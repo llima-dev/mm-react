@@ -2,6 +2,7 @@ import './LembreteCard.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faTrash, faEdit, faListCheck, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import type { ChecklistItem } from '../../types';
+import { Button } from 'react-bootstrap';
 
 type Props = {
   titulo: string;
@@ -9,6 +10,8 @@ type Props = {
   prazo?: string;
   cor?: string;
   checklist?: ChecklistItem[];
+  onEditar?: () => void;
+  dragHandle?: React.ReactNode;
 };
 
 export default function LembreteCard({
@@ -16,7 +19,9 @@ export default function LembreteCard({
   descricao,
   prazo,
   cor = 'azul',
+  onEditar,
   checklist = [],
+  dragHandle
 }: Props) {
   const percentual =
     checklist.length > 0
@@ -24,9 +29,15 @@ export default function LembreteCard({
           (checklist.filter((i) => i.feito).length / checklist.length) * 100
         )
       : 0;
+      
 
   return (
     <div className={`card card-borda-${cor}`}>
+      {dragHandle && (
+        <div className="position-absolute top-0 end-0 p-2">
+          {dragHandle}
+        </div>
+      )}
       <div className="card-body">
         <h5 className="card-title">{titulo}</h5>
         <p className="card-text">{descricao}</p>
@@ -53,10 +64,19 @@ export default function LembreteCard({
           </div>
         )}
         <div className="d-flex justify-content-end gap-2 mt-3">
-          <FontAwesomeIcon icon={faTrash} className="text-secondary opacity-50" />
-          <FontAwesomeIcon icon={faEdit} className="text-secondary opacity-50" />
-          <FontAwesomeIcon icon={faListCheck} className="text-secondary opacity-50" />
-          <FontAwesomeIcon icon={faInfoCircle} className="text-secondary opacity-50" />
+          <Button variant="link" className="p-0 text-secondary opacity-50" onClick={onEditar} title="Editar">
+            <FontAwesomeIcon icon={faEdit} />
+          </Button>
+          <Button variant="link" className="p-0 text-secondary opacity-50" onClick={(e) => {console.log(e);
+          }} title="Excluir">
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+          <Button variant="link" className="p-0 text-secondary opacity-50" title="Checklist (em breve)">
+            <FontAwesomeIcon icon={faListCheck} />
+          </Button>
+          <Button variant="link" className="p-0 text-secondary opacity-50" title="Detalhes (em breve)">
+            <FontAwesomeIcon icon={faInfoCircle} />
+          </Button>
         </div>
       </div>
     </div>

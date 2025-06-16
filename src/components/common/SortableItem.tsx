@@ -1,10 +1,13 @@
-// src/components/SortableItem.tsx
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import type { ReactElement } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGripVertical } from '@fortawesome/free-solid-svg-icons';
+import { cloneElement } from 'react';
 
 type Props = {
   id: string;
-  children: React.ReactNode;
+  children: ReactElement<{ dragHandle?: React.ReactNode }>;
 };
 
 export default function SortableItem({ id, children }: Props) {
@@ -17,9 +20,17 @@ export default function SortableItem({ id, children }: Props) {
     touchAction: 'manipulation',
   };
 
+  const dragHandle = (
+    <span {...attributes} {...listeners} style={{ cursor: 'grab' }}>
+      <FontAwesomeIcon icon={faGripVertical} />
+    </span>
+  );
+
+  const enhancedChild = cloneElement(children, { dragHandle });
+
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {children}
+    <div ref={setNodeRef} style={style}>
+      {enhancedChild}
     </div>
   );
 }

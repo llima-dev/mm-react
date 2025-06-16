@@ -88,15 +88,14 @@ export default function App() {
               >
                 {lembretes.map((l) => (
                   <SortableItem key={l.id} id={l.id}>
-                    <div onDoubleClick={() => editarLembrete(l)}>
-                      <LembreteCard
+                    <LembreteCard
                         titulo={l.titulo}
                         descricao={l.descricao}
                         prazo={l.prazo}
                         cor={l.cor}
                         checklist={l.checklist}
+                        onEditar={() => editarLembrete(l)}
                       />
-                    </div>
                   </SortableItem>
                 ))}
               </div>

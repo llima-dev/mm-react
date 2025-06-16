@@ -57,6 +57,10 @@
     line-height: 16px;
 }
 
-.card {
+.drag-handle {
     cursor: grab;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

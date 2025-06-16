@@ -20,19 +20,14 @@ export default function LembreteModal({
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [prazo, setPrazo] = useState('');
-  const [cor, setCor] = useState('azul');
+  const [cor, setCor] = useState('branco');
 
   useEffect(() => {
     if (lembreteParaEditar) {
       setTitulo(lembreteParaEditar.titulo);
       setDescricao(lembreteParaEditar.descricao);
       setPrazo(lembreteParaEditar.prazo ?? '');
-      setCor(lembreteParaEditar.cor || 'azul');
-    } else {
-      setTitulo('');
-      setDescricao('');
-      setPrazo('');
-      setCor('azul');
+      setCor(lembreteParaEditar.cor || 'branco');
     }
   }, [lembreteParaEditar]);  
 
@@ -50,7 +45,11 @@ export default function LembreteModal({
     };
   
     onSalvar(lembrete);
-  };  
+    setTitulo('');
+    setDescricao('');
+    setPrazo('');
+    setCor('branco');
+  };
 
   return (
     <Modal show={show} onHide={onClose} centered>
