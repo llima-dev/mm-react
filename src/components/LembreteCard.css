@@ -1,0 +1,58 @@
+.card {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card-borda-azul {
+    border-color: #1d4ed8;
+}
+
+.card-borda-verde {
+    border-color: #059669;
+}
+
+.card-borda-vermelha {
+    border-color: #dc2626;
+}
+
+.card-borda-amarela {
+    border-color: #facc15;
+}
+
+.card-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    color: #111827;
+}
+
+.prazo {
+    color: #555;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.checklist {
+    margin-top: 1rem;
+}
+
+.barra {
+    background: #eee;
+    border-radius: 6px;
+    height: 16px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.barra-preenchida {
+    background: #16a34a;
+    height: 100%;
+    text-align: center;
+    color: white;
+    font-size: 0.8rem;
+    line-height: 16px;
+}
