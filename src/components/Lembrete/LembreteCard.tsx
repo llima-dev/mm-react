@@ -1,9 +1,7 @@
 import './LembreteCard.css';
-
-type ChecklistItem = {
-  texto: string;
-  feito: boolean;
-};
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCalendarAlt, faTrash, faEdit, faListCheck, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import type { ChecklistItem } from '../../types';
 
 type Props = {
   titulo: string;
@@ -32,7 +30,8 @@ export default function LembreteCard({
       <div className="card-body">
         <h5 className="card-title">{titulo}</h5>
         <p className="card-text">{descricao}</p>
-        {prazo && <p className="prazo">📅 {prazo}</p>}
+        {prazo && <p className="prazo"><FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-muted" />
+        {prazo}</p>}
         {checklist.length > 0 && (
           <div className="checklist">
             <div className="barra">
@@ -53,6 +52,12 @@ export default function LembreteCard({
             </ul>
           </div>
         )}
+        <div className="d-flex justify-content-end gap-2 mt-3">
+          <FontAwesomeIcon icon={faTrash} className="text-secondary opacity-50" />
+          <FontAwesomeIcon icon={faEdit} className="text-secondary opacity-50" />
+          <FontAwesomeIcon icon={faListCheck} className="text-secondary opacity-50" />
+          <FontAwesomeIcon icon={faInfoCircle} className="text-secondary opacity-50" />
+        </div>
       </div>
     </div>
   );

@@ -1,0 +1,49 @@
+// hooks/useLembretes.ts
+import { useEffect, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import type { Lembrete } from '../types';
+
+const STORAGE_KEY = 'meu-mural-lembretes';
+
+export function useLembretes() {
+  const [lembretes, setLembretes] = useState<Lembrete[]>(() => {
+    try {
+      const salvo = localStorage.getItem(STORAGE_KEY);
+      return salvo ? JSON.parse(salvo) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // 🧠 Salva sempre que mudar
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(lembretes));
+  }, [lembretes]);
+
+  const adicionar = (lembrete: Lembrete) => {
+    const novo = { ...lembrete, id: uuidv4() };
+    setLembretes((prev) => [...prev, novo]);
+  };
+
+  const remover = (id: string) => {
+    setLembretes((prev) => prev.filter((l) => l.id !== id));
+  };
+
+  const atualizar = (id: string, dados: Partial<Lembrete>) => {
+    setLembretes((prev) =>
+      prev.map((l) => (l.id === id ? { ...l, ...dados } : l))
+    );
+  };
+
+  const reordenar = (novaLista: Lembrete[]) => {
+    setLembretes(novaLista);
+  };
+
+  return {
+    lembretes,
+    adicionar,
+    remover,
+    atualizar,
+    reordenar,
+  };
+}
