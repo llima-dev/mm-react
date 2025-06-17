@@ -15,6 +15,7 @@ export type Lembrete = {
   favoritos?: boolean;
   checklist?: ChecklistItem[];
   comentarios?: Comentario[];
+  anotacoes?: string;
 };
 
 export type Comentario = {

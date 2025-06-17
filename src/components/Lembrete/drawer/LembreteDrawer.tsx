@@ -3,6 +3,9 @@ import { createPortal } from "react-dom";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
+import EditorAnotacoes from "../EditorAnotacoes";
+
 import type { Lembrete, Comentario } from "../../../types";
 
 import "../LembreteCard.css";
@@ -11,11 +14,14 @@ type Props = {
   lembrete: Lembrete;
   onFechar: () => void;
   onSalvarComentario?: (comentarios: Comentario[]) => void;
+  onSalvarAnotacoes?: (texto: string) => void;
 };
 
-export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario }: Props) {
+export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes }: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
-  const [aba, setAba] = useState<"detalhes" | "comentarios">("detalhes");
+  const [anotacoes, setAnotacoes] = useState(lembrete.anotacoes || '');
+
+  const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes">("detalhes");
 
   const adicionarComentario = () => {
     if (!comentarioNovo.trim()) return;
@@ -31,11 +37,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario 
 
   return createPortal(
     <div className="drawer aberto">
-      <button
-        className="drawer-fechar"
-        onClick={onFechar}
-        title="Fechar"
-      >
+      <button className="drawer-fechar" onClick={onFechar} title="Fechar">
         <FontAwesomeIcon icon={faTimes} />
       </button>
       <h5>{lembrete.titulo}</h5>
@@ -52,6 +54,12 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario 
           onClick={() => setAba("comentarios")}
         >
           Comentários
+        </button>
+        <button
+          className={aba === "anotacoes" ? "ativo" : ""}
+          onClick={() => setAba("anotacoes")}
+        >
+          Anotações
         </button>
       </div>
 
@@ -111,6 +119,13 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario 
               </ul>
             )}
           </>
+        )}
+
+        {aba === "anotacoes" && (
+            <EditorAnotacoes
+                valorInicial={anotacoes}
+                onSalvar={(html) => onSalvarAnotacoes?.(html)}
+            />
         )}
       </div>
     </div>,

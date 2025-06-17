@@ -41,6 +41,7 @@ type Props = {
   onExcluir?: () => void;
   onReordenarChecklist?: (novoChecklist: ChecklistItem[]) => void;
   onToggleChecklistItem?: (itemId: string) => void;
+  onSalvarAnotacoes?: (texto: string) => void;
   onAbrirDetalhes?: () => void;
   onFecharDetalhes?: () => void;
   onSalvarComentario?: (comentarios: Comentario[]) => void; 

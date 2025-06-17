@@ -140,6 +140,7 @@ export default function App() {
                 lembrete={l}
                 onFechar={fecharDetalhes}
                 onSalvarComentario={(comentarios) => salvarComentarios(l.id, comentarios)}
+                onSalvarAnotacoes={(texto) => atualizar(l.id, { ...l, anotacoes: texto })}
               />
             ) : null
           )}
