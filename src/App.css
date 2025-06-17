@@ -119,3 +119,21 @@ html, body, #root {
 .btn-fav {
   background-color: #f8f9fa;
 }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.painel {
+  flex: 1;
+  padding: 1rem 2rem;
+}

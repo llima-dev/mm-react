@@ -39,7 +39,8 @@ import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAva
 import { 
   STORAGE_CHAVE_LEMBRETES,
   STORAGE_CHAVE_FILTROS,
-  STORAGE_CHAVE_FILTRO_FAVORITO
+  STORAGE_CHAVE_FILTRO_FAVORITO,
+  APP_VERSAO
 } from './utils/constants';
 
 import {
@@ -214,7 +215,7 @@ export default function App() {
             </div>
 
             {/* Lado direito: filtro avançado */}
-            <div className='d-flex align-items-baseline'>
+            <div className="d-flex align-items-baseline">
               <button
                 className={`no-border btn ${
                   filtroFavoritos ? "text-warning" : "text-dark"
@@ -393,6 +394,10 @@ export default function App() {
         }
         onExcluir={(id) => remover(id)}
       />
+
+      <footer className="text-center text-muted small mt-auto border-top pt-1" style={{marginBottom: '-30px', opacity: '0.5'}}>
+        <span>L.L Dev — Meu Mural v{APP_VERSAO}</span>
+      </footer>
     </div>
   );
 }
