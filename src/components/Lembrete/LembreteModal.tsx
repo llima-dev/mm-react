@@ -4,6 +4,8 @@ import type { Lembrete } from '../../types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import './LembreteModal.css';
+
 type Props = {
   show: boolean;
   onClose: () => void;
@@ -79,18 +81,23 @@ export default function LembreteModal({
           className="form-control mb-2"
           placeholder="Descrição"
           value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
+          onChange={(e) => {
+            setDescricao(e.target.value);
+            e.target.style.height = "auto";
+            e.target.style.height = e.target.scrollHeight + "px";
+          }}
+          style={{ minHeight: "80px", resize: "none", overflow: "hidden" }}
         />
         <div>
-        <DatePicker
-          selected={prazo ? new Date(prazo) : null}
-          onChange={(date) =>
-            setPrazo(date ? date.toISOString().split("T")[0] : "")
-          }
-          dateFormat="dd/MM/yyyy"
-          className="form-control mb-3 dt-picker"
-          placeholderText='Prazo'
-        />
+          <DatePicker
+            selected={prazo ? new Date(prazo + "T00:00:00") : null}
+            onChange={(date) =>
+              setPrazo(date ? date.toISOString().split("T")[0] : "")
+            }
+            dateFormat="dd/MM/yyyy"
+            className="form-control mb-3 dt-picker"
+            placeholderText="Prazo"
+          />
         </div>
         <label className="form-label">Cor do card:</label>
         <div className="d-flex gap-2">

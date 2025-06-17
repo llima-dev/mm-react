@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { DragEndEvent } from "@dnd-kit/core";
 import type { ChecklistItem, Comentario } from "../../types";
-import { confirmarExclusao, getStatusPrazo } from "../common/helper.ts";
+import { confirmarExclusao, getStatusPrazo, formatarData } from "../common/helper.ts";
 import SortableChecklistItem from "./checklist/SortableChecklistItem.tsx";
 import ChecklistModal from "./checklist/ChecklistModal.tsx";
 import 'highlight.js/styles/github-dark.css';
@@ -115,7 +115,7 @@ export default function LembreteCard({
   };
 
   return (
-    <div className={`card card-borda-${cor} ${fixado ? 'fixado' : ''}`}>
+    <div className={`card card-borda-${cor} ${fixado ? "fixado" : ""}`}>
       {!fixado && dragHandle && (
         <div className="position-absolute top-0 end-0 p-2">{dragHandle}</div>
       )}
@@ -155,11 +155,12 @@ export default function LembreteCard({
           <span>{titulo}</span>
         </h5>
 
-        <p className="card-text">{descricao}</p>
+        <p className="card-text card-text-limitada">{descricao}</p>
+
         {prazo && (
           <p className="prazo">
             <FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-muted" />
-            {prazo}
+            {formatarData(prazo)}
           </p>
         )}
         {checklist.length > 0 && (

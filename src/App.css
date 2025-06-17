@@ -49,6 +49,10 @@ html, body, #root {
   width: 100%;
   padding: 0 2rem;
   box-sizing: border-box;
+
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
 }
 
 /* borda sutil apenas entre as colunas */
@@ -110,4 +114,8 @@ html, body, #root {
 
 .no-border {
   border: none;
+}
+
+.btn-fav {
+  background-color: #f8f9fa;
 }

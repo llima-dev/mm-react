@@ -263,3 +263,12 @@
     /* vermelho Bootstrap */
     box-shadow: 0 0 6px rgba(220, 53, 69, 0.2);
 }
+
+.card-text-limitada {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    /* número de linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

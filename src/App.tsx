@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './App.css';
@@ -25,8 +25,22 @@ import type { Lembrete, Comentario } from './types';
 import LembreteDrawer from './components/Lembrete/drawer/LembreteDrawer';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalArquivados from './components/common/ModalArquivados';
-import { exportarLembretes, importarLembretesDoArquivo, limparMural } from './components/common/helper';
-import { STORAGE_CHAVE_LEMBRETES } from './utils/constants';
+import { 
+  exportarLembretes,
+  importarLembretesDoArquivo,
+  limparMural,
+  getStatusPrazo,
+  corPorTipo,
+  formatarData
+} from './components/common/helper';
+import FiltroAvancado from "./components/common/FiltroAvancado";
+import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
+
+import { 
+  STORAGE_CHAVE_LEMBRETES,
+  STORAGE_CHAVE_FILTROS,
+  STORAGE_CHAVE_FILTRO_FAVORITO
+} from './utils/constants';
 
 import {
   faStar,
@@ -37,9 +51,32 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
+
+  const [filtros, setFiltros] = useState<TipoFiltro[]>(() => {
+    try {
+      const salvo = localStorage.getItem(STORAGE_CHAVE_FILTROS);
+      return salvo ? JSON.parse(salvo) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [filtroFavoritos, setFiltroFavoritos] = useState(() => {
+    try {
+      const salvo = localStorage.getItem(STORAGE_CHAVE_FILTRO_FAVORITO);
+      return salvo === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_CHAVE_FILTROS, JSON.stringify(filtros));
+    localStorage.setItem(STORAGE_CHAVE_FILTRO_FAVORITO, filtroFavoritos.toString());
+  }, [filtros, filtroFavoritos]);
+
   const [modalAberta, setModalAberta] = useState(false);
   const [lembreteParaEditar, setLembreteParaEditar] = useState<Lembrete | null>(null);
-  const [filtroFavoritos, setFiltroFavoritos] = useState(false);
   const [modalArquivadosAberta, setModalArquivadosAberta] = useState(false);
 
   const salvarComentarios = (id: string, novos: Comentario[]) => {
@@ -106,7 +143,24 @@ export default function App() {
 
   const lembretesFiltrados = lembretes
   .filter((l) => !l.arquivado)
-  .filter((l) => (filtroFavoritos ? l.favorito : true));
+  .filter((l) => (filtroFavoritos ? l.favorito : true))
+  .filter((l) =>
+    filtros.every((f) => {
+      const v = f.valor.toLowerCase();
+      switch (f.tipo) {
+        case "titulo":
+          return l.titulo.toLowerCase().includes(v);
+        case "descricao":
+          return l.descricao.toLowerCase().includes(v);
+        case "prazo":
+            return l.prazo?.includes(v)
+        case "status":
+          return getStatusPrazo(l.prazo, l.checklist).tipo === v;
+        default:
+          return true;
+      }
+    })
+  );  
 
   const lembretesOrdenados = [...lembretesFiltrados].sort((a, b) => {
     const fa = a.fixado ? 1 : 0;
@@ -118,42 +172,100 @@ export default function App() {
     <div className="app">
       <main className="painel">
         <section className="col-esquerda h-100">
-          <div className="d-flex gap-2 justify-content-start mb-2">
-            <button
-              className="btn btn-sm btn-outline-secondary no-border"
-              onClick={abrirModalNovo}
-            >
-              + Adicionar Lembrete
-            </button>
-            <button
-              className="btn btn-outline-secondary btn-sm no-border"
-              onClick={() => exportarLembretes(lembretes)}
-            >
-              <FontAwesomeIcon icon={faDownload} /> Exportar
-            </button>
+          {/* Painel de ações + filtro */}
+          <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            {/* Lado esquerdo: ações */}
+            <div className="d-flex gap-2 flex-wrap">
+              <button
+                className="btn btn-sm btn-outline-secondary no-border"
+                onClick={abrirModalNovo}
+              >
+                + Adicionar Lembrete
+              </button>
 
-            <input
-              type="file"
-              accept=".json"
-              style={{ display: "none" }}
-              id="inputImportarJson"
-              onChange={handleImportar}
-            />
+              <button
+                className="btn btn-outline-secondary btn-sm no-border"
+                onClick={() => exportarLembretes(lembretes)}
+              >
+                <FontAwesomeIcon icon={faDownload} /> Exportar
+              </button>
 
-            <label
-              htmlFor="inputImportarJson"
-              className="btn btn-outline-secondary btn-sm no-border"
-            >
-              <FontAwesomeIcon icon={faUpload} /> Importar
-            </label>
+              <input
+                type="file"
+                accept=".json"
+                style={{ display: "none" }}
+                id="inputImportarJson"
+                onChange={handleImportar}
+              />
 
-            <button
-              className="btn btn-outline-danger btn-sm no-border"
-              onClick={limparMural}
-            >
-              <FontAwesomeIcon icon={faBroom} /> Limpar Mural
-            </button>
+              <label
+                htmlFor="inputImportarJson"
+                className="btn btn-outline-secondary btn-sm no-border"
+              >
+                <FontAwesomeIcon icon={faUpload} /> Importar
+              </label>
+
+              <button
+                className="btn btn-outline-danger btn-sm no-border"
+                onClick={limparMural}
+              >
+                <FontAwesomeIcon icon={faBroom} /> Limpar Mural
+              </button>
+            </div>
+
+            {/* Lado direito: filtro avançado */}
+            <div className='d-flex align-items-baseline'>
+              <button
+                className={`no-border btn ${
+                  filtroFavoritos ? "text-warning" : "text-dark"
+                } btn-sm btn-fav`}
+                onClick={() => setFiltroFavoritos((atual) => !atual)}
+              >
+                <FontAwesomeIcon icon={faStar} />
+              </button>
+              <FiltroAvancado
+                onAdicionarFiltro={(f) => setFiltros([...filtros, f])}
+              />
+            </div>
           </div>
+
+          {/* Badges de filtros aplicados */}
+          <div className="d-flex gap-2">
+            {filtros.map((f, i) => {
+              const cor = corPorTipo(f.tipo);
+
+              return (
+                <span
+                  key={i}
+                  className={`border badge d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-${cor.bg} ${cor.text}`}
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    maxWidth: "fit-content",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  <span style={{ textTransform: "capitalize" }}>
+                    {f.tipo === "prazo"
+                      ? `Prazo: ${formatarData(f.valor)}`
+                      : `${f.tipo}: `}
+                    {f.tipo !== "prazo" && <strong>{f.valor}</strong>}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white btn-sm"
+                    style={{ marginLeft: 4, filter: "invert(0.5)" }}
+                    onClick={() =>
+                      setFiltros(filtros.filter((_, idx) => idx !== i))
+                    }
+                  ></button>
+                </span>
+              );
+            })}
+          </div>
+
           <hr />
           <div className="d-flex flex-row align-items-start mb-3">
             <div className="d-flex w-50 align-items-start">
@@ -162,14 +274,6 @@ export default function App() {
                 <span className="text-muted">({lembretes.length})</span>
               </h5>
               <div className="d-flex gap-2 mb-3" style={{ marginLeft: "5px" }}>
-                <button
-                  className={`no-border btn ${
-                    filtroFavoritos ? "btn-warning" : "btn-outline-secondary"
-                  } btn-sm`}
-                  onClick={() => setFiltroFavoritos((atual) => !atual)}
-                >
-                  <FontAwesomeIcon icon={faStar} /> Favoritos
-                </button>
                 <button
                   className="no-border btn btn-outline-secondary btn-sm"
                   onClick={() => setModalArquivadosAberta(true)}
