@@ -85,3 +85,83 @@
     max-height: 180px;
     overflow-y: auto;
 }
+
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    padding: 1rem;
+    z-index: 1050;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    border-left: 1px solid #ddd;
+}
+
+.drawer.aberto {
+    transform: translateX(0%);
+}
+
+
+.drawer-fechar {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #6c757d;
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.drawer-fechar:hover {
+    color: #dc3545;
+}
+
+.drawer h5 {
+    margin-top: 0.5rem;
+}
+
+.drawer .abas {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.drawer .abas button {
+    border: none;
+    background: none;
+    padding: 0.5rem;
+    font-weight: 500;
+    color: #333;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.drawer .abas button.ativo {
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+
+.drawer .conteudo {
+    padding-top: 1rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.campo {
+    margin-bottom: 1rem;
+}
+
+.campo label {
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}

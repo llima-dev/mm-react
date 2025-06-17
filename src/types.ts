@@ -14,4 +14,11 @@ export type Lembrete = {
   cor?: string;
   favoritos?: boolean;
   checklist?: ChecklistItem[];
+  comentarios?: Comentario[];
+};
+
+export type Comentario = {
+  id: string;
+  texto: string;
+  data: string;
 };

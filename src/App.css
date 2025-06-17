@@ -55,7 +55,6 @@ html, body, #root {
 .col-esquerda {
   flex: 2;
   padding: 1.5rem;
-  border-right: 1px solid #e5e7eb;
 }
 
 .col-direita {

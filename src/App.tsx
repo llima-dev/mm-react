@@ -21,13 +21,27 @@ import SortableItem from './components/common/SortableItem';
 import LembreteCard from './components/Lembrete/LembreteCard';
 import LembreteModal from './components/Lembrete/LembreteModal';
 import { useLembretes } from './hooks/useLembretes';
-import type { Lembrete } from './types';
+import type { Lembrete, Comentario } from './types';
+import LembreteDrawer from './components/Lembrete/drawer/LembreteDrawer';
 
 export default function App() {
   const [modalAberta, setModalAberta] = useState(false);
   const [lembreteParaEditar, setLembreteParaEditar] = useState<Lembrete | null>(null);
 
-  const { lembretes, adicionar, reordenar, atualizar, remover } = useLembretes();
+  const salvarComentarios = (id: string, novos: Comentario[]) => {
+    atualizar(id, { comentarios: novos });
+  };
+
+  const { 
+    lembretes,
+    adicionar,
+    reordenar,
+    atualizar,
+    remover,
+    abrirDetalhes,
+    fecharDetalhes,
+    idDetalhesAberto
+  } = useLembretes();
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -77,7 +91,7 @@ export default function App() {
             </h5>
           </div>
 
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} onDragStart={() => fecharDetalhes()}>
             <SortableContext items={lembretes.map((l) => l.id)} strategy={rectSortingStrategy}>
               <div
                 className="d-grid"
@@ -96,6 +110,11 @@ export default function App() {
                         checklist={l.checklist}
                         onEditar={() => editarLembrete(l)}
                         onExcluir={() => remover(l.id)}
+                        onAbrirDetalhes={() => abrirDetalhes(l.id)}
+                        onFecharDetalhes={() => fecharDetalhes()}
+                        drawerAberto={idDetalhesAberto === l.id}
+                        comentarios={l.comentarios}
+                        onSalvarComentario={(comentarios) => salvarComentarios(l.id, comentarios)}
                         onToggleChecklistItem={(itemId) => {
                           const atualizado = {
                             ...l,
@@ -114,18 +133,16 @@ export default function App() {
               </div>
             </SortableContext>
           </DndContext>
-        </section>
-
-        <section className="col-direita h-100">
-          <div className="d-flex justify-content-center mb-2">
-            <button className="btn btn-sm btn-outline-secondary">+ Adicionar Snippet</button>
-          </div>
-          <div className="d-flex flex-column align-items-start mb-3">
-            <h5 className="mb-0 d-flex align-items-center gap-2">
-              <i className="fas fa-code text-dark"></i> Snippets{' '}
-              <span className="text-muted">(0)</span>
-            </h5>
-          </div>
+          {lembretes.map((l) =>
+            idDetalhesAberto === l.id ? (
+              <LembreteDrawer
+                key={`drawer-${l.id}`}
+                lembrete={l}
+                onFechar={fecharDetalhes}
+                onSalvarComentario={(comentarios) => salvarComentarios(l.id, comentarios)}
+              />
+            ) : null
+          )}
         </section>
       </main>
 

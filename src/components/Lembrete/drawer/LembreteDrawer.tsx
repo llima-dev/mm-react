@@ -1,0 +1,119 @@
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import type { Lembrete, Comentario } from "../../../types";
+
+import "../LembreteCard.css";
+
+type Props = {
+  lembrete: Lembrete;
+  onFechar: () => void;
+  onSalvarComentario?: (comentarios: Comentario[]) => void;
+};
+
+export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario }: Props) {
+  const [comentarioNovo, setComentarioNovo] = useState("");
+  const [aba, setAba] = useState<"detalhes" | "comentarios">("detalhes");
+
+  const adicionarComentario = () => {
+    if (!comentarioNovo.trim()) return;
+    const novo: Comentario = {
+      id: crypto.randomUUID(),
+      texto: comentarioNovo.trim(),
+      data: new Date().toISOString(),
+    };
+    const atualizados = [...(lembrete.comentarios || []), novo];
+    onSalvarComentario?.(atualizados);
+    setComentarioNovo("");
+  };
+
+  return createPortal(
+    <div className="drawer aberto">
+      <button
+        className="drawer-fechar"
+        onClick={onFechar}
+        title="Fechar"
+      >
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h5>{lembrete.titulo}</h5>
+
+      <div className="abas">
+        <button
+          className={aba === "detalhes" ? "ativo" : ""}
+          onClick={() => setAba("detalhes")}
+        >
+          Detalhes
+        </button>
+        <button
+          className={aba === "comentarios" ? "ativo" : ""}
+          onClick={() => setAba("comentarios")}
+        >
+          Comentários
+        </button>
+      </div>
+
+      <div className="conteudo">
+        {aba === "detalhes" && (
+          <>
+            <div className="campo">
+              <label>Descrição</label>
+              <div>{lembrete.descricao}</div>
+            </div>
+            <div className="campo">
+              <label>Prazo</label>
+              <div>{lembrete.prazo || "—"}</div>
+            </div>
+          </>
+        )}
+
+        {aba === "comentarios" && (
+          <>
+            <textarea
+              className="form-control mb-2"
+              value={comentarioNovo}
+              onChange={(e) => setComentarioNovo(e.target.value)}
+              placeholder="Escreva um comentário..."
+              rows={3}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  adicionarComentario();
+                }
+              }}
+            />
+
+            <Button
+              variant="primary"
+              size="sm"
+              disabled={!comentarioNovo.trim()}
+              onClick={adicionarComentario}
+            >
+              Adicionar
+            </Button>
+
+            <hr />
+
+            {(lembrete.comentarios || []).length === 0 ? (
+              <p className="text-muted">Nenhum comentário ainda.</p>
+            ) : (
+              <ul className="list-unstyled small mt-3">
+                {lembrete.comentarios.map((c) => (
+                  <li key={c.id} className="mb-2 border-bottom pb-2">
+                    <div className="text-muted">
+                      {new Date(c.data).toLocaleString()}
+                    </div>
+                    <div>{c.texto}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
