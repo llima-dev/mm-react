@@ -9,6 +9,8 @@ import AbaSnippets from "../AbaSnippets";
 
 import type { Lembrete, Comentario, Snippet } from "../../../types";
 
+import { extrairHashtags } from '../../common/helper';
+
 import "../LembreteCard.css";
 
 type Props = {
@@ -36,6 +38,8 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
     onSalvarComentario?.(atualizados);
     setComentarioNovo("");
   };
+
+  const hashtags = extrairHashtags(lembrete.descricao);
 
   return createPortal(
     <div className="drawer aberto">
@@ -76,7 +80,20 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
           <>
             <div className="campo">
               <label>Descrição</label>
-              <div>{lembrete.descricao}</div>
+              <div>{lembrete.descricao.replace(/#\w+/g, "").trim()}</div>
+              {hashtags.length > 0 && (
+                <div className="mt-2 d-flex flex-wrap gap-1">
+                  {hashtags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="badge rounded-pill"
+                      style={{ backgroundColor: "#e2e8f0", color: "#1e293b" }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="campo">
               <label>Prazo</label>

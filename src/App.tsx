@@ -74,13 +74,22 @@ export default function App() {
     }
   });
 
+  const [nomeProjeto, setNomeProjeto] = useState(() => {
+    return localStorage.getItem('nomeProjeto') || '';
+  });
+
   useEffect(() => {
+    localStorage.setItem('nomeProjeto', nomeProjeto);
     localStorage.setItem(STORAGE_CHAVE_FILTROS, JSON.stringify(filtros));
     localStorage.setItem(
       STORAGE_CHAVE_FILTRO_FAVORITO,
       filtroFavoritos.toString()
     );
-  }, [filtros, filtroFavoritos]);
+
+    document.title = nomeProjeto
+    ? `Meu Mural | ${nomeProjeto}`
+    : 'Meu Mural';
+  }, [filtros, filtroFavoritos, nomeProjeto]);
 
   const [modalAberta, setModalAberta] = useState(false);
   const [lembreteParaEditar, setLembreteParaEditar] = useState<Lembrete | null>(
@@ -110,12 +119,13 @@ export default function App() {
   function handleImportar(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    importarLembretesDoArquivo(file, lembretes, (novos) => {
+  
+    importarLembretesDoArquivo(file, lembretes, (novos, nomeDoArquivo) => {
       localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(novos));
+      if (nomeDoArquivo) localStorage.setItem('nomeProjeto', nomeDoArquivo);
       location.reload();
     });
-  }
+  }  
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -189,6 +199,16 @@ export default function App() {
               <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
                 {/* Lado esquerdo: ações */}
                 <div className="d-flex gap-2 flex-wrap">
+                <div className="d-flex align-items-center gap-3">
+                <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Nome do mural"
+                    value={nomeProjeto}
+                    onChange={(e) => setNomeProjeto(e.target.value)}
+                    style={{ maxWidth: "200px"}}
+                  />
+                </div>
                   <button
                     className="btn btn-sm btn-outline-secondary no-border"
                     onClick={abrirModalNovo}
@@ -198,7 +218,7 @@ export default function App() {
 
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => exportarLembretes(lembretes)}
+                    onClick={() => exportarLembretes(lembretes, nomeProjeto)}
                   >
                     <FontAwesomeIcon icon={faDownload} /> Exportar
                   </button>
@@ -221,6 +241,7 @@ export default function App() {
                   <button
                     className="btn btn-outline-danger btn-sm no-border"
                     onClick={limparMural}
+                    style={{opacity: "0.5" }}
                   >
                     <FontAwesomeIcon icon={faBroom} /> Limpar Mural
                   </button>

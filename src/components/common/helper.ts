@@ -66,34 +66,59 @@ export function getStatusPrazo(prazo?: string, checklist: ChecklistItem[] = []) 
   return { tipo: 'ok' };
 }
 
-export function exportarLembretes(lembretes: Lembrete[]) {
-  const json = JSON.stringify(lembretes, null, 2);
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
+export function exportarLembretes(lembretes: Lembrete[], nomeProjeto?: string) {
+  const nomeArquivo = nomeProjeto?.trim()
+    ? `meu-mural-${nomeProjeto.replace(/\s+/g, '_')}.json`
+    : 'meu-mural-export.json';
 
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "meu-mural-lembretes.json";
-  link.click();
+  const dados = {
+    nomeProjeto: nomeProjeto || '',
+    lembretes
+  };
+
+  const blob = new Blob([JSON.stringify(dados, null, 2)], {
+    type: 'application/json',
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nomeArquivo;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function importarLembretesDoArquivo(
   arquivo: File,
   lembretesAtuais: Lembrete[],
-  onImportar: (novos: Lembrete[]) => void
+  onImportar: (novos: Lembrete[], nomeProjeto?: string) => void
 ) {
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
-      const json = JSON.parse(e.target?.result as string) as Lembrete[];
-      const validos = json.filter((l) => l.id && l.titulo);
+      const json = JSON.parse(e.target?.result as string);
 
-      const convertidos = validos.map((l) => ({
-        ...l,
+      const lista = (Array.isArray(json) ? json : json.lembretes) as Partial<Lembrete>[];
+      const nomeProjeto = typeof json.nomeProjeto === 'string' ? json.nomeProjeto : undefined;
+
+      const validos = lista.filter((l) => l.id && l.titulo);
+
+      const convertidos: Lembrete[] = validos.map((l) => ({
         id: crypto.randomUUID(),
+        titulo: l.titulo || 'Sem título',
+        descricao: l.descricao || '',
+        cor: l.cor || 'azul',
+        checklist: l.checklist || [],
+        favorito: l.favorito ?? false,
+        fixado: l.fixado ?? false,
+        arquivado: false,
+        comentarios: l.comentarios || [],
+        anotacoes: l.anotacoes || '',
+        snippets: l.snippets || [],
+        prazo: l.prazo || ''
       }));
 
-      onImportar([...lembretesAtuais, ...convertidos]);
+      onImportar([...lembretesAtuais, ...convertidos], nomeProjeto);
     } catch (erro) {
       alert("Arquivo inválido.");
     }
@@ -102,10 +127,21 @@ export function importarLembretesDoArquivo(
 }
 
 export function limparMural() {
-  if (window.confirm("Tem certeza que deseja apagar todos os lembretes? Essa ação não pode ser desfeita.")) {
-    localStorage.removeItem(STORAGE_CHAVE_LEMBRETES);
-    location.reload();
-  }
+  Swal.fire({
+    title: 'Limpar mural?',
+    text: 'Tem certeza que deseja apagar todos os lembretes? Essa ação não pode ser desfeita.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#aaa',
+    confirmButtonText: 'Sim, apagar',
+    cancelButtonText: 'Cancelar',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      localStorage.removeItem(STORAGE_CHAVE_LEMBRETES);
+      location.reload();
+    }
+  });
 }
 
 export function corPorTipo(tipo: string): badgeStyle {
@@ -126,4 +162,8 @@ export function corPorTipo(tipo: string): badgeStyle {
 export function formatarData(data: string) {
   const [ano, mes, dia] = data.split("-");
   return `${dia}/${mes}/${ano}`;
+}
+
+export function extrairHashtags(texto: string): string[] {
+  return (texto.match(/#\w+/g) || []).slice(0, 5);
 }

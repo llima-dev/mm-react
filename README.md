@@ -1,54 +1,86 @@
-# React + TypeScript + Vite
+# 🧱 Meu Mural
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Organize seus lembretes, snippets de código e anotações — tudo em um só lugar.  
+100% local, rápido e personalizável. Ideal para devs, estudantes e mentes criativas.
 
-Currently, two official plugins are available:
+🔗 [Acesse aqui o app](https://llima-dev.github.io/mm-react/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## ✨ Funcionalidades
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- ✅ **Lembretes personalizados** com:
+  - Título, descrição e seleção de cor
+  - Prazo com indicação de status (em dia, próximo, atrasado)
+  - Checklist interativo com ordenação por drag & drop
+  - Hashtags com identificação automática
+  - Favoritar, fixar no topo e arquivar lembretes
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- 💬 **Comentários**: adicione e gerencie observações por lembrete
+
+- 📝 **Anotações**: editor rich text (com suporte a HTML)
+
+- 💻 **Snippets de código**: salve trechos com realce de sintaxe (`highlight.js`)
+
+- 🧠 **Filtro avançado**: por título, descrição, prazo, status e favorito
+
+- 🧩 **Drag & Drop** com `@dnd-kit`
+
+- ☁️ **Exportar/Importar** mural como `.json` (com nome do projeto)
+
+- 🌙 **Modo leve e responsivo** com design limpo, feito para o navegador
+
+- 📦 **Persistência local** via `localStorage`
+
+---
+
+## 🧑‍💻 Tecnologias utilizadas
+
+- [React 19](https://react.dev/)
+- [Bootstrap 5](https://getbootstrap.com/)
+- [@dnd-kit](https://dndkit.com/)
+- [Highlight.js](https://highlightjs.org/)
+- [React-Bootstrap](https://react-bootstrap.github.io/)
+- [TypeScript](https://www.typescriptlang.org/)
+
+---
+
+## 🧑‍💻 Como rodar localmente
+
+```bash
+# Instale as dependências
+npm install
+
+# Rode o projeto em modo de desenvolvimento
+npm run dev
+
+# Acesse no navegador
+http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 📤 Deploy via GitHub Pages
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+Este projeto é publicado diretamente no GitHub Pages:
+
+* **Repositório**: [llima-dev/mm-react](https://github.com/llima-dev/mm-react)
+* **URL pública**: [llima-dev.github.io/mm-react](https://llima-dev.github.io/mm-react)
+
+Para publicar novamente após alterações:
+
+```bash
+npm run build
+npx gh-pages -d dist
 ```
+
+---
+
+## 📝 Licença
+
+Distribuído sob a licença **MIT**.
+Consulte o arquivo `LICENSE` para mais informações.
+
+---
+
+> Feito com 💙 por **L.L Dev**

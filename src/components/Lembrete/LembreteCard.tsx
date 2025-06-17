@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { DragEndEvent } from "@dnd-kit/core";
 import type { ChecklistItem, Comentario } from "../../types";
-import { confirmarExclusao, getStatusPrazo, formatarData } from "../common/helper.ts";
+import { confirmarExclusao, getStatusPrazo, formatarData, extrairHashtags } from "../common/helper.ts";
 import SortableChecklistItem from "./checklist/SortableChecklistItem.tsx";
 import ChecklistModal from "./checklist/ChecklistModal.tsx";
 import 'highlight.js/styles/github-dark.css';
@@ -114,6 +114,8 @@ export default function LembreteCard({
     }
   };
 
+  const hashtags = extrairHashtags(descricao);
+
   return (
     <div className={`card card-borda-${cor} ${fixado ? "fixado" : ""}`}>
       {!fixado && dragHandle && (
@@ -155,7 +157,23 @@ export default function LembreteCard({
           <span>{titulo}</span>
         </h5>
 
-        <p className="card-text card-text-limitada">{descricao}</p>
+        <p className="card-text card-text-limitada">
+          {descricao.replace(/#\w+/g, "").trim()}
+        </p>
+
+        {hashtags.length > 0 && (
+          <div className="mt-2 d-flex flex-wrap gap-1">
+            {hashtags.map((tag, idx) => (
+              <span
+                key={idx}
+                className="badge rounded-pill"
+                style={{ backgroundColor: "#e2e8f0", color: "#1e293b" }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
 
         {prazo && (
           <p className="prazo">

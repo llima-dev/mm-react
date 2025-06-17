@@ -272,3 +272,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25em 0.6em;
+}
