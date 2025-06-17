@@ -258,3 +258,8 @@
   border-radius: 3px;
 }
 
+.card.fixado {
+    border-top: 3px solid #000000;
+    /* vermelho Bootstrap */
+    box-shadow: 0 0 6px rgba(220, 53, 69, 0.2);
+}

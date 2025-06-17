@@ -93,6 +93,12 @@ export default function App() {
   .filter((l) => !l.arquivado)
   .filter((l) => (filtroFavoritos ? l.favorito : true));
 
+  const lembretesOrdenados = [...lembretesFiltrados].sort((a, b) => {
+    const fa = a.fixado ? 1 : 0;
+    const fb = b.fixado ? 1 : 0;
+    return fb - fa;
+  });  
+
   return (
     <div className="app">
       <main className="painel">
@@ -149,7 +155,7 @@ export default function App() {
                   gap: "1rem",
                 }}
               >
-                {lembretesFiltrados.map((l) => (
+                {lembretesOrdenados.map((l) => (
                   <SortableItem key={l.id} id={l.id}>
                     <LembreteCard
                       favorito={l.favorito ?? false}
@@ -164,6 +170,8 @@ export default function App() {
                       onFecharDetalhes={() => fecharDetalhes()}
                       drawerAberto={idDetalhesAberto === l.id}
                       comentarios={l.comentarios}
+                      fixado={l.fixado}
+                      onToggleFixado={() => atualizar(l.id, { ...l, fixado: !l.fixado })}
                       onToggleArquivar={() =>
                         atualizar(l.id, { ...l, arquivado: true })
                       }

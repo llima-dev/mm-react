@@ -19,6 +19,7 @@ export type Lembrete = {
   anotacoes?: string;
   favorito?: boolean;
   arquivado?: boolean;
+  fixado?: boolean;
 };
 
 export type Comentario = {

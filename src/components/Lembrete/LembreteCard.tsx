@@ -16,6 +16,7 @@ import {
   faInfoCircle,
   faFlagCheckered,
   faBoxArchive,
+  faThumbtack,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
@@ -57,6 +58,8 @@ type Props = {
   onToggleFavorito?: () => void;
   arquivado?: boolean;
   onToggleArquivar?: () => void;
+  fixado?: boolean;
+  onToggleFixado?: () => void;
 };
 
 export default function LembreteCard({
@@ -73,7 +76,9 @@ export default function LembreteCard({
   onAbrirDetalhes,
   onToggleFavorito,
   onToggleArquivar,
+  onToggleFixado,
   dragHandle,
+  fixado,
 }: Props) {
   const percentual =
     checklist.length > 0
@@ -110,7 +115,7 @@ export default function LembreteCard({
   };
 
   return (
-    <div className={`card card-borda-${cor}`}>
+    <div className={`card card-borda-${cor} ${fixado ? 'fixado' : ''}`}>
       {dragHandle && (
         <div className="position-absolute top-0 end-0 p-2">{dragHandle}</div>
       )}
@@ -211,6 +216,20 @@ export default function LembreteCard({
           </div>
         )}
         <div className="d-flex justify-content-end gap-2 mt-3">
+          <div className="pin-btn">
+            <Button
+              variant="link"
+              className="p-0"
+              onClick={onToggleFixado}
+              title={fixado ? "Desafixar" : "Fixar no topo"}
+            >
+              <FontAwesomeIcon
+                icon={faThumbtack}
+                className={fixado ? "text-danger" : "text-muted"}
+                style={{ transform: fixado ? "rotate(0deg)" : "rotate(45deg)" }}
+              />
+            </Button>
+          </div>
           <Button
             variant="link"
             className="p-0"
@@ -233,7 +252,6 @@ export default function LembreteCard({
           >
             <FontAwesomeIcon icon={faBoxArchive} />
           </Button>
-
 
           <Button
             variant="link"
