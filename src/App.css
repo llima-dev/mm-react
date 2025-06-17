@@ -91,3 +91,20 @@ html, body, #root {
   display: flex;
   height: calc(100vh - 60px); /* deixa espaço pro footer */
 }
+
+.card-checklist-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: 12px; /* 👈 aqui está o truque */
+}
+
+.card-checklist-scroll::-webkit-scrollbar,
+.checklist-scroll-container::-webkit-scrollbar {
+  width: 6px;
+  margin-left: 5px;
+}
+.card-checklist-scroll::-webkit-scrollbar-thumb,
+.checklist-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #ced4da;
+  border-radius: 3px;
+}

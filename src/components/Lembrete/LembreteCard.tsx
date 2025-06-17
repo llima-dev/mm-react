@@ -1,8 +1,28 @@
-import './LembreteCard.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faTrash, faEdit, faListCheck, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import type { ChecklistItem } from '../../types';
+import { useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { DragEndEvent } from '@dnd-kit/core';
+import type { ChecklistItem } from '../../types';
+import { confirmarExclusao } from '../common/helper.ts';
+import SortableChecklistItem from './checklist/SortableChecklistItem.tsx';
+import ChecklistModal from './checklist/ChecklistModal.tsx';
+
+import { faCalendarAlt, faTrash, faEdit, faListCheck, faInfoCircle, faGripVertical } from '@fortawesome/free-solid-svg-icons';
+
+import './LembreteCard.css';
+
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 type Props = {
   titulo: string;
@@ -11,6 +31,9 @@ type Props = {
   cor?: string;
   checklist?: ChecklistItem[];
   onEditar?: () => void;
+  onExcluir?: () => void;
+  onReordenarChecklist?: (novoChecklist: ChecklistItem[]) => void;
+  onToggleChecklistItem?: (itemId: string) => void;
   dragHandle?: React.ReactNode;
 };
 
@@ -20,7 +43,10 @@ export default function LembreteCard({
   prazo,
   cor = 'azul',
   onEditar,
+  onExcluir,
   checklist = [],
+  onReordenarChecklist,
+  onToggleChecklistItem,
   dragHandle
 }: Props) {
   const percentual =
@@ -29,8 +55,21 @@ export default function LembreteCard({
           (checklist.filter((i) => i.feito).length / checklist.length) * 100
         )
       : 0;
-      
 
+  const [modalChecklistAberto, setModalChecklistAberto] = useState(false);
+
+  const sensors = useSensors(useSensor(PointerSensor));
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active.id !== over?.id && onReordenarChecklist) {
+      const oldIndex = checklist.findIndex((i) => i.id === active.id);
+      const newIndex = checklist.findIndex((i) => i.id === over.id);
+      const novaOrdem = arrayMove(checklist, oldIndex, newIndex);
+      onReordenarChecklist(novaOrdem);
+    }
+  };      
+      
   return (
     <div className={`card card-borda-${cor}`}>
       {dragHandle && (
@@ -44,7 +83,7 @@ export default function LembreteCard({
         {prazo && <p className="prazo"><FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-muted" />
         {prazo}</p>}
         {checklist.length > 0 && (
-          <div className="checklist">
+          <div className="checklist mt-2">
             <div className="barra">
               <div
                 className="barra-preenchida"
@@ -53,32 +92,68 @@ export default function LembreteCard({
                 {percentual}%
               </div>
             </div>
-            <ul>
-              {checklist.map((item, i) => (
-                <li key={i}>
-                  <input type="checkbox" checked={item.feito} readOnly />{' '}
-                  {item.texto}
-                </li>
-              ))}
-            </ul>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={checklist.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                <div className="d-flex flex-column mt-2 ml-1 card-checklist-scroll">
+                  {checklist.map((item) => (
+                    <SortableChecklistItem key={item.id} id={item.id}>
+                    <>
+                      <div className="checklist-linha">
+                        <div className="checklist-esquerda">
+                          <input type="checkbox" checked={item.feito} onChange={() => onToggleChecklistItem?.(item.id)} />
+                          <span className={`checklist-texto ${item.feito ? 'feito' : ''}`}>
+                            {item.texto}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  </SortableChecklistItem>                                                                              
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
         )}
         <div className="d-flex justify-content-end gap-2 mt-3">
           <Button variant="link" className="p-0 text-secondary opacity-50" onClick={onEditar} title="Editar">
             <FontAwesomeIcon icon={faEdit} />
           </Button>
-          <Button variant="link" className="p-0 text-secondary opacity-50" onClick={(e) => {console.log(e);
-          }} title="Excluir">
+
+          <Button
+            variant="link"
+            className="p-0 text-secondary opacity-50"
+            onClick={() => {
+              if (onExcluir) confirmarExclusao(onExcluir);
+            }}
+            title="Excluir"
+          >
             <FontAwesomeIcon icon={faTrash} />
           </Button>
-          <Button variant="link" className="p-0 text-secondary opacity-50" title="Checklist (em breve)">
+
+          <Button
+            variant="link"
+            className="p-0 text-secondary opacity-50"
+            onClick={() => setModalChecklistAberto(true)}
+            title="Editar checklist"
+          >
             <FontAwesomeIcon icon={faListCheck} />
           </Button>
+          
           <Button variant="link" className="p-0 text-secondary opacity-50" title="Detalhes (em breve)">
             <FontAwesomeIcon icon={faInfoCircle} />
           </Button>
         </div>
       </div>
+
+      <ChecklistModal
+        show={modalChecklistAberto}
+        onClose={() => setModalChecklistAberto(false)}
+        checklistInicial={checklist}
+        onSalvar={(novoChecklist) => {
+          setModalChecklistAberto(false);
+          onReordenarChecklist?.(novoChecklist);
+        }}
+      />
     </div>
   );
 }

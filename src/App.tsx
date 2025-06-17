@@ -27,7 +27,7 @@ export default function App() {
   const [modalAberta, setModalAberta] = useState(false);
   const [lembreteParaEditar, setLembreteParaEditar] = useState<Lembrete | null>(null);
 
-  const { lembretes, adicionar, reordenar, atualizar } = useLembretes();
+  const { lembretes, adicionar, reordenar, atualizar, remover } = useLembretes();
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -95,6 +95,19 @@ export default function App() {
                         cor={l.cor}
                         checklist={l.checklist}
                         onEditar={() => editarLembrete(l)}
+                        onExcluir={() => remover(l.id)}
+                        onToggleChecklistItem={(itemId) => {
+                          const atualizado = {
+                            ...l,
+                            checklist: l.checklist.map((i) =>
+                              i.id === itemId ? { ...i, feito: !i.feito } : i
+                            ),
+                          };
+                          atualizar(l.id, atualizado);
+                        }}
+                        onReordenarChecklist={(novoChecklist) => {
+                          atualizar(l.id, { ...l, checklist: novoChecklist });
+                        }}
                       />
                   </SortableItem>
                 ))}

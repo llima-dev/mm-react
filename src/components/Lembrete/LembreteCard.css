@@ -1,27 +1,39 @@
 .card {
-    border: 2px solid #ccc;
-    border-radius: 10px;
+    position: relative;
+    background: #fff;
+    border-left: 6px solid transparent;
+    border-radius: 8px;
     padding: 1rem;
-    margin-bottom: 1rem;
-    background: white;
-    text-align: left;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Cores personalizadas */
+.card-borda-vermelho {
+    border-left-color: #dc3545;
+    /* vermelho Bootstrap */
+    background: #fdeaea;
 }
 
 .card-borda-azul {
-    border-color: #1d4ed8;
+    border-left-color: #0d6efd;
+    background: #e7f1ff;
 }
 
 .card-borda-verde {
-    border-color: #059669;
-}
-
-.card-borda-vermelho {
-    border-color: #dc2626;
+    border-left-color: #198754;
+    background: #e8f5e9;
 }
 
 .card-borda-amarelo {
-    border-color: #facc15;
+    border-left-color: #ffc107;
+    background: #fff8e1;
+}
+
+.card-borda-branco {
+    border-left: 6px solid #212529;
+    /* preto Bootstrap */
+    background: #ffffff;
+    /* ou #fdfdfd para suavizar */
 }
 
 .card-title {
@@ -63,4 +75,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.card-body {
+    padding: 0;
+}
+
+.card-checklist-scroll {
+    max-height: 180px;
+    overflow-y: auto;
 }

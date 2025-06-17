@@ -20,6 +20,7 @@
     "react-bootstrap": "^2.10.10",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
+    "sweetalert2": "^11.22.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
