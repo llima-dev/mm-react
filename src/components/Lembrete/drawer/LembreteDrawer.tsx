@@ -21,7 +21,7 @@ type Props = {
 
 export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes, onSalvarSnippets }: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
-  const [anotacoes, setAnotacoes] = useState(lembrete.anotacoes || '');
+  const [anotacoes] = useState(lembrete.anotacoes || '');
 
   const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
 
@@ -112,20 +112,20 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
 
             <hr />
 
-            {(lembrete.comentarios || []).length === 0 ? (
-              <p className="text-muted">Nenhum comentário ainda.</p>
-            ) : (
-              <ul className="list-unstyled small mt-3">
-                {lembrete.comentarios.map((c) => (
-                  <li key={c.id} className="mb-2 border-bottom pb-2">
-                    <div className="text-muted">
-                      {new Date(c.data).toLocaleString()}
-                    </div>
-                    <div>{c.texto}</div>
-                  </li>
-                ))}
-              </ul>
-            )}
+            {!lembrete.comentarios?.length ? (
+                <p className="text-muted">Nenhum comentário ainda.</p>
+              ) : (
+                <ul className="list-unstyled small mt-3">
+                  {lembrete.comentarios.map((c) => (
+                    <li key={c.id} className="mb-2 border-bottom pb-2">
+                      <div className="text-muted">
+                        {new Date(c.data).toLocaleString()}
+                      </div>
+                      <div>{c.texto}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
           </>
         )}
 

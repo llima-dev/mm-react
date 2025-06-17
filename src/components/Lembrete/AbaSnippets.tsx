@@ -38,15 +38,6 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
     onSalvar(snippets.filter((s) => s.id !== id));
   };
 
-  const copiarCodigo = async (codigo: string) => {
-    try {
-      await navigator.clipboard.writeText(codigo);
-      alert("Código copiado!"); // ou use um toast se quiser ficar chique
-    } catch (err) {
-      alert("Erro ao copiar.");
-    }
-  };
-
   return (
     <div className="campo">
       <label className="form-label">Novo Snippet</label>

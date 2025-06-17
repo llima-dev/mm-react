@@ -87,6 +87,9 @@ export default function LembreteCard({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
+    if (!over) return;
+    
     if (active.id !== over?.id && onReordenarChecklist) {
       const oldIndex = checklist.findIndex((i) => i.id === active.id);
       const newIndex = checklist.findIndex((i) => i.id === over.id);

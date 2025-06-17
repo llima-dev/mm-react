@@ -47,6 +47,9 @@ export default function App() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
+    if (!over) return;
+
     if (active.id !== over?.id) {
       const oldIndex = lembretes.findIndex((l) => l.id === active.id);
       const newIndex = lembretes.findIndex((l) => l.id === over.id);
@@ -117,6 +120,8 @@ export default function App() {
                         comentarios={l.comentarios}
                         onSalvarComentario={(comentarios) => salvarComentarios(l.id, comentarios)}
                         onToggleChecklistItem={(itemId) => {
+                          if (!l.checklist) return;
+                          
                           const atualizado = {
                             ...l,
                             checklist: l.checklist.map((i) =>
