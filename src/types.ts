@@ -17,6 +17,7 @@ export type Lembrete = {
   comentarios?: Comentario[];
   snippets?: Snippet[];
   anotacoes?: string;
+  favorito?: boolean;
 };
 
 export type Comentario = {

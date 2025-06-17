@@ -40,7 +40,7 @@ export default function LembreteModal({
       descricao,
       prazo,
       cor,
-      favoritos: lembreteParaEditar?.favoritos ?? false,
+      favorito: lembreteParaEditar?.favorito ?? false,
       checklist: lembreteParaEditar?.checklist ?? [],
     };
   

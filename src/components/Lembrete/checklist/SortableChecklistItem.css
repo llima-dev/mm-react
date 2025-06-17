@@ -177,4 +177,12 @@ input[type="checkbox"]:checked::after {
     max-height: 300px;
     overflow-y: auto;
     padding-right: 4px;
-  }
+}
+
+.checklist-texto {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 180px;
+}

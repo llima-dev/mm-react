@@ -107,3 +107,7 @@ html, body, #root {
   background-color: #ced4da;
   border-radius: 3px;
 }
+
+.no-border {
+  border: none;
+}

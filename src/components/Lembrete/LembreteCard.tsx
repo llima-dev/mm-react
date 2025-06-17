@@ -17,6 +17,9 @@ import {
   faFlagCheckered,
 } from "@fortawesome/free-solid-svg-icons";
 
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
+
 import "./LembreteCard.css";
 
 import {
@@ -49,12 +52,15 @@ type Props = {
   drawerAberto?: boolean;
   comentarios?: Comentario[];
   dragHandle?: React.ReactNode;
+  favorito?: boolean;
+  onToggleFavorito?: () => void;
 };
 
 export default function LembreteCard({
   titulo,
   descricao,
   prazo,
+  favorito,
   cor = "azul",
   onEditar,
   onExcluir,
@@ -62,6 +68,7 @@ export default function LembreteCard({
   onReordenarChecklist,
   onToggleChecklistItem,
   onAbrirDetalhes,
+  onToggleFavorito,
   dragHandle,
 }: Props) {
   const percentual =
@@ -200,6 +207,20 @@ export default function LembreteCard({
           </div>
         )}
         <div className="d-flex justify-content-end gap-2 mt-3">
+          <Button
+            variant="link"
+            className="p-0"
+            onClick={onToggleFavorito}
+            title={
+              favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"
+            }
+          >
+            <FontAwesomeIcon
+              icon={favorito ? faStarSolid : faStarRegular}
+              className={favorito ? "text-warning" : "text-muted"}
+            />
+          </Button>
+
           <Button
             variant="link"
             className="p-0 text-secondary opacity-50"
