@@ -94,7 +94,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
             />
 
             <Button
-              variant="primary"
+              variant="outline-primary btn-sm"
               size="sm"
               disabled={!comentarioNovo.trim()}
               onClick={adicionarComentario}

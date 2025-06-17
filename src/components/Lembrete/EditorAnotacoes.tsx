@@ -28,6 +28,7 @@ export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
 
   const valorAtual = editor?.getHTML() ?? "";
   const mudou = valorAtual !== ultimaVersaoSalva;
+  const variant = mudou ? "outline-primary btn-sm" : "outline-secondary btn-sm";
 
   return (
     <div className="campo">
@@ -90,7 +91,7 @@ export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
           <EditorContent editor={editor} className="tiptap" />
 
           <Button
-            variant="primary"
+            variant={variant}
             size="sm"
             className="mt-2"
             disabled={!mudou}
@@ -98,7 +99,7 @@ export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
               if (editor) {
                 const html = editor.getHTML();
                 onSalvar(html);
-                setUltimaVersaoSalva(html); // 👈 aqui atualiza o "checkpoint"
+                setUltimaVersaoSalva(html);
               }
             }}
           >

@@ -175,10 +175,10 @@ export default function ChecklistModal({
         </DndContext>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant="outline-secondary btn-sm" onClick={onClose}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={() => onSalvar(checklist)}>
+        <Button variant="outline-primary btn-sm" onClick={() => onSalvar(checklist)}>
           Salvar
         </Button>
       </Modal.Footer>

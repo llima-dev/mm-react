@@ -80,10 +80,11 @@ export default function App() {
       <main className="painel">
         <section className="col-esquerda h-100">
           <div className="d-flex justify-content-center mb-2">
-            <button className="btn btn-sm btn-outline-primary" onClick={abrirModalNovo}>
+            <button className="btn btn-sm btn-outline-secondary" onClick={abrirModalNovo}>
               + Adicionar Lembrete
             </button>
           </div>
+          <hr />
           <div className="d-flex flex-column align-items-start mb-3">
             <h5 className="mb-0 d-flex align-items-center gap-2">
               <i className="fas fa-note-sticky text-dark"></i> Lembretes{' '}

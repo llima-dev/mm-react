@@ -51,8 +51,16 @@ export default function LembreteModal({
     setCor('branco');
   };
 
+  const limparModal = () => {
+      setTitulo('');
+      setDescricao('');
+      setPrazo('');
+      setCor('branco');
+      onClose();
+  }
+
   return (
-    <Modal show={show} onHide={onClose} centered>
+    <Modal show={show} onHide={limparModal} centered>
       <Modal.Header closeButton>
         <Modal.Title>
           {lembreteParaEditar ? "Editar" : "Novo"} Lembrete
@@ -78,7 +86,8 @@ export default function LembreteModal({
             setPrazo(date ? date.toISOString().split("T")[0] : "")
           }
           dateFormat="dd/MM/yyyy"
-          className="form-control mb-3"
+          className="form-control mb-3 dt-picker"
+          placeholderText='Prazo'
         />
         </div>
         <label className="form-label">Cor do card:</label>
@@ -118,10 +127,10 @@ export default function LembreteModal({
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
+        <Button variant="outline-secondary btn-sm" onClick={limparModal}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleSalvar}>
+        <Button variant="outline-primary btn-sm" onClick={handleSalvar}>
           Salvar
         </Button>
       </Modal.Footer>

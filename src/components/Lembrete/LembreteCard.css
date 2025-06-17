@@ -183,3 +183,27 @@
     border-color: #86b7fe;
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
 }
+
+.barra-status-wrapper {
+    margin-bottom: 0.5rem;
+}
+
+.barra {
+    background: #eee;
+    border-radius: 6px;
+    height: 16px;
+    overflow: hidden;
+}
+
+.barra-preenchida {
+    background: #16a34a;
+    height: 100%;
+    text-align: center;
+    color: white;
+    font-size: 0.8rem;
+    line-height: 16px;
+}
+
+.dt-picker {
+    cursor: pointer;
+}

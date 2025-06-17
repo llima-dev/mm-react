@@ -3,7 +3,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { DragEndEvent } from "@dnd-kit/core";
 import type { ChecklistItem, Comentario } from "../../types";
-import { confirmarExclusao } from "../common/helper.ts";
+import { confirmarExclusao, getStatusPrazo } from "../common/helper.ts";
 import SortableChecklistItem from "./checklist/SortableChecklistItem.tsx";
 import ChecklistModal from "./checklist/ChecklistModal.tsx";
 
@@ -13,7 +13,7 @@ import {
   faEdit,
   faListCheck,
   faInfoCircle,
-  faTimes,
+  faFlagCheckered,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./LembreteCard.css";
@@ -44,7 +44,7 @@ type Props = {
   onSalvarAnotacoes?: (texto: string) => void;
   onAbrirDetalhes?: () => void;
   onFecharDetalhes?: () => void;
-  onSalvarComentario?: (comentarios: Comentario[]) => void; 
+  onSalvarComentario?: (comentarios: Comentario[]) => void;
   drawerAberto?: boolean;
   comentarios?: Comentario[];
   dragHandle?: React.ReactNode;
@@ -60,11 +60,7 @@ export default function LembreteCard({
   checklist = [],
   onReordenarChecklist,
   onToggleChecklistItem,
-  onSalvarComentario,
   onAbrirDetalhes,
-  onFecharDetalhes,
-  comentarios,
-  drawerAberto,
   dragHandle,
 }: Props) {
   const percentual =
@@ -74,9 +70,17 @@ export default function LembreteCard({
         )
       : 0;
 
+  const status = getStatusPrazo(prazo, checklist);
   const [modalChecklistAberto, setModalChecklistAberto] = useState(false);
-  const [comentarioNovo, setComentarioNovo] = useState("");
-  const [aba, setAba] = useState<"detalhes" | "comentarios">("detalhes");
+
+  const corBarra =
+    percentual === 100
+      ? "#16a34a" // verde
+      : percentual >= 66
+      ? "#84cc16" // verde limão
+      : percentual >= 33
+      ? "#facc15" // amarelo
+      : "#dc2626"; // vermelho
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -90,25 +94,47 @@ export default function LembreteCard({
     }
   };
 
-  const adicionarComentario = () => {
-    if (!comentarioNovo.trim()) return;
-    const novo: Comentario = {
-      id: crypto.randomUUID(),
-      texto: comentarioNovo.trim(),
-      data: new Date().toISOString(),
-    };
-    const atualizados = [...(comentarios || []), novo];
-    onSalvarComentario?.(atualizados);
-    setComentarioNovo('');
-  };  
-
   return (
     <div className={`card card-borda-${cor}`}>
       {dragHandle && (
         <div className="position-absolute top-0 end-0 p-2">{dragHandle}</div>
       )}
       <div className="card-body">
-        <h5 className="card-title">{titulo}</h5>
+        <h5 className="card-title d-flex align-items-center gap-2">
+          {status.tipo !== "nulo" &&
+            (status.tipo === "finalizado" ? (
+              <FontAwesomeIcon
+                icon={faFlagCheckered}
+                className="text-secondary"
+                title="Checklist finalizado"
+              />
+            ) : (
+              <span
+                title={
+                  status.tipo === "ok"
+                    ? "Prazo em dia"
+                    : status.tipo === "proximo"
+                    ? "Prazo se aproximando"
+                    : "Prazo atrasado"
+                }
+                style={{
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "50%",
+                  backgroundColor:
+                    status.tipo === "ok"
+                      ? "#198754"
+                      : status.tipo === "proximo"
+                      ? "#facc15"
+                      : "#dc3545",
+                  display: "inline-block",
+                }}
+              ></span>
+            ))}
+
+          <span>{titulo}</span>
+        </h5>
+
         <p className="card-text">{descricao}</p>
         {prazo && (
           <p className="prazo">
@@ -118,14 +144,20 @@ export default function LembreteCard({
         )}
         {checklist.length > 0 && (
           <div className="checklist mt-2">
-            <div className="barra">
-              <div
-                className="barra-preenchida"
-                style={{ width: `${percentual}%` }}
-              >
-                {percentual}%
+            <div className="barra-status-wrapper d-flex align-items-baselign justify-content-between mt-2">
+              <div className="barra flex-grow-1 me-2">
+                <div
+                  className="barra-preenchida"
+                  style={{
+                    width: `${percentual}%`,
+                    backgroundColor: corBarra,
+                  }}
+                >
+                  {percentual}%
+                </div>
               </div>
             </div>
+
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
