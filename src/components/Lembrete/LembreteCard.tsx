@@ -15,6 +15,7 @@ import {
   faListCheck,
   faInfoCircle,
   faFlagCheckered,
+  faBoxArchive,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
@@ -54,6 +55,8 @@ type Props = {
   dragHandle?: React.ReactNode;
   favorito?: boolean;
   onToggleFavorito?: () => void;
+  arquivado?: boolean;
+  onToggleArquivar?: () => void;
 };
 
 export default function LembreteCard({
@@ -69,6 +72,7 @@ export default function LembreteCard({
   onToggleChecklistItem,
   onAbrirDetalhes,
   onToggleFavorito,
+  onToggleArquivar,
   dragHandle,
 }: Props) {
   const percentual =
@@ -220,6 +224,16 @@ export default function LembreteCard({
               className={favorito ? "text-warning" : "text-muted"}
             />
           </Button>
+
+          <Button
+            variant="link"
+            className="p-0 text-secondary opacity-50"
+            onClick={onToggleArquivar}
+            title="Arquivar"
+          >
+            <FontAwesomeIcon icon={faBoxArchive} />
+          </Button>
+
 
           <Button
             variant="link"

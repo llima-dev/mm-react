@@ -24,15 +24,18 @@ import { useLembretes } from './hooks/useLembretes';
 import type { Lembrete, Comentario } from './types';
 import LembreteDrawer from './components/Lembrete/drawer/LembreteDrawer';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ModalArquivados from './components/common/ModalArquivados';
 
 import {
-  faStar
+  faStar,
+  faBoxArchive
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
   const [modalAberta, setModalAberta] = useState(false);
   const [lembreteParaEditar, setLembreteParaEditar] = useState<Lembrete | null>(null);
   const [filtroFavoritos, setFiltroFavoritos] = useState(false);
+  const [modalArquivadosAberta, setModalArquivadosAberta] = useState(false);
 
   const salvarComentarios = (id: string, novos: Comentario[]) => {
     atualizar(id, { comentarios: novos });
@@ -48,6 +51,8 @@ export default function App() {
     fecharDetalhes,
     idDetalhesAberto
   } = useLembretes();
+
+  const arquivados = lembretes.filter((l) => l.arquivado);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
@@ -84,9 +89,9 @@ export default function App() {
     setModalAberta(true);
   };
 
-  const lembretesFiltrados = filtroFavoritos
-  ? lembretes.filter((l) => l.favorito)
-  : lembretes;
+  const lembretesFiltrados = lembretes
+  .filter((l) => !l.arquivado)
+  .filter((l) => (filtroFavoritos ? l.favorito : true));
 
   return (
     <div className="app">
@@ -107,7 +112,7 @@ export default function App() {
                 <i className="fas fa-note-sticky text-dark"></i> Lembretes{" "}
                 <span className="text-muted">({lembretes.length})</span>
               </h5>
-              <div className="d-flex gap-2 mb-3" style={{marginLeft: '5px'}}>
+              <div className="d-flex gap-2 mb-3" style={{ marginLeft: "5px" }}>
                 <button
                   className={`no-border btn ${
                     filtroFavoritos ? "btn-warning" : "btn-outline-secondary"
@@ -115,6 +120,12 @@ export default function App() {
                   onClick={() => setFiltroFavoritos((atual) => !atual)}
                 >
                   <FontAwesomeIcon icon={faStar} /> Favoritos
+                </button>
+                <button
+                  className="no-border btn btn-outline-secondary btn-sm"
+                  onClick={() => setModalArquivadosAberta(true)}
+                >
+                  <FontAwesomeIcon icon={faBoxArchive} /> Arquivados
                 </button>
                 {/* Demais filtros... */}
               </div>
@@ -153,6 +164,9 @@ export default function App() {
                       onFecharDetalhes={() => fecharDetalhes()}
                       drawerAberto={idDetalhesAberto === l.id}
                       comentarios={l.comentarios}
+                      onToggleArquivar={() =>
+                        atualizar(l.id, { ...l, arquivado: true })
+                      }
                       onToggleFavorito={() =>
                         atualizar(l.id, { ...l, favorito: !l.favorito })
                       }
@@ -208,6 +222,19 @@ export default function App() {
         }}
         onSalvar={handleSalvar}
         lembreteParaEditar={lembreteParaEditar}
+      />
+
+      <ModalArquivados
+        show={modalArquivadosAberta}
+        arquivados={arquivados}
+        onFechar={() => setModalArquivadosAberta(false)}
+        onDesarquivar={(id) =>
+          atualizar(id, {
+            ...lembretes.find((l) => l.id === id)!,
+            arquivado: false,
+          })
+        }
+        onExcluir={(id) => remover(id)}
       />
     </div>
   );

@@ -42,6 +42,7 @@ export default function LembreteModal({
       cor,
       favorito: lembreteParaEditar?.favorito ?? false,
       checklist: lembreteParaEditar?.checklist ?? [],
+      arquivado: lembreteParaEditar?.arquivado ?? false,
     };
   
     onSalvar(lembrete);

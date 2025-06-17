@@ -18,6 +18,7 @@ export type Lembrete = {
   snippets?: Snippet[];
   anotacoes?: string;
   favorito?: boolean;
+  arquivado?: boolean;
 };
 
 export type Comentario = {
