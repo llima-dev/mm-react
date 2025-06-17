@@ -238,7 +238,7 @@ export default function LembreteCard({
           <div className="pin-btn">
             <Button
               variant="link"
-              className="p-0"
+              className="p-0 icon-hoverable"
               onClick={onToggleFixado}
               title={fixado ? "Desafixar" : "Fixar no topo"}
             >
@@ -251,7 +251,7 @@ export default function LembreteCard({
           </div>
           <Button
             variant="link"
-            className="p-0"
+            className="p-0 icon-hoverable"
             onClick={onToggleFavorito}
             title={
               favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"
@@ -265,7 +265,7 @@ export default function LembreteCard({
 
           <Button
             variant="link"
-            className="p-0 text-secondary opacity-50"
+            className="p-0 icon-hoverable text-secondary opacity-50"
             onClick={onToggleArquivar}
             title="Arquivar"
           >
@@ -274,7 +274,7 @@ export default function LembreteCard({
 
           <Button
             variant="link"
-            className="p-0 text-secondary opacity-50"
+            className="p-0 icon-hoverable text-secondary opacity-50"
             onClick={onEditar}
             title="Editar"
           >
@@ -283,7 +283,7 @@ export default function LembreteCard({
 
           <Button
             variant="link"
-            className="p-0 text-secondary opacity-50"
+            className="p-0 icon-hoverable text-secondary opacity-50"
             onClick={() => {
               if (onExcluir) confirmarExclusao(onExcluir);
             }}
@@ -294,7 +294,7 @@ export default function LembreteCard({
 
           <Button
             variant="link"
-            className="p-0 text-secondary opacity-50"
+            className="p-0 icon-hoverable text-secondary opacity-50"
             onClick={() => setModalChecklistAberto(true)}
             title="Editar checklist"
           >
@@ -303,7 +303,7 @@ export default function LembreteCard({
 
           <Button
             variant="link"
-            className="p-0 text-secondary opacity-50"
+            className="p-0 icon-hoverable text-secondary opacity-50"
             title="Detalhes"
             onClick={onAbrirDetalhes}
           >

@@ -315,7 +315,7 @@ export default function App() {
                       className="no-border btn btn-outline-secondary btn-sm"
                       onClick={() => setModalArquivadosAberta(true)}
                     >
-                      <FontAwesomeIcon icon={faBoxArchive} /> Arquivados
+                      <FontAwesomeIcon icon={faBoxArchive} /> Arquivados ({arquivados.length})
                     </button>
                     {/* Demais filtros... */}
                   </div>

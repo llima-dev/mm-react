@@ -57,6 +57,7 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
         <option value="html">HTML</option>
         <option value="json">JSON</option>
         <option value="css">CSS</option>
+        <option value="php">PHP</option>
         <option value="typescript">TypeScript</option>
       </select>
       <textarea
