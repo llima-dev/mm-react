@@ -305,7 +305,7 @@ export default function App() {
                 <div className="d-flex w-50 align-items-start">
                   <h5 className="mb-0 d-flex align-items-center gap-2">
                     <i className="fas fa-note-sticky text-dark"></i> Lembretes{" "}
-                    <span className="text-muted">({lembretes.length})</span>
+                    <span className="text-muted">({lembretesFiltrados.length})</span>
                   </h5>
                   <div
                     className="d-flex gap-2 mb-3"
