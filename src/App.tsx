@@ -25,10 +25,15 @@ import type { Lembrete, Comentario } from './types';
 import LembreteDrawer from './components/Lembrete/drawer/LembreteDrawer';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalArquivados from './components/common/ModalArquivados';
+import { exportarLembretes, importarLembretesDoArquivo, limparMural } from './components/common/helper';
+import { STORAGE_CHAVE_LEMBRETES } from './utils/constants';
 
 import {
   faStar,
-  faBoxArchive
+  faBoxArchive,
+  faDownload,
+  faUpload,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
@@ -55,6 +60,16 @@ export default function App() {
   const arquivados = lembretes.filter((l) => l.arquivado);
 
   const sensors = useSensors(useSensor(PointerSensor));
+
+  function handleImportar(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+  
+    importarLembretesDoArquivo(file, lembretes, (novos) => {
+      localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(novos));
+      location.reload();
+    });
+  }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -103,12 +118,40 @@ export default function App() {
     <div className="app">
       <main className="painel">
         <section className="col-esquerda h-100">
-          <div className="d-flex justify-content-center mb-2">
+          <div className="d-flex gap-2 justify-content-start mb-2">
             <button
-              className="btn btn-sm btn-outline-secondary"
+              className="btn btn-sm btn-outline-secondary no-border"
               onClick={abrirModalNovo}
             >
               + Adicionar Lembrete
+            </button>
+            <button
+              className="btn btn-outline-secondary btn-sm no-border"
+              onClick={() => exportarLembretes(lembretes)}
+            >
+              <FontAwesomeIcon icon={faDownload} /> Exportar
+            </button>
+
+            <input
+              type="file"
+              accept=".json"
+              style={{ display: "none" }}
+              id="inputImportarJson"
+              onChange={handleImportar}
+            />
+
+            <label
+              htmlFor="inputImportarJson"
+              className="btn btn-outline-secondary btn-sm no-border"
+            >
+              <FontAwesomeIcon icon={faUpload} /> Importar
+            </label>
+
+            <button
+              className="btn btn-outline-danger btn-sm no-border"
+              onClick={limparMural}
+            >
+              <FontAwesomeIcon icon={faBroom} /> Limpar Mural
             </button>
           </div>
           <hr />
@@ -171,7 +214,9 @@ export default function App() {
                       drawerAberto={idDetalhesAberto === l.id}
                       comentarios={l.comentarios}
                       fixado={l.fixado}
-                      onToggleFixado={() => atualizar(l.id, { ...l, fixado: !l.fixado })}
+                      onToggleFixado={() =>
+                        atualizar(l.id, { ...l, fixado: !l.fixado })
+                      }
                       onToggleArquivar={() =>
                         atualizar(l.id, { ...l, arquivado: true })
                       }

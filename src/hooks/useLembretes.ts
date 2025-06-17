@@ -2,14 +2,13 @@
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import type { Lembrete } from "../types";
-
-const STORAGE_KEY = "meu-mural-lembretes";
+import { STORAGE_CHAVE_LEMBRETES } from '../utils/constants';
 
 export function useLembretes() {
   const [idDetalhesAberto, setIdDetalhesAberto] = useState<string | null>(null);
   const [lembretes, setLembretes] = useState<Lembrete[]>(() => {
     try {
-      const salvo = localStorage.getItem(STORAGE_KEY);
+      const salvo = localStorage.getItem(STORAGE_CHAVE_LEMBRETES);
       return salvo ? JSON.parse(salvo) : [];
     } catch {
       return [];
@@ -21,7 +20,7 @@ export function useLembretes() {
 
   // 🧠 Salva sempre que mudar
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lembretes));
+    localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(lembretes));
   }, [lembretes]);
 
   const adicionar = (lembrete: Lembrete) => {

@@ -1,0 +1,1 @@
+export const STORAGE_CHAVE_LEMBRETES = "meu-mural-lembretes";

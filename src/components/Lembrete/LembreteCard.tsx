@@ -116,7 +116,7 @@ export default function LembreteCard({
 
   return (
     <div className={`card card-borda-${cor} ${fixado ? 'fixado' : ''}`}>
-      {dragHandle && (
+      {!fixado && dragHandle && (
         <div className="position-absolute top-0 end-0 p-2">{dragHandle}</div>
       )}
       <div className="card-body">

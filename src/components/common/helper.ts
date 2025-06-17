@@ -1,5 +1,6 @@
 import Swal from 'sweetalert2';
-import type { ChecklistItem } from "../../types";
+import type { ChecklistItem, Lembrete } from "../../types";
+import { STORAGE_CHAVE_LEMBRETES } from '../../utils/constants';
 
 export function confirmarExclusao(callback: () => void) {
   Swal.fire({
@@ -58,4 +59,46 @@ export function getStatusPrazo(prazo?: string, checklist: ChecklistItem[] = []) 
   if (diffDias < 0) return { tipo: 'atrasado' };
   if (diffDias <= 1) return { tipo: 'proximo' };
   return { tipo: 'ok' };
+}
+
+export function exportarLembretes(lembretes: Lembrete[]) {
+  const json = JSON.stringify(lembretes, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "meu-mural-lembretes.json";
+  link.click();
+}
+
+export function importarLembretesDoArquivo(
+  arquivo: File,
+  lembretesAtuais: Lembrete[],
+  onImportar: (novos: Lembrete[]) => void
+) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const json = JSON.parse(e.target?.result as string) as Lembrete[];
+      const validos = json.filter((l) => l.id && l.titulo);
+
+      const convertidos = validos.map((l) => ({
+        ...l,
+        id: crypto.randomUUID(),
+      }));
+
+      onImportar([...lembretesAtuais, ...convertidos]);
+    } catch (erro) {
+      alert("Arquivo inválido.");
+    }
+  };
+  reader.readAsText(arquivo);
+}
+
+export function limparMural() {
+  if (window.confirm("Tem certeza que deseja apagar todos os lembretes? Essa ação não pode ser desfeita.")) {
+    localStorage.removeItem(STORAGE_CHAVE_LEMBRETES);
+    location.reload();
+  }
 }
