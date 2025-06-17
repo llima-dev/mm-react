@@ -142,6 +142,7 @@ export default function App() {
                 onFechar={fecharDetalhes}
                 onSalvarComentario={(comentarios) => salvarComentarios(l.id, comentarios)}
                 onSalvarAnotacoes={(texto) => atualizar(l.id, { ...l, anotacoes: texto })}
+                onSalvarSnippets={(snips) => atualizar(l.id, { ...l, snippets: snips })}
               />
             ) : null
           )}

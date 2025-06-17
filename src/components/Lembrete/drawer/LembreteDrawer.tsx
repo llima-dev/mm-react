@@ -5,8 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import EditorAnotacoes from "../EditorAnotacoes";
+import AbaSnippets from "../AbaSnippets";
 
-import type { Lembrete, Comentario } from "../../../types";
+import type { Lembrete, Comentario, Snippet } from "../../../types";
 
 import "../LembreteCard.css";
 
@@ -15,13 +16,14 @@ type Props = {
   onFechar: () => void;
   onSalvarComentario?: (comentarios: Comentario[]) => void;
   onSalvarAnotacoes?: (texto: string) => void;
+  onSalvarSnippets?: (snips: Snippet[]) => void;
 };
 
-export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes }: Props) {
+export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes, onSalvarSnippets }: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
   const [anotacoes, setAnotacoes] = useState(lembrete.anotacoes || '');
 
-  const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes">("detalhes");
+  const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
 
   const adicionarComentario = () => {
     if (!comentarioNovo.trim()) return;
@@ -60,6 +62,12 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
           onClick={() => setAba("anotacoes")}
         >
           Anotações
+        </button>
+        <button
+          className={aba === "snippets" ? "ativo" : ""}
+          onClick={() => setAba("snippets")}
+        >
+          Snippets
         </button>
       </div>
 
@@ -122,10 +130,17 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
         )}
 
         {aba === "anotacoes" && (
-            <EditorAnotacoes
-                valorInicial={anotacoes}
-                onSalvar={(html) => onSalvarAnotacoes?.(html)}
-            />
+          <EditorAnotacoes
+            valorInicial={anotacoes}
+            onSalvar={(html) => onSalvarAnotacoes?.(html)}
+          />
+        )}
+
+        {aba === "snippets" && (
+          <AbaSnippets
+            snippets={lembrete.snippets || []}
+            onSalvar={(snips) => onSalvarSnippets?.(snips)}
+          />
         )}
       </div>
     </div>,

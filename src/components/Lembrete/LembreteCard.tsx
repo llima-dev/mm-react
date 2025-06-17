@@ -6,6 +6,7 @@ import type { ChecklistItem, Comentario } from "../../types";
 import { confirmarExclusao, getStatusPrazo } from "../common/helper.ts";
 import SortableChecklistItem from "./checklist/SortableChecklistItem.tsx";
 import ChecklistModal from "./checklist/ChecklistModal.tsx";
+import 'highlight.js/styles/github-dark.css';
 
 import {
   faCalendarAlt,
