@@ -19,8 +19,12 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Preparar workaround do npm
+        run: |
+          rm -rf package-lock.json node_modules
+
       - name: Instalar dependências
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Rodar testes com Vitest
         run: npx vitest run --coverage
