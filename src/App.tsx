@@ -34,6 +34,7 @@ import {
   getStatusPrazo,
   corPorTipo,
   formatarData,
+  calcularUsoLocalStorage,
 } from "./components/common/helper";
 import FiltroAvancado from "./components/common/FiltroAvancado";
 import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
@@ -54,6 +55,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
+  const { usadoKB, porcentagem } = calcularUsoLocalStorage();
+
   const [mostrarSplash, setMostrarSplash] = useState(true);
 
   const [filtros, setFiltros] = useState<TipoFiltro[]>(() => {
@@ -199,16 +202,16 @@ export default function App() {
               <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
                 {/* Lado esquerdo: ações */}
                 <div className="d-flex gap-2 flex-wrap">
-                <div className="d-flex align-items-center gap-3">
-                <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    placeholder="Nome do mural"
-                    value={nomeProjeto}
-                    onChange={(e) => setNomeProjeto(e.target.value)}
-                    style={{ maxWidth: "200px"}}
-                  />
-                </div>
+                  <div className="d-flex align-items-center gap-3">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Nome do mural"
+                      value={nomeProjeto}
+                      onChange={(e) => setNomeProjeto(e.target.value)}
+                      style={{ maxWidth: "200px" }}
+                    />
+                  </div>
                   <button
                     className="btn btn-sm btn-outline-secondary no-border"
                     onClick={abrirModalNovo}
@@ -241,7 +244,7 @@ export default function App() {
                   <button
                     className="btn btn-outline-danger btn-sm no-border"
                     onClick={limparMural}
-                    style={{opacity: "0.5" }}
+                    style={{ opacity: "0.5" }}
                   >
                     <FontAwesomeIcon icon={faBroom} /> Limpar Mural
                   </button>
@@ -305,7 +308,9 @@ export default function App() {
                 <div className="d-flex w-50 align-items-start">
                   <h5 className="mb-0 d-flex align-items-center gap-2">
                     <i className="fas fa-note-sticky text-dark"></i> Lembretes{" "}
-                    <span className="text-muted">({lembretesFiltrados.length})</span>
+                    <span className="text-muted">
+                      ({lembretesFiltrados.length})
+                    </span>
                   </h5>
                   <div
                     className="d-flex gap-2 mb-3"
@@ -315,7 +320,8 @@ export default function App() {
                       className="no-border btn btn-outline-secondary btn-sm"
                       onClick={() => setModalArquivadosAberta(true)}
                     >
-                      <FontAwesomeIcon icon={faBoxArchive} /> Arquivados ({arquivados.length})
+                      <FontAwesomeIcon icon={faBoxArchive} /> Arquivados (
+                      {arquivados.length})
                     </button>
                     {/* Demais filtros... */}
                   </div>
@@ -436,7 +442,20 @@ export default function App() {
             className="text-center text-muted small mt-auto border-top pt-1"
             style={{ marginBottom: "-30px", opacity: "0.5" }}
           >
-            <span>L.L Dev — Meu Mural v{APP_VERSAO}</span>
+            <span>
+              <a
+                target="_blank"
+                style={{ textDecoration: "none" }}
+                href="https://github.com/llima-dev"
+              >
+                L.L Dev
+              </a>{" "}
+              — Meu Mural v{APP_VERSAO}
+            </span>
+            <br />
+            <span>
+              Armazenamento: {usadoKB} KB ({porcentagem}%)
+            </span>
           </footer>
         </div>
       )}

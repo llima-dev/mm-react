@@ -167,3 +167,19 @@ export function formatarData(data: string) {
 export function extrairHashtags(texto: string): string[] {
   return (texto.match(/#\w+/g) || []).slice(0, 5);
 }
+
+export function calcularUsoLocalStorage(): { usadoKB: number; porcentagem: number } {
+  const totalEstimado = 5 * 1024 * 1024; // 5MB padrão (em bytes)
+
+  let totalUsado = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const chave = localStorage.key(i);
+    const valor = localStorage.getItem(chave!);
+    totalUsado += chave!.length + (valor?.length ?? 0);
+  }
+
+  const usadoKB = +(totalUsado / 1024).toFixed(1); // em KB
+  const porcentagem = +((totalUsado / totalEstimado) * 100).toFixed(1);
+
+  return { usadoKB, porcentagem };
+}
