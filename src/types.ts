@@ -20,6 +20,9 @@ export type Lembrete = {
   favorito?: boolean;
   arquivado?: boolean;
   fixado?: boolean;
+  criadoPorRecorrencia?: boolean;
+  geradoPor?: string;
+  diasRecorrencia?: number[];
 };
 
 export type Comentario = {

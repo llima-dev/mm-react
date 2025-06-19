@@ -17,6 +17,7 @@ import {
   faFlagCheckered,
   faBoxArchive,
   faThumbtack,
+  faCopy,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
@@ -61,6 +62,7 @@ type Props = {
   onToggleArquivar?: () => void;
   fixado?: boolean;
   onToggleFixado?: () => void;
+  onDuplicar: () => void;
 };
 
 export default function LembreteCard({
@@ -80,6 +82,7 @@ export default function LembreteCard({
   onToggleFixado,
   dragHandle,
   fixado,
+  onDuplicar
 }: Props) {
   const percentual =
     checklist.length > 0
@@ -274,6 +277,15 @@ export default function LembreteCard({
             title="Arquivar"
           >
             <FontAwesomeIcon icon={faBoxArchive} />
+          </Button>
+
+          <Button
+            variant="link"
+            className="p-0 icon-hoverable text-secondary opacity-50"
+            title="Duplicar lembrete"
+            onClick={onDuplicar}
+          >
+            <FontAwesomeIcon icon={faCopy} />
           </Button>
 
           <Button

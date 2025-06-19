@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "./App.css";
@@ -37,6 +37,8 @@ import {
   formatarData,
   calcularUsoLocalStorage,
   toggleFullScreen,
+  duplicarLembrete,
+  gerarLembretesRecorrentes,
 } from "./components/common/helper";
 import FiltroAvancado from "./components/common/FiltroAvancado";
 import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
@@ -116,6 +118,21 @@ export default function App() {
     idDetalhesAberto,
   } = useLembretes();
 
+  const jaVerificouRecorrencia = useRef(false);
+
+  useEffect(() => {
+    if (jaVerificouRecorrencia.current) return;
+  
+    jaVerificouRecorrencia.current = true;
+  
+    const hoje = new Date();
+    const novos = gerarLembretesRecorrentes(lembretes, hoje);
+  
+    if (novos.length > 0) {
+      novos.forEach((l) => adicionar(l));
+    }
+  }, []);
+
   const arquivados = lembretes.filter((l) => l.arquivado);
 
   const sensors = useSensors(
@@ -187,6 +204,10 @@ export default function App() {
             return l.prazo?.includes(v);
           case "status":
             return getStatusPrazo(l.prazo, l.checklist).tipo === v;
+          case "recorrencia":
+            if (v === "com-recorrencia") return !!l.diasRecorrencia?.length;
+            if (v === "gerados") return l.criadoPorRecorrencia === true;
+            return true;
           default:
             return true;
         }
@@ -519,6 +540,10 @@ export default function App() {
                           drawerAberto={idDetalhesAberto === l.id}
                           comentarios={l.comentarios}
                           fixado={l.fixado}
+                          onDuplicar={() => {
+                            const copia = duplicarLembrete(l);
+                            adicionar(copia);
+                          }}
                           onToggleFixado={() =>
                             atualizar(l.id, { ...l, fixado: !l.fixado })
                           }

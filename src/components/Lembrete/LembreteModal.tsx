@@ -23,6 +23,7 @@ export default function LembreteModal({
   const [descricao, setDescricao] = useState('');
   const [prazo, setPrazo] = useState('');
   const [cor, setCor] = useState('branco');
+  const [diasRecorrencia, setDiasRecorrencia] = useState<number[]>([]);
 
   useEffect(() => {
     if (lembreteParaEditar) {
@@ -30,6 +31,7 @@ export default function LembreteModal({
       setDescricao(lembreteParaEditar.descricao);
       setPrazo(lembreteParaEditar.prazo ?? '');
       setCor(lembreteParaEditar.cor || 'branco');
+      setDiasRecorrencia(lembreteParaEditar.diasRecorrencia ?? []);
     }
   }, [lembreteParaEditar]);  
 
@@ -46,6 +48,7 @@ export default function LembreteModal({
       checklist: lembreteParaEditar?.checklist ?? [],
       arquivado: lembreteParaEditar?.arquivado ?? false,
       fixado: lembreteParaEditar?.fixado ?? false,
+      diasRecorrencia: diasRecorrencia.length ? diasRecorrencia : undefined,
     };
   
     onSalvar(lembrete);
@@ -132,6 +135,31 @@ export default function LembreteModal({
                 }}
               ></span>
             </label>
+          ))}
+        </div>
+        <hr />
+        <label className="form-label" title='Define se o lembrete será recriado semanalmente'>Recorrência semanal:</label>
+        <div className="d-flex gap-2 flex-wrap mb-2">
+          {["D", "S", "T", "Q", "Q", "S", "S"].map((dia, index) => (
+            <button
+              key={index}
+              type="button"
+              className={`btn btn-sm ${
+                diasRecorrencia.includes(index)
+                  ? "btn-primary"
+                  : "btn-outline-secondary"
+              }`}
+              style={{ width: "32px", padding: "2px" }}
+              onClick={() => {
+                setDiasRecorrencia((atual) =>
+                  atual.includes(index)
+                    ? atual.filter((d) => d !== index)
+                    : [...atual, index]
+                );
+              }}
+            >
+              {dia}
+            </button>
           ))}
         </div>
       </Modal.Body>

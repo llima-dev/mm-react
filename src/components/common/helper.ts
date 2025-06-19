@@ -193,3 +193,71 @@ export function toggleFullScreen() {
     document.exitFullscreen();
   }
 }
+
+export function duplicarLembrete(orig: Lembrete): Lembrete {
+  const tituloBase = orig.titulo.replace(/\s*\(cópia\)$/i, "");
+  return {
+    ...orig,
+    id: crypto.randomUUID(),
+    titulo: `${tituloBase} (cópia)`,
+    favorito: false,
+    fixado: false,
+    arquivado: false,
+    criadoPorRecorrencia: false,
+    geradoPor: orig.id,
+    diasRecorrencia: undefined,
+  };
+}
+
+export function gerarLembretesRecorrentes(
+  lembretes: Lembrete[],
+  dataAtual: Date
+): Lembrete[] {
+  const hoje = dataAtual.getDay();
+  const dataHojeStr = dataAtual.toISOString().split("T")[0];
+  const novos: Lembrete[] = [];
+
+  for (const l of lembretes) {
+    if (
+      !l.diasRecorrencia ||
+      !l.diasRecorrencia.includes(hoje) ||
+      jaGerouHoje(l.id, dataHojeStr)
+    ) {
+      continue;
+    }
+
+    const tituloBase = l.titulo.replace(/\s*\((cópia|recorrência)\)$/i, "");
+
+    const novo: Lembrete = {
+      ...duplicarLembrete(l),
+      titulo: `${tituloBase} (recorrência)`,
+      prazo: dataHojeStr,
+      criadoPorRecorrencia: true,
+      geradoPor: l.id,
+      diasRecorrencia: undefined,
+    };
+
+    registrarGeracaoHoje(l.id, dataHojeStr);
+    novos.push(novo);
+  }
+
+  return novos;
+}
+
+
+// Marca se já foi gerado um clone do lembrete original hoje
+export function jaGerouHoje(id: string, data: string): boolean {
+  const chave = `recorrencia_${data}`;
+  const lista = JSON.parse(localStorage.getItem(chave) || "[]");
+  return lista.includes(id);
+}
+
+export function registrarGeracaoHoje(id: string, data: string): void {
+  const chave = `recorrencia_${data}`;
+  const lista = JSON.parse(localStorage.getItem(chave) || "[]");
+
+  if (!lista.includes(id)) {
+    lista.push(id);
+    localStorage.setItem(chave, JSON.stringify(lista));
+  }
+}

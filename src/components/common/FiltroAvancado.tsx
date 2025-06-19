@@ -2,7 +2,7 @@ import { useState } from "react";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-export type FiltroTipo = "titulo" | "descricao" | "prazo" | "status";
+export type FiltroTipo = "titulo" | "descricao" | "prazo" | "status" | "recorrencia";
 
 export type FiltroAvancado = {
   tipo: FiltroTipo;
@@ -36,6 +36,7 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
         <option value="descricao">Descrição</option>
         <option value="prazo">Prazo</option>
         <option value="status">Status</option>
+        <option value="recorrencia">Recorrência</option>
       </select>
       
       {tipo === "prazo" ? (
@@ -61,6 +62,17 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
           <option value="atrasado">Atrasado</option>
           <option value="proximo">Próximo</option>
           <option value="ok">Ok</option>
+        </select>
+      ) : tipo === "recorrencia" ? (
+        <select
+          className="form-select form-select-sm"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          style={{ minWidth: "140px" }}
+        >
+          <option value="">Selecione...</option>
+          <option value="com-recorrencia">Com recorrência</option>
+          <option value="gerados">Gerados automaticamente</option>
         </select>
       ) : (
         <input
