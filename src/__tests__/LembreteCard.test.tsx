@@ -24,6 +24,7 @@ describe('LembreteCard', () => {
     onToggleFavorito: vi.fn(),
     onToggleArquivar: vi.fn(),
     onToggleFixado: vi.fn(),
+    onDuplicar: vi.fn(),
   };
 
   test('renderiza título, descrição (sem hashtags) e tags', () => {
@@ -61,4 +62,11 @@ describe('LembreteCard', () => {
     fireEvent.click(botaoDetalhes);
     expect(mockProps.onAbrirDetalhes).toHaveBeenCalled();
   });
+
+  test('chama onDuplicar ao clicar no botão de duplicar', () => {
+    render(<LembreteCard {...mockProps} onDuplicar={vi.fn()} />);
+    const botaoDuplicar = screen.getByTitle('Duplicar lembrete');
+    fireEvent.click(botaoDuplicar);
+    expect(mockProps.onDuplicar).toHaveBeenCalled();
+  });  
 });
