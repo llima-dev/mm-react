@@ -63,3 +63,49 @@
     background-color: #64748b;
     /* cor ao passar o mouse */
 }
+
+.table-checklist {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.table-checklist th {
+    background-color: #f8f9fa;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.table-checklist td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.table-checklist tbody tr:hover {
+    background-color: #f1f5f9;
+    box-shadow: inset 3px 0 0 #3b82f6;
+    cursor: pointer;
+}
+
+.tabela-scroll-limitada {
+    max-height: 300px;
+    /* ou o valor que quiser */
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.tabela-scroll-limitada::-webkit-scrollbar {
+    width: 6px;
+}
+
+.tabela-scroll-limitada::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+}

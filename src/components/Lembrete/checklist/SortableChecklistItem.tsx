@@ -9,6 +9,7 @@ import "./SortableChecklistItem.css";
 type Props = {
   id: string;
   children: ReactNode;
+  concluidoEm?: string;
 };
 
 export default function SortableChecklistItem({ id, children }: Props) {

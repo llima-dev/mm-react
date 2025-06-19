@@ -562,7 +562,13 @@ export default function App() {
                             const atualizado = {
                               ...l,
                               checklist: l.checklist.map((i) =>
-                                i.id === itemId ? { ...i, feito: !i.feito } : i
+                                i.id === itemId
+                                  ? {
+                                      ...i,
+                                      feito: !i.feito,
+                                      concluidoEm: !i.feito ? new Date().toISOString() : undefined,
+                                    }
+                                  : i
                               ),
                             };
                             atualizar(l.id, atualizado);

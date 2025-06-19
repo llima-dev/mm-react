@@ -9,7 +9,7 @@ import AbaSnippets from "../AbaSnippets";
 
 import type { Lembrete, Comentario, Snippet } from "../../../types";
 
-import { extrairHashtags } from '../../common/helper';
+import { extrairHashtags, formatarData } from '../../common/helper';
 
 import "../LembreteCard.css";
 import "./LembreteDrawer.css";
@@ -98,8 +98,45 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
             </div>
             <div className="campo">
               <label>Prazo</label>
-              <div>{lembrete.prazo || "—"}</div>
+              <div>{lembrete.prazo ? formatarData(lembrete.prazo) : "—"}</div>
             </div>
+            <hr />
+            {Array.isArray(lembrete.checklist) &&
+              lembrete.checklist.length > 0 && (
+                <div className="campo mt-3">
+                  <label>Checklist</label>
+                  <div className="tabela-scroll-limitada">
+                  <table className="table-checklist align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Item</th>
+                        <th>Status</th>
+                        <th>Concluído em</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {lembrete.checklist.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.texto}</td>
+                          <td>
+                            {item.feito ? (
+                              <span className="text-success">Concluído</span>
+                            ) : (
+                              <span className="text-muted">Pendente</span>
+                            )}
+                          </td>
+                          <td>
+                            {item.feito && item.concluidoEm
+                              ? new Date(item.concluidoEm).toLocaleString()
+                              : "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+              )}
           </>
         )}
 
@@ -131,19 +168,19 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
             <hr />
 
             {!lembrete.comentarios?.length ? (
-                <p className="text-muted">Nenhum comentário ainda.</p>
-              ) : (
-                <ul className="list-unstyled small mt-3">
-                  {lembrete.comentarios.map((c) => (
-                    <li key={c.id} className="mb-2 border-bottom pb-2">
-                      <div className="text-muted">
-                        {new Date(c.data).toLocaleString()}
-                      </div>
-                      <div>{c.texto}</div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <p className="text-muted">Nenhum comentário ainda.</p>
+            ) : (
+              <ul className="list-unstyled small mt-3">
+                {lembrete.comentarios.map((c) => (
+                  <li key={c.id} className="mb-2 border-bottom pb-2">
+                    <div className="text-muted">
+                      {new Date(c.data).toLocaleString()}
+                    </div>
+                    <div>{c.texto}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </>
         )}
 

@@ -4,6 +4,7 @@ export type ChecklistItem = {
   id: string;
   texto: string;
   feito: boolean;
+  concluidoEm?: string;
 };
 
 export type Lembrete = {
