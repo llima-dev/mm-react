@@ -25,7 +25,7 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
   };
 
   return (
-    <div className="d-flex gap-2 align-items-center mb-3">
+    <div className="d-flex gap-2 align-items-center mb-3 advanced-filter-container">
       <select
         className="form-select form-select-sm"
         style={{ maxWidth: "120px" }}

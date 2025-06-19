@@ -12,6 +12,7 @@ import type { Lembrete, Comentario, Snippet } from "../../../types";
 import { extrairHashtags } from '../../common/helper';
 
 import "../LembreteCard.css";
+import "./LembreteDrawer.css";
 
 type Props = {
   lembrete: Lembrete;

@@ -78,20 +78,18 @@ export default function App() {
   });
 
   const [nomeProjeto, setNomeProjeto] = useState(() => {
-    return localStorage.getItem('nomeProjeto') || '';
+    return localStorage.getItem("nomeProjeto") || "";
   });
 
   useEffect(() => {
-    localStorage.setItem('nomeProjeto', nomeProjeto);
+    localStorage.setItem("nomeProjeto", nomeProjeto);
     localStorage.setItem(STORAGE_CHAVE_FILTROS, JSON.stringify(filtros));
     localStorage.setItem(
       STORAGE_CHAVE_FILTRO_FAVORITO,
       filtroFavoritos.toString()
     );
 
-    document.title = nomeProjeto
-    ? `Meu Mural | ${nomeProjeto}`
-    : 'Meu Mural';
+    document.title = nomeProjeto ? `Meu Mural | ${nomeProjeto}` : "Meu Mural";
   }, [filtros, filtroFavoritos, nomeProjeto]);
 
   const [modalAberta, setModalAberta] = useState(false);
@@ -122,13 +120,13 @@ export default function App() {
   function handleImportar(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
-  
+
     importarLembretesDoArquivo(file, lembretes, (novos, nomeDoArquivo) => {
       localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(novos));
-      if (nomeDoArquivo) localStorage.setItem('nomeProjeto', nomeDoArquivo);
+      if (nomeDoArquivo) localStorage.setItem("nomeProjeto", nomeDoArquivo);
       location.reload();
     });
-  }  
+  }
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -199,33 +197,30 @@ export default function App() {
           <main className="painel">
             <section className="col-esquerda h-100">
               {/* Painel de ações + filtro */}
-              <div className="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
-                {/* Lado esquerdo: ações */}
-                <div className="d-flex gap-2 flex-wrap">
-                  <div className="d-flex align-items-center gap-3">
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Nome do mural"
-                      value={nomeProjeto}
-                      onChange={(e) => setNomeProjeto(e.target.value)}
-                      style={{ maxWidth: "200px" }}
-                    />
-                  </div>
+              {/* Lado esquerdo: ações */}
+              <>
+                {/* Desktop */}
+                <div className="d-none d-md-flex gap-2 flex-wrap">
+                  <input
+                    type="text"
+                    className="form-control form-control-sm"
+                    placeholder="Nome do mural"
+                    value={nomeProjeto}
+                    onChange={(e) => setNomeProjeto(e.target.value)}
+                    style={{ maxWidth: "200px" }}
+                  />
                   <button
                     className="btn btn-sm btn-outline-secondary no-border"
                     onClick={abrirModalNovo}
                   >
                     + Adicionar Lembrete
                   </button>
-
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={() => exportarLembretes(lembretes, nomeProjeto)}
                   >
                     <FontAwesomeIcon icon={faDownload} /> Exportar
                   </button>
-
                   <input
                     type="file"
                     accept=".json"
@@ -233,14 +228,12 @@ export default function App() {
                     id="inputImportarJson"
                     onChange={handleImportar}
                   />
-
                   <label
                     htmlFor="inputImportarJson"
                     className="btn btn-outline-secondary btn-sm no-border"
                   >
                     <FontAwesomeIcon icon={faUpload} /> Importar
                   </label>
-
                   <button
                     className="btn btn-outline-danger btn-sm no-border"
                     onClick={limparMural}
@@ -250,72 +243,212 @@ export default function App() {
                   </button>
                 </div>
 
-                {/* Lado direito: filtro avançado */}
-                <div className="d-flex align-items-baseline">
-                  <button
-                    className={`no-border btn ${
-                      filtroFavoritos ? "text-warning" : "text-dark"
-                    } btn-sm btn-fav`}
-                    onClick={() => setFiltroFavoritos((atual) => !atual)}
-                  >
-                    <FontAwesomeIcon icon={faStar} />
-                  </button>
-                  <FiltroAvancado
-                    onAdicionarFiltro={(f) => setFiltros([...filtros, f])}
-                  />
-                </div>
-              </div>
-
-              {/* Badges de filtros aplicados */}
-              <div className="d-flex gap-2">
-                {filtros.map((f, i) => {
-                  const cor = corPorTipo(f.tipo);
-
-                  return (
-                    <span
-                      key={i}
-                      className={`border badge d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-${cor.bg} ${cor.text}`}
-                      style={{
-                        fontSize: "0.75rem",
-                        fontWeight: 500,
-                        maxWidth: "fit-content",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
+                {/* Mobile */}
+                <div className="d-md-none w-100">
+                  <div className="input-group mb-2">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Nome do mural"
+                      value={nomeProjeto}
+                      onChange={(e) => setNomeProjeto(e.target.value)}
+                    />
+                  </div>
+                  <div className="dropdown">
+                    <button
+                      className="btn btn-outline-secondary btn-sm dropdown-toggle w-100"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
                     >
-                      <span style={{ textTransform: "capitalize" }}>
-                        {f.tipo === "prazo"
-                          ? `Prazo: ${formatarData(f.valor)}`
-                          : `${f.tipo}: `}
-                        {f.tipo !== "prazo" && <strong>{f.valor}</strong>}
-                      </span>
+                      Ações
+                    </button>
+                    <ul className="dropdown-menu w-100">
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={abrirModalNovo}
+                        >
+                          + Adicionar Lembrete
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() =>
+                            exportarLembretes(lembretes, nomeProjeto)
+                          }
+                        >
+                          Exportar
+                        </button>
+                      </li>
+                      <li>
+                        <label
+                          htmlFor="inputImportarJson"
+                          className="dropdown-item"
+                        >
+                          Importar
+                        </label>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item text-danger"
+                          onClick={limparMural}
+                          style={{ opacity: "0.7" }}
+                        >
+                          Limpar Mural
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => setModalArquivadosAberta(true)}
+                        >
+                          <FontAwesomeIcon icon={faBoxArchive} /> Arquivados (
+                          {arquivados.length})
+                        </button>
+                      </li>
+                      <hr />
+                      <li>
+                        <button
+                          className={`dropdown-item ${
+                            filtroFavoritos ? "text-warning" : ""
+                          }`}
+                          onClick={() => setFiltroFavoritos((atual) => !atual)}
+                        >
+                          <FontAwesomeIcon icon={faStar} /> Filtrar Favoritos
+                        </button>
+                      </li>
+                      <li>
+                        <div className="px-2">
+                          <FiltroAvancado
+                            onAdicionarFiltro={(f) =>
+                              setFiltros([...filtros, f])
+                            }
+                          />
+                        </div>
+                      </li>
+                      <li>
+                        <div className="dropdown-divider"></div>
+                      </li>
+                      {/* Fora do <details>, mas ainda dentro da <ul> */}
+                      {filtros.length > 0 && (
+                        <li className="px-2">
+                          <div className="dropdown-divider"></div>
+                          <strong className="small text-muted">
+                            Filtros Ativos:
+                          </strong>
+                          <div className="d-flex flex-column gap-2 mt-1">
+                            {filtros.map((f, i) => {
+                              const cor = corPorTipo(f.tipo);
+                              return (
+                                <span
+                                  key={i}
+                                  className={`border badge d-flex align-items-center justify-content-between px-2 py-1 rounded-pill bg-${cor.bg} ${cor.text}`}
+                                  style={{
+                                    fontSize: "0.75rem",
+                                    fontWeight: 500,
+                                    whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                  }}
+                                >
+                                  <span style={{ textTransform: "capitalize" }}>
+                                    {f.tipo === "prazo"
+                                      ? `Prazo: ${formatarData(f.valor)}`
+                                      : `${f.tipo}: `}
+                                    {f.tipo !== "prazo" && (
+                                      <strong>{f.valor}</strong>
+                                    )}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="btn-close btn-close-white btn-sm ms-2"
+                                    style={{ filter: "invert(0.5)" }}
+                                    onClick={() =>
+                                      setFiltros(
+                                        filtros.filter((_, idx) => idx !== i)
+                                      )
+                                    }
+                                  ></button>
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="filtros-wrapper d-flex flex-column flex-md-row flex-wrap gap-2 mb-1 mt-2">
+                  <div className="d-flex flex-column filtros-container">
+                    <div className="d-flex align-items-baseline">
                       <button
-                        type="button"
-                        className="btn-close btn-close-white btn-sm"
-                        style={{ marginLeft: 4, filter: "invert(0.5)" }}
-                        onClick={() =>
-                          setFiltros(filtros.filter((_, idx) => idx !== i))
-                        }
-                      ></button>
-                    </span>
-                  );
-                })}
-              </div>
+                        className={`no-border btn ${
+                          filtroFavoritos ? "text-warning" : "text-dark"
+                        } btn-sm btn-fav`}
+                        onClick={() => setFiltroFavoritos((atual) => !atual)}
+                      >
+                        <FontAwesomeIcon icon={faStar} />
+                      </button>
+                      <FiltroAvancado
+                        onAdicionarFiltro={(f) => setFiltros([...filtros, f])}
+                      />
+                    </div>
+
+                    <div className="d-flex">
+                      {filtros.map((f, i) => {
+                        const cor = corPorTipo(f.tipo);
+                        return (
+                          <span
+                            key={i}
+                            className={`border badge d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-${cor.bg} ${cor.text}`}
+                            style={{
+                              fontSize: "0.75rem",
+                              fontWeight: 500,
+                              maxWidth: "fit-content",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            <span style={{ textTransform: "capitalize" }}>
+                              {f.tipo === "prazo"
+                                ? `Prazo: ${formatarData(f.valor)}`
+                                : `${f.tipo}: `}
+                              {f.tipo !== "prazo" && <strong>{f.valor}</strong>}
+                            </span>
+                            <button
+                              type="button"
+                              className="btn-close btn-close-white btn-sm"
+                              style={{ marginLeft: 4, filter: "invert(0.5)" }}
+                              onClick={() =>
+                                setFiltros(
+                                  filtros.filter((_, idx) => idx !== i)
+                                )
+                              }
+                            ></button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </>
 
               <hr />
-              <div className="d-flex flex-row align-items-start mb-3">
-                <div className="d-flex w-50 align-items-start">
+              <div className="d-flex flex-row align-items-start mb-3 advanced-filter-container">
+                <div className="d-flex w-100 align-items-start justify-content-between">
                   <h5 className="mb-0 d-flex align-items-center gap-2">
                     <i className="fas fa-note-sticky text-dark"></i> Lembretes{" "}
                     <span className="text-muted">
                       ({lembretesFiltrados.length})
                     </span>
                   </h5>
-                  <div
-                    className="d-flex gap-2 mb-3"
-                    style={{ marginLeft: "5px" }}
-                  >
+
+                  {/* Mobile: botão arquivados vai dentro do dropdown */}
+                  <div className="d-none d-md-flex gap-2">
                     <button
                       className="no-border btn btn-outline-secondary btn-sm"
                       onClick={() => setModalArquivadosAberta(true)}
@@ -323,7 +456,6 @@ export default function App() {
                       <FontAwesomeIcon icon={faBoxArchive} /> Arquivados (
                       {arquivados.length})
                     </button>
-                    {/* Demais filtros... */}
                   </div>
                 </div>
               </div>

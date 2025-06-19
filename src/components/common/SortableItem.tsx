@@ -21,7 +21,7 @@ export default function SortableItem({ id, children }: Props) {
   };
 
   const dragHandle = (
-    <span {...attributes} {...listeners} style={{ cursor: 'grab' }}>
+    <span className='drag-handle' {...attributes} {...listeners} style={{ cursor: 'grab' }}>
       <FontAwesomeIcon icon={faGripVertical} />
     </span>
   );
