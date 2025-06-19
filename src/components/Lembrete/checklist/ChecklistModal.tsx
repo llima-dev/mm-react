@@ -4,7 +4,8 @@ import type { ChecklistItem } from "../../../types";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -32,7 +33,10 @@ export default function ChecklistModal({
 }: Props) {
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [novoItem, setNovoItem] = useState("");
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor)
+  );
 
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [textoEditado, setTextoEditado] = useState("");

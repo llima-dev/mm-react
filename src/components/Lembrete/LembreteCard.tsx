@@ -27,7 +27,7 @@ import "./LembreteCard.css";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
   useSensor,
   useSensors,
@@ -101,7 +101,7 @@ export default function LembreteCard({
       : "#dc2626"; // vermelho
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(MouseSensor),
     useSensor(TouchSensor)
   );
 
