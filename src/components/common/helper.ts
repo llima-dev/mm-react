@@ -183,3 +183,13 @@ export function calcularUsoLocalStorage(): { usadoKB: number; porcentagem: numbe
 
   return { usadoKB, porcentagem };
 }
+
+export function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch((err) => {
+      console.error(`Erro ao entrar em fullscreen: ${err.message}`);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}

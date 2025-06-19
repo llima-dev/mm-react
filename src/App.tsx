@@ -36,6 +36,7 @@ import {
   corPorTipo,
   formatarData,
   calcularUsoLocalStorage,
+  toggleFullScreen,
 } from "./components/common/helper";
 import FiltroAvancado from "./components/common/FiltroAvancado";
 import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
@@ -53,6 +54,7 @@ import {
   faDownload,
   faUpload,
   faBroom,
+  faExpand,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
@@ -210,6 +212,13 @@ export default function App() {
               <>
                 {/* Desktop */}
                 <div className="d-none d-md-flex gap-2 flex-wrap">
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={toggleFullScreen}
+                    title="Tela cheia"
+                  >
+                    <FontAwesomeIcon icon={faExpand} />
+                  </button>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -255,6 +264,13 @@ export default function App() {
                 {/* Mobile */}
                 <div className="d-md-none w-100">
                   <div className="input-group mb-2">
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={toggleFullScreen}
+                    title="Tela cheia"
+                  >
+                    <FontAwesomeIcon icon={faExpand} />
+                  </button>
                     <input
                       type="text"
                       className="form-control form-control-sm"
@@ -389,7 +405,7 @@ export default function App() {
                     </ul>
                   </div>
                 </div>
-                
+
                 <div className="filtros-wrapper d-flex flex-column flex-md-row flex-wrap gap-2 mb-1 mt-2">
                   <div className="d-flex flex-column filtros-container">
                     <div className="d-flex align-items-baseline">
