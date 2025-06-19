@@ -7,7 +7,7 @@ import SplashScreen from "./components/common/SplashScreen";
 
 import {
   DndContext,
-  PointerSensor,
+  MouseSensor,
   useSensor,
   useSensors,
   TouchSensor,
@@ -117,10 +117,10 @@ export default function App() {
   const arquivados = lembretes.filter((l) => l.arquivado);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(MouseSensor),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250,
+        delay: 150,
         tolerance: 5,
       },
     })
