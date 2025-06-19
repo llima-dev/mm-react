@@ -28,6 +28,7 @@ import {
   DndContext,
   closestCenter,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -99,7 +100,10 @@ export default function LembreteCard({
       ? "#facc15" // amarelo
       : "#dc2626"; // vermelho
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor)
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

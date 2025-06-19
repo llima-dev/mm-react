@@ -10,6 +10,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  TouchSensor,
   closestCenter,
 } from "@dnd-kit/core";
 import {
@@ -115,7 +116,15 @@ export default function App() {
 
   const arquivados = lembretes.filter((l) => l.arquivado);
 
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );  
 
   function handleImportar(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
