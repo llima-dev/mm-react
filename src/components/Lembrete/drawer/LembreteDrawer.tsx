@@ -24,7 +24,7 @@ type Props = {
 
 export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes, onSalvarSnippets }: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
-  const [anotacoes] = useState(lembrete.anotacoes || '');
+  const [anotacoes, setAnotacoes] = useState(lembrete.anotacoes || '');
 
   const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
 
@@ -76,7 +76,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
         </button>
       </div>
 
-      <div className="conteudo">
+      <div className={"conteudo " + aba}>
         {aba === "detalhes" && (
           <>
             <div className="campo">
@@ -106,34 +106,34 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                 <div className="campo mt-3">
                   <label>Checklist</label>
                   <div className="tabela-scroll-limitada">
-                  <table className="table-checklist align-middle">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Item</th>
-                        <th>Status</th>
-                        <th>Concluído em</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {lembrete.checklist.map((item) => (
-                        <tr key={item.id}>
-                          <td>{item.texto}</td>
-                          <td>
-                            {item.feito ? (
-                              <span className="text-success">Concluído</span>
-                            ) : (
-                              <span className="text-muted">Pendente</span>
-                            )}
-                          </td>
-                          <td>
-                            {item.feito && item.concluidoEm
-                              ? new Date(item.concluidoEm).toLocaleString()
-                              : "—"}
-                          </td>
+                    <table className="table-checklist align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Item</th>
+                          <th>Status</th>
+                          <th>Concluído em</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {lembrete.checklist.map((item) => (
+                          <tr key={item.id}>
+                            <td>{item.texto}</td>
+                            <td>
+                              {item.feito ? (
+                                <span className="text-success">Concluído</span>
+                              ) : (
+                                <span className="text-muted">Pendente</span>
+                              )}
+                            </td>
+                            <td>
+                              {item.feito && item.concluidoEm
+                                ? new Date(item.concluidoEm).toLocaleString()
+                                : "—"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}
@@ -187,7 +187,10 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
         {aba === "anotacoes" && (
           <EditorAnotacoes
             valorInicial={anotacoes}
-            onSalvar={(html) => onSalvarAnotacoes?.(html)}
+            onSalvar={(html) => {
+              setAnotacoes(html);
+              onSalvarAnotacoes?.(html);
+            }}
           />
         )}
 
