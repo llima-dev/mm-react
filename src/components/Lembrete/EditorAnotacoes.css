@@ -22,7 +22,8 @@
   transition: background 0.14s;
 }
 
-.toolbar-btn:hover, .toolbar-btn.active {
+.toolbar-btn:hover,
+.toolbar-btn.active {
   background: #e2e8f0 !important;
   color: #1e293b !important;
 }
@@ -95,14 +96,47 @@
   scrollbar-width: thin;
   scrollbar-color: #e2e8f0 #fff;
 }
+
 .tiptap::-webkit-scrollbar {
   width: 6px;
   background: #fff;
 }
+
 .tiptap::-webkit-scrollbar-thumb {
   background: #e2e8f0;
   border-radius: 8px;
 }
+
 .tiptap::-webkit-scrollbar-thumb:hover {
   background: #cbd5e1;
+}
+
+.tiptap table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  background: #fff;
+  box-shadow: 0 1px 3px #0001;
+}
+
+.tiptap th, .tiptap td {
+  border: 1px solid #cbd5e1;
+  padding: 7px 12px;
+  text-align: left;
+  font-size: 1em;
+}
+
+.tiptap th {
+  background: #f1f5f9;
+  font-weight: bold;
+  color: #334155;
+}
+
+.tiptap td {
+  background: #f8fafc;
+  color: #334155;
+}
+
+.tiptap tr:hover td {
+  background: #e0e7ef;
 }

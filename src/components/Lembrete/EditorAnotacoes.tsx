@@ -4,7 +4,12 @@ import StarterKit from "@tiptap/starter-kit";
 import { Button } from "react-bootstrap";
 
 import { jsPDF } from "jspdf";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import autoTable from "jspdf-autotable";
+
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,7 +20,15 @@ import {
   faUndo,
   faRedo,
   faSpinner,
-  faCheckCircle
+  faCheckCircle,
+  faTable,
+  faArrowDown,
+  faArrowUp,
+  faArrowRight,
+  faArrowLeft,
+  faMinus,
+  faTrash,
+  faFilePdf
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditorAnotacoes.css";
@@ -27,55 +40,134 @@ type Props = {
   onSalvar: (conteudo: string) => void;
 };
 
-export default function EditorAnotacoes({ lembrete, valorInicial, onSalvar }: Props) {
-    const [salvando, setSalvando] = useState(false);
-    const [ultimoSalvo, setUltimoSalvo] = useState(Date.now());
-    const salvarTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+interface jsPDFComAutoTable extends jsPDF {
+  lastAutoTable?: {
+    finalY: number;
+  };
+}
 
-    const editor = useEditor({
-      extensions: [StarterKit],
-      content: valorInicial,
-      onBlur: ({ editor }) => {
-        setSalvando(true);
-        const html = editor.getHTML();
-        onSalvar(html);
+export default function EditorAnotacoes({
+  lembrete,
+  valorInicial,
+  onSalvar,
+}: Props) {
+  const [salvando, setSalvando] = useState(false);
+  const [ultimoSalvo, setUltimoSalvo] = useState(Date.now());
+  const salvarTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-        if (salvarTimeoutRef.current) {
-          clearTimeout(salvarTimeoutRef.current);
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+    ],
+    content: valorInicial,
+    onBlur: ({ editor }) => {
+      setSalvando(true);
+      const html = editor.getHTML();
+      onSalvar(html);
+
+      if (salvarTimeoutRef.current) {
+        clearTimeout(salvarTimeoutRef.current);
+      }
+      salvarTimeoutRef.current = setTimeout(() => {
+        setSalvando(false);
+        setUltimoSalvo(Date.now());
+      }, 700);
+    },
+  });
+
+  async function handleInserirTabela() {
+    const formValues = {
+      linhas: 1,
+      colunas: 3
+    }
+
+    if (editor) {
+      editor
+        .chain()
+        .focus()
+        .insertTable({
+          rows: formValues.linhas,
+          cols: formValues.colunas,
+          withHeaderRow: true,
+        })
+        .run();
+    }
+  }
+
+  useEffect(() => {
+    if (editor && valorInicial !== editor.getHTML()) {
+      editor.commands.setContent(valorInicial || "");
+    }
+  }, [valorInicial, editor]);
+
+  
+  function exportarPDF() {
+    if (!editor) return;
+
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const html = editor.getHTML();
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text(lembrete.titulo || "Anotação", 40, 60);
+
+    let y = 90;
+
+    Array.from(tempDiv.childNodes).forEach((node) => {
+      if (
+        node.nodeType === Node.ELEMENT_NODE &&
+        (node as HTMLElement).tagName === "TABLE"
+      ) {
+        autoTable(doc, {
+          html: node as HTMLTableElement,
+          startY: y,
+          styles: {
+            lineColor: [80, 80, 80],
+            lineWidth: 0.4,
+            textColor: [40, 40, 40],
+            fontSize: 11,
+            halign: "left",
+            valign: "middle",
+            cellPadding: 5,
+          },
+          headStyles: {
+            fillColor: [240, 244, 248],
+            textColor: [20, 30, 50],
+            fontStyle: "bold",
+            lineWidth: 0.7,
+            lineColor: [80, 80, 80],
+          },
+          alternateRowStyles: {
+            fillColor: [250, 250, 250],
+          },
+          tableLineWidth: 1,
+          tableLineColor: [130, 130, 130],
+        });
+
+        const docAuto = doc as jsPDFComAutoTable;
+        y = docAuto.lastAutoTable ? docAuto.lastAutoTable.finalY + 20 : y + 40;
+
+      } else {
+        const text = (node.textContent || "").trim();
+        if (text) {
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "normal");
+          doc.text(text, 40, y, { maxWidth: 500 });
+          y += 24;
         }
-        salvarTimeoutRef.current = setTimeout(() => {
-          setSalvando(false);
-          setUltimoSalvo(Date.now());
-        }, 700);
-      },
+      }
     });
 
-    useEffect(() => {
-      if (editor && valorInicial !== editor.getHTML()) {
-        editor.commands.setContent(valorInicial || "");
-      }
-    }, [valorInicial, editor]);
-
-    function exportarPDF() {
-      if (!editor) return;
-      const html = editor.getHTML();
-
-      const doc = new jsPDF({
-        orientation: "p",
-        unit: "pt",
-        format: "a4",
-      });
-
-      doc.html(html, {
-        x: 32,
-        y: 32,
-        width: 540,
-        windowWidth: 800,
-        callback: function (doc) {
-          doc.save(lembrete.titulo + ".pdf");
-        },
-      });
-    }
+    doc.save((lembrete.titulo || "anotacao") + ".pdf");
+  }
 
   return (
     <div className="campo">
@@ -153,15 +245,88 @@ export default function EditorAnotacoes({ lembrete, valorInicial, onSalvar }: Pr
             >
               <FontAwesomeIcon icon={faRedo} />
             </Button>
+            <div className="toolbar-divider" />
             <Button
               variant="light"
               size="sm"
               className="toolbar-btn"
-              onClick={() => exportarPDF()}
-              title="Exportar PDF"
+              onClick={handleInserirTabela}
+              title="Inserir tabela personalizada"
             >
-              <FontAwesomeIcon icon={faFilePdf} />
+              <FontAwesomeIcon icon={faTable} />
             </Button>
+
+            {editor && editor.isActive("table") && (
+              <>
+                <Button
+                  size="sm"
+                  variant="light"
+                  className="toolbar-btn"
+                  onClick={() => editor.chain().focus().addRowAfter().run()}
+                  title="Adicionar linha abaixo"
+                >
+                  <FontAwesomeIcon icon={faArrowDown} />{" "}
+                  {/* ou faPlus, faTableRow, etc */}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="light"
+                  className="toolbar-btn"
+                  onClick={() => editor.chain().focus().addRowBefore().run()}
+                  title="Adicionar linha acima"
+                >
+                  <FontAwesomeIcon icon={faArrowUp} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="light"
+                  className="toolbar-btn"
+                  onClick={() => editor.chain().focus().addColumnAfter().run()}
+                  title="Adicionar coluna à direita"
+                >
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="light"
+                  className="toolbar-btn"
+                  onClick={() => editor.chain().focus().addColumnBefore().run()}
+                  title="Adicionar coluna à esquerda"
+                >
+                  <FontAwesomeIcon icon={faArrowLeft} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="light"
+                  className="toolbar-btn"
+                  onClick={() => editor.chain().focus().deleteRow().run()}
+                  title="Remover linha"
+                >
+                  <FontAwesomeIcon icon={faMinus} />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="light"
+                  className="toolbar-btn"
+                  onClick={() => editor.chain().focus().deleteColumn().run()}
+                  title="Remover coluna"
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </Button>
+              </>
+            )}
+
+            {editor && !editor.isActive("table") && (
+              <Button
+                variant="light"
+                size="sm"
+                className="toolbar-btn"
+                onClick={() => exportarPDF()}
+                title="Exportar PDF"
+              >
+                <FontAwesomeIcon icon={faFilePdf} />
+              </Button>
+            )}
           </div>
 
           <EditorContent editor={editor} className="tiptap" />
