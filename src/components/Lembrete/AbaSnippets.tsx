@@ -3,22 +3,124 @@ import type { Snippet } from "../../types";
 import hljs from "highlight.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "react-bootstrap";
-import { copiarCodigoComAlerta  } from '../common/helper';
+import { copiarCodigoComAlerta } from '../common/helper';
 
 import {
+    faGripVertical,
+    faEdit,
     faCopy,
     faXmark
 } from "@fortawesome/free-solid-svg-icons";
+
+import { DndContext, closestCenter, useSensor, useSensors, MouseSensor, TouchSensor } from "@dnd-kit/core";
+import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import SnippetModal from "./SnippetModal";
+
+import "./AbaSnippets.css";
 
 type Props = {
   snippets: Snippet[];
   onSalvar: (snippets: Snippet[]) => void;
 };
 
+type SortableSnippetCardProps = {
+  snippet: Snippet;
+  onCopy: () => void;
+  onEdit: () => void;
+  onRemove: () => void;
+};
+
+function SortableSnippetCard({ snippet, onCopy, onEdit, onRemove }: SortableSnippetCardProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: snippet.id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="snippet-card mb-3 position-relative d-flex align-items-start"
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        transform: CSS.Transform.toString(transform),
+        transition,
+        background: "#f8fafc",
+        borderRadius: 8,
+        border: "1px solid #e2e8f0",
+        minHeight: 80,
+      }}
+    >
+      <span
+        {...attributes}
+        {...listeners}
+        style={{
+          cursor: "grab",
+          color: "#888",
+          marginRight: 12,
+          marginLeft: 4,
+          marginTop: 16,
+          fontSize: 14,
+          userSelect: "none"
+        }}
+        tabIndex={0}
+        title="Arrastar para ordenar"
+      >
+        <FontAwesomeIcon icon={faGripVertical} />
+      </span>
+      <div className="w-100" style={{ overflow: "hidden" }}>
+        <div className="snippet-title">{snippet.titulo}</div>
+        <div className="snippet-actions position-absolute top-0 end-0 m-2 d-flex gap-1">
+          <Button variant="outline-secondary btn-sm no-border" size="sm" onClick={onCopy} title="Copiar">
+            <FontAwesomeIcon icon={faCopy} />
+          </Button>
+          <Button variant="outline-primary btn-sm no-border" size="sm" onClick={onEdit} title="Editar">
+            <FontAwesomeIcon icon={faEdit} />
+          </Button>
+          <Button variant="outline-danger btn-sm no-border" size="sm" onClick={onRemove} title="Remover">
+            <FontAwesomeIcon icon={faXmark} />
+          </Button>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <span className="badge bg-secondary">{snippet.linguagem}</span>
+        </div>
+        <pre className="mt-2" style={{ background: "#23272e", color: "#fff", borderRadius: "0.4em", padding: "0.5em" }}>
+          <code
+            dangerouslySetInnerHTML={{
+              __html: hljs.highlight(snippet.codigo, { language: snippet.linguagem }).value,
+            }}
+          />
+        </pre>
+      </div>
+    </div>
+  );
+}
+
 export default function AbaSnippets({ snippets, onSalvar }: Props) {
   const [titulo, setTitulo] = useState("");
   const [codigo, setCodigo] = useState("");
   const [linguagem, setLinguagem] = useState("javascript");
+  const [snips, setSnips] = useState<Snippet[]>(snippets);
+
+  const [modalAberto, setModalAberto] = useState(false);
+  const [snippetParaEditar, setSnippetParaEditar] = useState<Snippet | null>(null);
+
+  // Atualiza snips se vier coisa nova do pai
+  if (snips !== snippets && snippets.length !== snips.length) {
+    setSnips(snippets);
+  }
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor)
+  );
+
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = snips.findIndex(s => s.id === active.id);
+    const newIndex = snips.findIndex(s => s.id === over.id);
+    const novaOrdem = arrayMove(snips, oldIndex, newIndex);
+    setSnips(novaOrdem);
+    onSalvar(novaOrdem);
+  }
 
   const adicionarSnippet = () => {
     if (!codigo.trim()) return;
@@ -28,14 +130,31 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
       linguagem,
       codigo,
     };
-    onSalvar([...snippets, novo]);
+    const atualizados = [...snips, novo];
+    setSnips(atualizados);
+    onSalvar(atualizados);
     setTitulo("");
     setCodigo("");
     setLinguagem("javascript");
   };
 
   const remover = (id: string) => {
-    onSalvar(snippets.filter((s) => s.id !== id));
+    const atualizados = snips.filter((s) => s.id !== id);
+    setSnips(atualizados);
+    onSalvar(atualizados);
+  };
+
+  const editarSnippet = (s: Snippet) => {
+    setSnippetParaEditar(s);
+    setModalAberto(true);
+  };
+
+  const handleSalvarSnippetEditado = (snipEditado: Snippet) => {
+    const atualizados = snips.map(s =>
+      s.id === snipEditado.id ? snipEditado : s
+    );
+    setSnips(atualizados);
+    onSalvar(atualizados);
   };
 
   return (
@@ -75,41 +194,36 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
       </button>
 
       <div className="snippets-container">
-        <ul className="list-unstyled">
-          {snippets.map((s) => (
-            <div className="snippet-card mb-3 position-relative">
-            <div className="snippet-title">{s.titulo}</div>
-          
-            <div className="snippet-actions position-absolute top-0 end-0 m-2 d-flex gap-1">
-              <Button
-                variant="outline-secondary"
-                size="sm"
-                onClick={() => copiarCodigoComAlerta(s.codigo)}
-                title="Copiar"
-              >
-                <FontAwesomeIcon icon={faCopy} />
-              </Button>
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => remover(s.id)}
-                title="Remover"
-              >
-                <FontAwesomeIcon icon={faXmark} />
-              </Button>
-            </div>
-          
-            <pre className="mt-2">
-              <code
-                dangerouslySetInnerHTML={{
-                  __html: hljs.highlight(s.codigo, { language: s.linguagem }).value,
-                }}
-              />
-            </pre>
-          </div>          
-          ))}
-        </ul>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={snips.map(s => s.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <ul className="list-unstyled">
+              {snips.map((s) => (
+                <SortableSnippetCard
+                  key={s.id}
+                  snippet={s}
+                  onCopy={() => copiarCodigoComAlerta(s.codigo)}
+                  onEdit={() => editarSnippet(s)}
+                  onRemove={() => remover(s.id)}
+                />
+              ))}
+            </ul>
+          </SortableContext>
+        </DndContext>
       </div>
+
+      <SnippetModal
+        show={modalAberto}
+        onClose={() => setModalAberto(false)}
+        onSalvar={handleSalvarSnippetEditado}
+        snippet={snippetParaEditar}
+      />
     </div>
   );
 }

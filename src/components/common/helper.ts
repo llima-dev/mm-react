@@ -115,10 +115,14 @@ export function importarLembretesDoArquivo(
         comentarios: l.comentarios || [],
         anotacoes: l.anotacoes || '',
         snippets: l.snippets || [],
-        prazo: l.prazo || ''
+        prazo: l.prazo || '',
+        criadoPorRecorrencia: l.criadoPorRecorrencia,
+        geradoPor: l.geradoPor,
+        diasRecorrencia: l.diasRecorrencia
       }));
 
       onImportar([...lembretesAtuais, ...convertidos], nomeProjeto);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (erro) {
       alert("Arquivo inválido.");
     }
