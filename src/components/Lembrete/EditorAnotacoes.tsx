@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Button } from "react-bootstrap";
+import { HexColorPicker } from "react-colorful";
+
+import TextStyle from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
 
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -28,7 +32,8 @@ import {
   faArrowLeft,
   faMinus,
   faTrash,
-  faFilePdf
+  faFilePdf,
+  faBroom,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditorAnotacoes.css";
@@ -55,6 +60,9 @@ export default function EditorAnotacoes({
   const [ultimoSalvo, setUltimoSalvo] = useState(Date.now());
   const salvarTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [cor, setCor] = useState("#000000");
+  const [showPicker, setShowPicker] = useState(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -64,6 +72,8 @@ export default function EditorAnotacoes({
       TableRow,
       TableHeader,
       TableCell,
+      TextStyle,
+      Color, 
     ],
     content: valorInicial,
     onBlur: ({ editor }) => {
@@ -200,32 +210,78 @@ export default function EditorAnotacoes({
               <FontAwesomeIcon icon={faItalic} />
             </Button>
             <div className="toolbar-divider" />
+            <div style={{ position: "relative" }}>
+              <button
+                style={{
+                  background: cor,
+                  width: 32,
+                  height: 28,
+                  border: "1.5px solid #e2e8f0",
+                  borderRadius: 5,
+                }}
+                onClick={() => setShowPicker(!showPicker)}
+              />
+              {showPicker && (
+                <div
+                  style={{
+                    position: "absolute",
+                    zIndex: 10,
+                    top: 32,
+                    left: 0,
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.14)",
+                  }}
+                >
+                  <HexColorPicker
+                    color={cor}
+                    onChange={(c) => {
+                      setCor(c);
+                      editor.chain().focus().setColor(c).run();
+                    }}
+                  />
+                </div>
+              )}
+            </div>
             <Button
-              variant="light"
+              variant="outline-secondary"
               size="sm"
-              className={
-                editor.isActive("bulletList")
-                  ? "toolbar-btn active"
-                  : "toolbar-btn"
-              }
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              title="Lista não ordenada"
+              className="d-flex align-items-center"
+              style={{ padding: "0.25rem 0.5rem" }}
+              onClick={() => editor.chain().focus().unsetColor().run()}
+              title="Limpar cor"
             >
-              <FontAwesomeIcon icon={faListUl} />
+              <FontAwesomeIcon icon={faBroom} />
             </Button>
-            <Button
-              variant="light"
-              size="sm"
-              className={
-                editor.isActive("orderedList")
-                  ? "toolbar-btn active"
-                  : "toolbar-btn"
-              }
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              title="Lista ordenada"
-            >
-              <FontAwesomeIcon icon={faListOl} />
-            </Button>
+            <div className="toolbar-divider" />
+            {editor && !editor.isActive("table") && (
+              <Button
+                variant="light"
+                size="sm"
+                className={
+                  editor.isActive("bulletList")
+                    ? "toolbar-btn active"
+                    : "toolbar-btn"
+                }
+                onClick={() => editor.chain().focus().toggleBulletList().run()}
+                title="Lista não ordenada"
+              >
+                <FontAwesomeIcon icon={faListUl} />
+              </Button>
+            )}
+            {editor && !editor.isActive("table") && (
+              <Button
+                variant="light"
+                size="sm"
+                className={
+                  editor.isActive("orderedList")
+                    ? "toolbar-btn active"
+                    : "toolbar-btn"
+                }
+                onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                title="Lista ordenada"
+              >
+                <FontAwesomeIcon icon={faListOl} />
+              </Button>
+            )}
             <div className="toolbar-divider" />
             <Button
               variant="light"
@@ -246,15 +302,17 @@ export default function EditorAnotacoes({
               <FontAwesomeIcon icon={faRedo} />
             </Button>
             <div className="toolbar-divider" />
-            <Button
-              variant="light"
-              size="sm"
-              className="toolbar-btn"
-              onClick={handleInserirTabela}
-              title="Inserir tabela personalizada"
-            >
-              <FontAwesomeIcon icon={faTable} />
-            </Button>
+            {editor && !editor.isActive("table") && (
+              <Button
+                variant="light"
+                size="sm"
+                className="toolbar-btn"
+                onClick={handleInserirTabela}
+                title="Inserir tabela personalizada"
+              >
+                <FontAwesomeIcon icon={faTable} />
+              </Button>
+            )}
 
             {editor && editor.isActive("table") && (
               <>
