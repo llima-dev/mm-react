@@ -3,6 +3,9 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Button } from "react-bootstrap";
 
+import { jsPDF } from "jspdf";
+import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBold,
@@ -16,13 +19,15 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./EditorAnotacoes.css";
+import type { Lembrete } from "../../types";
 
 type Props = {
   valorInicial: string;
+  lembrete: Lembrete;
   onSalvar: (conteudo: string) => void;
 };
 
-export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
+export default function EditorAnotacoes({ lembrete, valorInicial, onSalvar }: Props) {
     const [salvando, setSalvando] = useState(false);
     const [ultimoSalvo, setUltimoSalvo] = useState(Date.now());
     const salvarTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -50,6 +55,27 @@ export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
         editor.commands.setContent(valorInicial || "");
       }
     }, [valorInicial, editor]);
+
+    function exportarPDF() {
+      if (!editor) return;
+      const html = editor.getHTML();
+
+      const doc = new jsPDF({
+        orientation: "p",
+        unit: "pt",
+        format: "a4",
+      });
+
+      doc.html(html, {
+        x: 32,
+        y: 32,
+        width: 540,
+        windowWidth: 800,
+        callback: function (doc) {
+          doc.save(lembrete.titulo + ".pdf");
+        },
+      });
+    }
 
   return (
     <div className="campo">
@@ -127,12 +153,24 @@ export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
             >
               <FontAwesomeIcon icon={faRedo} />
             </Button>
+            <Button
+              variant="light"
+              size="sm"
+              className="toolbar-btn"
+              onClick={() => exportarPDF()}
+              title="Exportar PDF"
+            >
+              <FontAwesomeIcon icon={faFilePdf} />
+            </Button>
           </div>
 
           <EditorContent editor={editor} className="tiptap" />
 
-           {/* Status de salvamento */}
-          <div className="d-flex align-items-center mt-2" style={{ minHeight: 32 }}>
+          {/* Status de salvamento */}
+          <div
+            className="d-flex align-items-center mt-2"
+            style={{ minHeight: 32 }}
+          >
             {salvando ? (
               <span className="text-primary me-2" style={{ fontWeight: 500 }}>
                 <FontAwesomeIcon icon={faSpinner} spin className="me-1" />
@@ -143,7 +181,12 @@ export default function EditorAnotacoes({ valorInicial, onSalvar }: Props) {
                 <FontAwesomeIcon icon={faCheckCircle} className="me-1" />
                 Salvo
                 <small className="text-muted ms-2">
-                  ({new Date(ultimoSalvo).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })})
+                  (
+                  {new Date(ultimoSalvo).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  )
                 </small>
               </span>
             )}

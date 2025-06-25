@@ -23,6 +23,7 @@
     "bootstrap": "^5.3.6",
     "framer-motion": "^12.18.1",
     "highlight.js": "^11.11.1",
+    "jspdf": "^3.0.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
     "react-datepicker": "^8.4.0",

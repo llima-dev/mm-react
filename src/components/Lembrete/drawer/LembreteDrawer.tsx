@@ -187,6 +187,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
         {aba === "anotacoes" && (
           <EditorAnotacoes
             valorInicial={anotacoes}
+            lembrete={lembrete}
             onSalvar={(html) => {
               setAnotacoes(html);
               onSalvarAnotacoes?.(html);

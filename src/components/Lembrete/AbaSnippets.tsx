@@ -198,11 +198,13 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
         onChange={(e) => setCodigo(e.target.value)}
       />
       <button
-        className="btn btn-sm btn-primary mb-3"
+        className="btn btn-sm btn-outline-primary mb-3"
         onClick={adicionarSnippet}
       >
         Adicionar
       </button>
+
+      <hr/>
 
       <div className="snippets-container">
         <input
