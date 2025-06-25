@@ -66,7 +66,10 @@ function SortableSnippetCard({ snippet, onCopy, onEdit, onRemove }: SortableSnip
         <FontAwesomeIcon icon={faGripVertical} />
       </span>
       <div className="w-100" style={{ overflow: "hidden" }}>
-        <div className="snippet-title">{snippet.titulo}</div>
+        <div className="snippet-title d-flex gap-1">
+          {snippet.titulo}
+          <span className="badge bg-warning text-dark d-flex align-items-center p-1">{snippet.linguagem}</span>
+        </div>
         <div className="snippet-actions position-absolute top-0 end-0 m-2 d-flex gap-1">
           <Button variant="outline-secondary btn-sm no-border" size="sm" onClick={onCopy} title="Copiar">
             <FontAwesomeIcon icon={faCopy} />
@@ -77,9 +80,6 @@ function SortableSnippetCard({ snippet, onCopy, onEdit, onRemove }: SortableSnip
           <Button variant="outline-danger btn-sm no-border" size="sm" onClick={onRemove} title="Remover">
             <FontAwesomeIcon icon={faXmark} />
           </Button>
-        </div>
-        <div style={{ marginTop: 8 }}>
-          <span className="badge bg-secondary">{snippet.linguagem}</span>
         </div>
         <pre className="mt-2" style={{ background: "#23272e", color: "#fff", borderRadius: "0.4em", padding: "0.5em" }}>
           <code
@@ -101,6 +101,8 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
 
   const [modalAberto, setModalAberto] = useState(false);
   const [snippetParaEditar, setSnippetParaEditar] = useState<Snippet | null>(null);
+
+  const [busca, setBusca] = useState("");
 
   // Atualiza snips se vier coisa nova do pai
   if (snips !== snippets && snippets.length !== snips.length) {
@@ -157,6 +159,14 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
     onSalvar(atualizados);
   };
 
+
+  const snipsFiltrados = snips.filter(
+    (s) =>
+      s.titulo.toLowerCase().includes(busca.toLowerCase()) ||
+      s.codigo.toLowerCase().includes(busca.toLowerCase())
+      || s.linguagem.toLowerCase().includes(busca.toLowerCase())
+  );
+
   return (
     <div className="campo">
       <label className="form-label">Novo Snippet</label>
@@ -177,6 +187,7 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
         <option value="json">JSON</option>
         <option value="css">CSS</option>
         <option value="php">PHP</option>
+        <option value="sql">SQL</option>
         <option value="typescript">TypeScript</option>
       </select>
       <textarea
@@ -194,17 +205,24 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
       </button>
 
       <div className="snippets-container">
+        <input
+          className="form-control mb-3"
+          placeholder="Buscar snippet por título ou código..."
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
+          style={{ position: "sticky", top: 0, zIndex: 2, background: "#fff" }} // sticky para mobile/dark
+        />
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={snips.map(s => s.id)}
+            items={snips.map((s) => s.id)}
             strategy={verticalListSortingStrategy}
           >
-            <ul className="list-unstyled">
-              {snips.map((s) => (
+            <ul className="list-unstyled snippets-list">
+              {snipsFiltrados.map((s) => (
                 <SortableSnippetCard
                   key={s.id}
                   snippet={s}

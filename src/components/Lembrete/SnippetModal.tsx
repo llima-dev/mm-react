@@ -58,6 +58,7 @@ export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props
             <option value="json">JSON</option>
             <option value="css">CSS</option>
             <option value="php">PHP</option>
+            <option value="sql">SQL</option>
             <option value="typescript">TypeScript</option>
           </Form.Select>
         </Form.Group>
