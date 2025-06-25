@@ -31,6 +31,22 @@ export function confirmarExclusao(callback: () => void) {
   });
 }
 
+export function toggleChecklistItem(lembrete: Lembrete, itemId: string): Lembrete {
+  if (!lembrete.checklist) return lembrete;
+  return {
+    ...lembrete,
+    checklist: lembrete.checklist.map((item) =>
+      item.id === itemId
+        ? {
+            ...item,
+            feito: !item.feito,
+            concluidoEm: !item.feito ? new Date().toISOString() : undefined,
+          }
+        : item
+    ),
+  };
+}
+
 export function copiarCodigoComAlerta(codigo: string) {
   navigator.clipboard.writeText(codigo)
     .then(() => {

@@ -39,6 +39,7 @@ import {
   toggleFullScreen,
   duplicarLembrete,
   gerarLembretesRecorrentes,
+  toggleChecklistItem,
 } from "./components/common/helper";
 import FiltroAvancado from "./components/common/FiltroAvancado";
 import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
@@ -285,13 +286,13 @@ export default function App() {
                 {/* Mobile */}
                 <div className="d-md-none w-100">
                   <div className="input-group mb-2">
-                  <button
-                    className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={toggleFullScreen}
-                    title="Tela cheia"
-                  >
-                    <FontAwesomeIcon icon={faExpand} />
-                  </button>
+                    <button
+                      className="btn btn-outline-secondary btn-sm no-border"
+                      onClick={toggleFullScreen}
+                      title="Tela cheia"
+                    >
+                      <FontAwesomeIcon icon={faExpand} />
+                    </button>
                     <input
                       type="text"
                       className="form-control form-control-sm"
@@ -557,20 +558,7 @@ export default function App() {
                             salvarComentarios(l.id, comentarios)
                           }
                           onToggleChecklistItem={(itemId) => {
-                            if (!l.checklist) return;
-
-                            const atualizado = {
-                              ...l,
-                              checklist: l.checklist.map((i) =>
-                                i.id === itemId
-                                  ? {
-                                      ...i,
-                                      feito: !i.feito,
-                                      concluidoEm: !i.feito ? new Date().toISOString() : undefined,
-                                    }
-                                  : i
-                              ),
-                            };
+                            const atualizado = toggleChecklistItem(l, itemId);
                             atualizar(l.id, atualizado);
                           }}
                           onReordenarChecklist={(novoChecklist) => {

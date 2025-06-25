@@ -25,6 +25,19 @@ type Props = {
   onSalvar: (novoChecklist: ChecklistItem[]) => void;
 };
 
+function toggleChecklistItem(arr: ChecklistItem[], id: string): ChecklistItem[] {
+  return arr.map(item =>
+    item.id === id
+      ? {
+          ...item,
+          feito: !item.feito,
+          concluidoEm: !item.feito ? new Date().toISOString() : undefined,
+        }
+      : item
+  );
+}
+
+
 export default function ChecklistModal({
   show,
   onClose,
@@ -43,16 +56,20 @@ export default function ChecklistModal({
 
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const primeiraVez = useRef(true);
+
   const toggleItem = (id: string) => {
-    setChecklist((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, feito: !item.feito } : item
-      )
-    );
+    setChecklist((prev) => {
+      const atualizado = toggleChecklistItem(prev, id);
+      return atualizado;
+    });
   };
 
   const remover = (id: string) => {
-    setChecklist((prev) => prev.filter((item) => item.id !== id));
+    setChecklist((prev) => {
+      const atualizado = prev.filter((item) => item.id !== id);
+      return atualizado;
+    });
   };
 
   const editar = (id: string) => {
@@ -64,42 +81,56 @@ export default function ChecklistModal({
 
   const salvarEdicao = () => {
     if (!editandoId) return;
-    setChecklist((prev) =>
-      prev.map((item) =>
+    setChecklist((prev) => {
+      const atualizado = prev.map((item) =>
         item.id === editandoId ? { ...item, texto: textoEditado } : item
-      )
-    );
+      );
+      return atualizado;
+    });
     setEditandoId(null);
     setTextoEditado("");
   };
 
   useEffect(() => {
-    setChecklist(checklistInicial);
-  }, [checklistInicial]);
+    if (primeiraVez.current) {
+      primeiraVez.current = false;
+      return;
+    }
+    
+    if (show) {
+      onSalvar(checklist);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checklist]);
+
+  useEffect(() => {
+    if (show) setChecklist(checklistInicial || []);
+  }, [show, checklistInicial]);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
-      const oldIndex = checklist.findIndex((i) => i.id === active.id);
-      const newIndex = checklist.findIndex((i) => i.id === over.id);
-      setChecklist(arrayMove(checklist, oldIndex, newIndex));
+      setChecklist((prev) => {
+        const oldIndex = prev.findIndex((i) => i.id === active.id);
+        const newIndex = prev.findIndex((i) => i.id === over.id);
+        const atualizado = arrayMove(prev, oldIndex, newIndex);
+        return atualizado;
+      });
     }
   };
 
   const adicionarItem = () => {
     if (!novoItem.trim()) return;
-  
-    setChecklist([
-      ...checklist,
-      { id: crypto.randomUUID(), texto: novoItem.trim(), feito: false },
-    ]);
-    setNovoItem('');
-  
-    // Reaplica o foco no input
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  };  
+    setChecklist((prev) => {
+      const atualizado = [
+        ...prev,
+        { id: crypto.randomUUID(), texto: novoItem.trim(), feito: false },
+      ];
+      return atualizado;
+    });
+    setNovoItem("");
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
 
   return (
     <Modal show={show} onHide={onClose} centered>
@@ -178,14 +209,6 @@ export default function ChecklistModal({
           </SortableContext>
         </DndContext>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="outline-secondary btn-sm" onClick={onClose}>
-          Cancelar
-        </Button>
-        <Button variant="outline-primary btn-sm" onClick={() => onSalvar(checklist)}>
-          Salvar
-        </Button>
-      </Modal.Footer>
     </Modal>
   );
 }

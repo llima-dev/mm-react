@@ -333,7 +333,6 @@ export default function LembreteCard({
         onClose={() => setModalChecklistAberto(false)}
         checklistInicial={checklist}
         onSalvar={(novoChecklist) => {
-          setModalChecklistAberto(false);
           onReordenarChecklist?.(novoChecklist);
         }}
       />
