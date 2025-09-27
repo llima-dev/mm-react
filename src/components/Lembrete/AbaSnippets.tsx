@@ -9,7 +9,9 @@ import {
     faGripVertical,
     faEdit,
     faCopy,
-    faXmark
+    faXmark,
+    faMinus,
+    faPlus
 } from "@fortawesome/free-solid-svg-icons";
 
 import { DndContext, closestCenter, useSensor, useSensors, MouseSensor, TouchSensor } from "@dnd-kit/core";
@@ -98,6 +100,7 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
   const [codigo, setCodigo] = useState("");
   const [linguagem, setLinguagem] = useState("javascript");
   const [snips, setSnips] = useState<Snippet[]>(snippets);
+  const [mostrarForm, setMostrarForm] = useState(false);
 
   const [modalAberto, setModalAberto] = useState(false);
   const [snippetParaEditar, setSnippetParaEditar] = useState<Snippet | null>(null);
@@ -169,50 +172,91 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
 
   return (
     <div className="campo">
-      <label className="form-label">Novo Snippet</label>
-      <input
-        className="form-control mb-2"
-        placeholder="Título"
-        value={titulo}
-        onChange={(e) => setTitulo(e.target.value)}
-      />
-      <select
-        className="form-select mb-2"
-        value={linguagem}
-        onChange={(e) => setLinguagem(e.target.value)}
-      >
-        <option value="javascript">JavaScript</option>
-        <option value="bash">Bash</option>
-        <option value="html">HTML</option>
-        <option value="json">JSON</option>
-        <option value="css">CSS</option>
-        <option value="php">PHP</option>
-        <option value="sql">SQL</option>
-        <option value="typescript">TypeScript</option>
-      </select>
-      <textarea
-        className="form-control mb-2"
-        rows={4}
-        placeholder="Código"
-        value={codigo}
-        onChange={(e) => setCodigo(e.target.value)}
-      />
-      <button
-        className="btn btn-sm btn-outline-primary mb-3"
-        onClick={adicionarSnippet}
-      >
-        Adicionar
-      </button>
+      {/* Cabeçalho com toggle */}
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <label className="form-label m-0">Snippets</label>
+        <Button
+          variant="outline-primary"
+          size="sm"
+          onClick={() => setMostrarForm((v) => !v)}
+        >
+          <FontAwesomeIcon
+            icon={mostrarForm ? faMinus : faPlus}
+            className="me-1"
+          />
+          {mostrarForm ? "Fechar" : "Novo"}
+        </Button>
+      </div>
 
-      <hr/>
+      {/* Formulário retrátil */}
+      {mostrarForm && (
+        <div className="snippet-form mb-3 p-2 border rounded bg-light-subtle">
+          <input
+            className="form-control mb-2"
+            placeholder="Título"
+            value={titulo}
+            onChange={(e) => setTitulo(e.target.value)}
+          />
+          <select
+            className="form-select mb-2"
+            value={linguagem}
+            onChange={(e) => setLinguagem(e.target.value)}
+          >
+            <option value="javascript">JavaScript</option>
+            <option value="bash">Bash</option>
+            <option value="html">HTML</option>
+            <option value="json">JSON</option>
+            <option value="css">CSS</option>
+            <option value="php">PHP</option>
+            <option value="sql">SQL</option>
+            <option value="typescript">TypeScript</option>
+          </select>
+          <textarea
+            className="form-control mb-2"
+            rows={4}
+            placeholder="Código"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+          />
+          <div className="d-flex justify-content-end gap-2">
+            <Button
+              variant="outline-secondary btn-sm"
+              size="sm"
+              onClick={() => setMostrarForm(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="success btn-sm"
+              size="sm"
+              onClick={() => {
+                adicionarSnippet();
+                setMostrarForm(false);
+              }}
+            >
+              <FontAwesomeIcon icon={faPlus} className="me-1" />
+              Adicionar
+            </Button>
+          </div>
+        </div>
+      )}
 
-      <div className="snippets-container">
+      <hr />
+
+      {/* Lista de snippets */}
+      <div className="campo snippets-wrapper">
+      <div className="snippets-container scroll-suave">
         <input
           className="form-control mb-3"
           placeholder="Buscar snippet por título ou código..."
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          style={{ position: "sticky", top: 0, zIndex: 2, background: "#fff" }} // sticky para mobile/dark
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 2,
+            background: "var(--bs-body-bg)", // dark/light
+          }}
         />
         <DndContext
           sensors={sensors}
@@ -236,6 +280,7 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
             </ul>
           </SortableContext>
         </DndContext>
+      </div>
       </div>
 
       <SnippetModal

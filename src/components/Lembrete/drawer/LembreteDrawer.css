@@ -27,6 +27,7 @@
     flex: 1;
     overflow-y: auto;
     padding-right: 0.5rem;
+    overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -150,4 +151,66 @@
 
 .checklist-input {
   border-bottom: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+  .drawer {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0; /* fica como uma tela */
+  }
+}
+
+.checklist-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.checklist-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  scroll-behavior: smooth;
+}
+
+.checklist-input {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding-top: 8px;
+}
+
+.drawer-conteudo {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.drawer-body {
+  flex: 1;
+  overflow: hidden; /* sem scroll aqui */
+  display: flex;
+  flex-direction: column;
+}
+
+.checklist-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* truque pra flex + overflow */
+}
+
+.checklist-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+  scroll-behavior: smooth;
+}
+
+.checklist-input {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 8px 0;
 }

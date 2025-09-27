@@ -226,7 +226,6 @@
 }
 
 .snippets-container {
-    max-height: 400px;
     overflow-y: auto;
     padding-right: 6px;
 }
@@ -384,7 +383,7 @@
 
 .card-title .text-truncate {
   flex: 1;
-  min-width: 0; /* 🔑 isso força o flex a respeitar truncamento */
+  min-width: 0;
 }
 
 .drag-handle {
@@ -395,4 +394,84 @@
 
 .drag-handle:hover {
   opacity: 1;
+}
+
+.comentarios-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.comentarios-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+  scroll-behavior: smooth;
+}
+
+.comentarios-input {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+}
+
+/* aplica em todas as áreas com scroll (checklist, comentários, etc) */
+.checklist-list,
+.comentarios-list {
+  scrollbar-width: thin;         /* Firefox */
+  scrollbar-color: #cbd5e1 transparent; /* cor da barrinha + fundo */
+}
+
+/* Chrome, Edge e Safari */
+.checklist-list::-webkit-scrollbar,
+.comentarios-list::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.checklist-list::-webkit-scrollbar-track,
+.comentarios-list::-webkit-scrollbar-track {
+  background: transparent;       /* some o trilho */
+}
+
+.checklist-list::-webkit-scrollbar-thumb,
+.comentarios-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;     /* cinza clarinho */
+  border-radius: 3px;
+}
+
+.checklist-list::-webkit-scrollbar-thumb:hover,
+.comentarios-list::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;     /* escurece levemente no hover */
+}
+
+/* utilitário global pra suavizar scroll */
+.scroll-suave {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.scroll-suave::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scroll-suave::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-suave::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
+}
+
+.scroll-suave::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.snippets-list {
+  padding-bottom: 3rem; /* espaço extra pro último item não sumir */
 }

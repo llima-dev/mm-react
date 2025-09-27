@@ -294,47 +294,49 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
         )}
 
         {aba === "comentarios" && (
-          <>
-            <textarea
-              className="form-control mb-2"
-              value={comentarioNovo}
-              onChange={(e) => setComentarioNovo(e.target.value)}
-              placeholder="Escreva um comentário..."
-              rows={3}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  adicionarComentario();
-                }
-              }}
-            />
+          <div className="comentarios-container">
+            <div className="comentarios-list">
+              {!lembrete.comentarios?.length ? (
+                <p className="text-muted">Nenhum comentário ainda.</p>
+              ) : (
+                <ul className="list-unstyled small">
+                  {lembrete.comentarios.map((c) => (
+                    <li key={c.id} className="mb-2 border-bottom pb-2">
+                      <div className="text-muted">
+                        {new Date(c.data).toLocaleString()}
+                      </div>
+                      <div>{c.texto}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-            <Button
-              variant="outline-primary btn-sm"
-              size="sm"
-              disabled={!comentarioNovo.trim()}
-              onClick={adicionarComentario}
-            >
-              Adicionar
-            </Button>
+            <div className="comentarios-input">
+              <textarea
+                className="form-control mb-2"
+                value={comentarioNovo}
+                onChange={(e) => setComentarioNovo(e.target.value)}
+                placeholder="Escreva um comentário..."
+                rows={3}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    adicionarComentario();
+                  }
+                }}
+              />
 
-            <hr />
-
-            {!lembrete.comentarios?.length ? (
-              <p className="text-muted">Nenhum comentário ainda.</p>
-            ) : (
-              <ul className="list-unstyled small mt-3">
-                {lembrete.comentarios.map((c) => (
-                  <li key={c.id} className="mb-2 border-bottom pb-2">
-                    <div className="text-muted">
-                      {new Date(c.data).toLocaleString()}
-                    </div>
-                    <div>{c.texto}</div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </>
+              <Button
+                variant="outline-primary btn-sm"
+                size="sm"
+                disabled={!comentarioNovo.trim()}
+                onClick={adicionarComentario}
+              >
+                Adicionar
+              </Button>
+            </div>
+          </div>
         )}
 
         {aba === "anotacoes" && (
