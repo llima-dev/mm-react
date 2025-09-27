@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import EditorAnotacoes from "../EditorAnotacoes";
 import AbaSnippets from "../AbaSnippets";
@@ -143,24 +143,62 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
             </div>
             <hr />
             {Array.isArray(lembrete.checklist) && (
-              <div className="campo mt-3">
+              <div className="campo mt-3 checklist-container">
                 <label>Checklist</label>
-                <div className="checklist-scroll-container">
+
+                {/* Campo fixo de adicionar item */}
+                <div
+                  className="checklist-input d-flex gap-2 mb-2 sticky-top bg-white pt-2 pb-2"
+                  style={{ zIndex: 1 }}
+                >
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Novo item"
+                    value={novoItem}
+                    onChange={(e) => setNovoItem(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        adicionarItem();
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="d-flex align-items-center gap-1"
+                    onClick={adicionarItem}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </Button>
+                </div>
+
+                {/* Lista rolável */}
+                <div className="checklist-list flex-grow-1 overflow-auto">
                   <DndContext
                     collisionDetection={closestCenter}
                     onDragEnd={({ active, over }) => {
                       if (active.id !== over?.id) {
                         if (!over) return;
                         const atual = lembrete.checklist ?? [];
-                        const oldIndex = atual.findIndex(i => i.id === active.id);
-                        const newIndex = atual.findIndex(i => i.id === over.id);
-                        const novoChecklist = arrayMove(atual, oldIndex, newIndex);
+                        const oldIndex = atual.findIndex(
+                          (i) => i.id === active.id
+                        );
+                        const newIndex = atual.findIndex(
+                          (i) => i.id === over.id
+                        );
+                        const novoChecklist = arrayMove(
+                          atual,
+                          oldIndex,
+                          newIndex
+                        );
                         onSalvarChecklist?.(novoChecklist);
                       }
                     }}
                   >
                     <SortableContext
-                      items={lembrete.checklist.map(i => i.id)}
+                      items={lembrete.checklist.map((i) => i.id)}
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="d-flex flex-column">
@@ -172,9 +210,17 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                                   type="checkbox"
                                   checked={item.feito}
                                   onChange={() => {
-                                    const atualizado = (lembrete.checklist ?? []).map(i =>
+                                    const atualizado = (
+                                      lembrete.checklist ?? []
+                                    ).map((i) =>
                                       i.id === item.id
-                                        ? { ...i, feito: !i.feito, concluidoEm: !i.feito ? new Date().toISOString() : undefined }
+                                        ? {
+                                            ...i,
+                                            feito: !i.feito,
+                                            concluidoEm: !i.feito
+                                              ? new Date().toISOString()
+                                              : undefined,
+                                          }
                                         : i
                                     );
                                     onSalvarChecklist?.(atualizado);
@@ -183,7 +229,9 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                                 {editandoId === item.id ? (
                                   <input
                                     value={textoEditado}
-                                    onChange={(e) => setTextoEditado(e.target.value)}
+                                    onChange={(e) =>
+                                      setTextoEditado(e.target.value)
+                                    }
                                     onBlur={salvarEdicao}
                                     onKeyDown={(e) => {
                                       if (e.key === "Enter") salvarEdicao();
@@ -193,26 +241,40 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                                   />
                                 ) : (
                                   <div className="d-flex flex-column">
-                                    <span className={item.feito ? "feito" : ""}>{item.texto}</span>
-                                    {item.concluidoEm && (
-                                      <small className="text-muted mt-2">
-                                        concluído em {new Date(item.concluidoEm).toLocaleDateString()}
-                                      </small>
-                                    )}
+                                    <span className={item.feito ? "feito" : ""}>
+                                      {item.texto}
+                                    </span>
+                                    <small
+                                      className={`mt-1 ${
+                                        item.feito
+                                          ? "text-success"
+                                          : "text-muted fst-italic"
+                                      }`}
+                                    >
+                                      {item.concluidoEm
+                                        ? `concluído em ${new Date(
+                                            item.concluidoEm
+                                          ).toLocaleDateString()}`
+                                        : "não concluído"}
+                                    </small>
                                   </div>
                                 )}
                               </div>
                               <div className="checklist-acoes">
                                 <button
                                   className="btn-acao"
-                                  onClick={() => editarItem(item.id, item.texto)}
+                                  onClick={() =>
+                                    editarItem(item.id, item.texto)
+                                  }
                                 >
                                   Editar
                                 </button>
                                 <button
                                   className="btn-acao"
                                   onClick={() => {
-                                    const atualizado = (lembrete.checklist ?? []).filter(i => i.id !== item.id);
+                                    const atualizado = (
+                                      lembrete.checklist ?? []
+                                    ).filter((i) => i.id !== item.id);
                                     onSalvarChecklist?.(atualizado);
                                   }}
                                 >
@@ -226,22 +288,6 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                     </SortableContext>
                   </DndContext>
                 </div>
-                  <div className="d-flex gap-2 mt-3">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Novo item"
-                      value={novoItem}
-                      onChange={(e) => setNovoItem(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          adicionarItem();
-                        }
-                      }}
-                    />
-                    <Button variant="success" onClick={adicionarItem}>+</Button>
-                  </div>
               </div>
             )}
           </>
