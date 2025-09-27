@@ -1,20 +1,18 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { DragEndEvent } from "@dnd-kit/core";
 import type { ChecklistItem, Comentario } from "../../types";
 import { confirmarExclusao, getStatusPrazo, formatarData, extrairHashtags } from "../common/helper.ts";
-import SortableChecklistItem from "./checklist/SortableChecklistItem.tsx";
-import ChecklistModal from "./checklist/ChecklistModal.tsx";
 import 'highlight.js/styles/github-dark.css';
 
 import {
   faCalendarAlt,
   faTrash,
   faEdit,
-  faListCheck,
   faInfoCircle,
   faFlagCheckered,
+  faCircle,
+  faCheckCircle,
   faBoxArchive,
   faThumbtack,
   faCopy,
@@ -24,20 +22,6 @@ import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 
 import "./LembreteCard.css";
-
-import {
-  DndContext,
-  closestCenter,
-  MouseSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  arrayMove,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 
 type Props = {
   titulo: string;
@@ -74,8 +58,6 @@ export default function LembreteCard({
   onEditar,
   onExcluir,
   checklist = [],
-  onReordenarChecklist,
-  onToggleChecklistItem,
   onAbrirDetalhes,
   onToggleFavorito,
   onToggleArquivar,
@@ -92,7 +74,6 @@ export default function LembreteCard({
       : 0;
 
   const status = getStatusPrazo(prazo, checklist);
-  const [modalChecklistAberto, setModalChecklistAberto] = useState(false);
 
   const corBarra =
     percentual === 100
@@ -102,24 +83,6 @@ export default function LembreteCard({
       : percentual >= 33
       ? "#facc15" // amarelo
       : "#dc2626"; // vermelho
-
-  const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor)
-  );
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (!over) return;
-    
-    if (active.id !== over?.id && onReordenarChecklist) {
-      const oldIndex = checklist.findIndex((i) => i.id === active.id);
-      const newIndex = checklist.findIndex((i) => i.id === over.id);
-      const novaOrdem = arrayMove(checklist, oldIndex, newIndex);
-      onReordenarChecklist(novaOrdem);
-    }
-  };
 
   const hashtags = extrairHashtags(descricao);
 
@@ -189,8 +152,10 @@ export default function LembreteCard({
           </p>
         )}
         {checklist.length > 0 && (
-          <div className="checklist mt-2">
-            <div className="barra-status-wrapper d-flex align-items-baselign justify-content-between mt-2">
+          <div className="checklist-resumo mt-3">
+
+            {/* Barra de progresso */}
+            <div className="barra-status-wrapper d-flex align-items-center mb-2">
               <div className="barra flex-grow-1 me-2">
                 <div
                   className="barra-preenchida"
@@ -204,41 +169,47 @@ export default function LembreteCard({
               </div>
             </div>
 
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={checklist.map((i) => i.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="d-flex flex-column mt-2 ml-1 card-checklist-scroll">
-                  {checklist.map((item) => (
-                    <SortableChecklistItem key={item.id} id={item.id}>
-                      <>
-                        <div className="checklist-linha">
-                          <div className="checklist-esquerda">
-                            <input
-                              type="checkbox"
-                              checked={item.feito}
-                              onChange={() => onToggleChecklistItem?.(item.id)}
-                            />
-                            <span
-                              className={`checklist-texto ${
-                                item.feito ? "feito" : ""
-                              }`}
-                            >
-                              {item.texto}
-                            </span>
-                          </div>
-                        </div>
-                      </>
-                    </SortableChecklistItem>
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
+            {/* Tabela enxuta */}
+            <table className="table table-sm mb-0">
+              <tbody>
+                {checklist.slice(0, 4).map((item) => (
+                  <tr key={item.id}>
+                    <td style={{ width: "30px", textAlign: "center" }}>
+                      {item.feito ? (
+                        <FontAwesomeIcon
+                          icon={faCheckCircle}
+                          className="text-success"
+                          title="Concluído"
+                        />
+                      ) : (
+                        <FontAwesomeIcon
+                          icon={faCircle}
+                          className="text-muted"
+                          title="Pendente"
+                        />
+                      )}
+                    </td>
+                    <td
+                      className={
+                        (item.feito ? "text-decoration-line-through text-muted " : "") +
+                        "text-truncate"
+                      }
+                      style={{ maxWidth: "180px" }}
+                      title={item.texto}
+                    >
+                      {item.texto}
+                    </td>
+                  </tr>
+                ))}
+                {checklist.length > 4 && (
+                  <tr>
+                    <td colSpan={2} className="text-muted small fst-italic">
+                      + {checklist.length - 4} itens
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         )}
         <div className="d-flex justify-content-end gap-2 mt-3">
@@ -311,15 +282,6 @@ export default function LembreteCard({
           <Button
             variant="link"
             className="p-0 icon-hoverable text-secondary opacity-50"
-            onClick={() => setModalChecklistAberto(true)}
-            title="Editar checklist"
-          >
-            <FontAwesomeIcon icon={faListCheck} />
-          </Button>
-
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable text-secondary opacity-50"
             title="Detalhes"
             onClick={onAbrirDetalhes}
           >
@@ -327,15 +289,6 @@ export default function LembreteCard({
           </Button>
         </div>
       </div>
-
-      <ChecklistModal
-        show={modalChecklistAberto}
-        onClose={() => setModalChecklistAberto(false)}
-        checklistInicial={checklist}
-        onSalvar={(novoChecklist) => {
-          onReordenarChecklist?.(novoChecklist);
-        }}
-      />
     </div>
   );
 }

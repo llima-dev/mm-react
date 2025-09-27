@@ -34,18 +34,20 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 4px 8px;
-    /* ↓ altura reduzida aqui */
-    margin-bottom: 4px;
+    padding: 6px 8px;
     font-size: 0.85rem;
     line-height: 1.2;
+    border-bottom: 1px solid #e2e8f0; /* só divisória inferior */
+    background: transparent; /* sem fundo */
+    border-radius: 0; /* sem arredondamento */
+}
+
+.container-checklist:last-child {
+    border-bottom: none; /* último sem borda */
 }
 
 .container-checklist:hover {
-    background: #f1f3f5;
+    background: #f8fafc; /* leve highlight no hover */
 }
 
 .container-checklist input[type="checkbox"] {

@@ -39,7 +39,6 @@ import {
   toggleFullScreen,
   duplicarLembrete,
   gerarLembretesRecorrentes,
-  toggleChecklistItem,
 } from "./components/common/helper";
 import FiltroAvancado from "./components/common/FiltroAvancado";
 import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
@@ -120,6 +119,27 @@ export default function App() {
   } = useLembretes();
 
   const jaVerificouRecorrencia = useRef(false);
+
+  useEffect(() => {
+    const intervalo = setInterval(() => {
+      if (modalAberta) return;
+
+      const hojeStr = new Date().toISOString().slice(0, 10);
+
+      const novos = gerarLembretesRecorrentes(lembretes, new Date());
+      if (novos.length > 0) {
+        novos.forEach((l) => adicionar(l));
+      }
+
+      lembretes.forEach((l) => {
+        if (l.arquivado && l.prazo && l.prazo <= hojeStr) {
+          atualizar(l.id, { ...l, arquivado: false });
+        }
+      });
+    }, 60 * 1000);
+
+    return () => clearInterval(intervalo);
+  }, [lembretes, adicionar, atualizar, modalAberta]);
 
   useEffect(() => {
     if (jaVerificouRecorrencia.current) return;
@@ -557,13 +577,6 @@ export default function App() {
                           onSalvarComentario={(comentarios) =>
                             salvarComentarios(l.id, comentarios)
                           }
-                          onToggleChecklistItem={(itemId) => {
-                            const atualizado = toggleChecklistItem(l, itemId);
-                            atualizar(l.id, atualizado);
-                          }}
-                          onReordenarChecklist={(novoChecklist) => {
-                            atualizar(l.id, { ...l, checklist: novoChecklist });
-                          }}
                         />
                       </SortableItem>
                     ))}
@@ -576,6 +589,9 @@ export default function App() {
                     key={`drawer-${l.id}`}
                     lembrete={l}
                     onFechar={fecharDetalhes}
+                    onSalvarChecklist={(novoChecklist) =>
+                      atualizar(l.id, { ...l, checklist: novoChecklist })
+                    }
                     onSalvarComentario={(comentarios) =>
                       salvarComentarios(l.id, comentarios)
                     }

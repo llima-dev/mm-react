@@ -7,9 +7,21 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import EditorAnotacoes from "../EditorAnotacoes";
 import AbaSnippets from "../AbaSnippets";
 
-import type { Lembrete, Comentario, Snippet } from "../../../types";
+import type { Lembrete, Comentario, Snippet, ChecklistItem } from "../../../types";
 
 import { extrairHashtags, formatarData } from '../../common/helper';
+
+import {
+  DndContext,
+  closestCenter,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+
+import SortableChecklistItem from "../checklist/SortableChecklistItem"; 
 
 import "../LembreteCard.css";
 import "./LembreteDrawer.css";
@@ -20,11 +32,15 @@ type Props = {
   onSalvarComentario?: (comentarios: Comentario[]) => void;
   onSalvarAnotacoes?: (texto: string) => void;
   onSalvarSnippets?: (snips: Snippet[]) => void;
+  onSalvarChecklist?: (novoChecklist: ChecklistItem[]) => void;
 };
 
-export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes, onSalvarSnippets }: Props) {
+export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes, onSalvarSnippets, onSalvarChecklist }: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
   const [anotacoes, setAnotacoes] = useState(lembrete.anotacoes || '');
+  const [novoItem, setNovoItem] = useState("");
+  const [editandoId, setEditandoId] = useState<string | null>(null);
+  const [textoEditado, setTextoEditado] = useState("");
 
   const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
 
@@ -38,6 +54,31 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
     const atualizados = [...(lembrete.comentarios || []), novo];
     onSalvarComentario?.(atualizados);
     setComentarioNovo("");
+  };
+
+  const adicionarItem = () => {
+    if (!novoItem.trim()) return;
+    const atualizado = [
+      ...(lembrete.checklist || []),
+      { id: crypto.randomUUID(), texto: novoItem.trim(), feito: false },
+    ];
+    onSalvarChecklist?.(atualizado);
+    setNovoItem("");
+  };
+
+  const editarItem = (id: string, texto: string) => {
+    setEditandoId(id);
+    setTextoEditado(texto);
+  };
+
+  const salvarEdicao = () => {
+    if (!editandoId) return;
+    const atualizado = (lembrete.checklist ?? []).map((item) =>
+      item.id === editandoId ? { ...item, texto: textoEditado } : item
+    );
+    onSalvarChecklist?.(atualizado);
+    setEditandoId(null);
+    setTextoEditado("");
   };
 
   const hashtags = extrairHashtags(lembrete.descricao);
@@ -101,42 +142,101 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
               <div>{lembrete.prazo ? formatarData(lembrete.prazo) : "—"}</div>
             </div>
             <hr />
-            {Array.isArray(lembrete.checklist) &&
-              lembrete.checklist.length > 0 && (
-                <div className="campo mt-3">
-                  <label>Checklist</label>
-                  <div className="tabela-scroll-limitada">
-                    <table className="table-checklist align-middle">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Item</th>
-                          <th>Status</th>
-                          <th>Concluído em</th>
-                        </tr>
-                      </thead>
-                      <tbody>
+            {Array.isArray(lembrete.checklist) && (
+              <div className="campo mt-3">
+                <label>Checklist</label>
+                <div className="checklist-scroll-container">
+                  <DndContext
+                    collisionDetection={closestCenter}
+                    onDragEnd={({ active, over }) => {
+                      if (active.id !== over?.id) {
+                        if (!over) return;
+                        const atual = lembrete.checklist ?? [];
+                        const oldIndex = atual.findIndex(i => i.id === active.id);
+                        const newIndex = atual.findIndex(i => i.id === over.id);
+                        const novoChecklist = arrayMove(atual, oldIndex, newIndex);
+                        onSalvarChecklist?.(novoChecklist);
+                      }
+                    }}
+                  >
+                    <SortableContext
+                      items={lembrete.checklist.map(i => i.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="d-flex flex-column">
                         {lembrete.checklist.map((item) => (
-                          <tr key={item.id}>
-                            <td>{item.texto}</td>
-                            <td>
-                              {item.feito ? (
-                                <span className="text-success">Concluído</span>
-                              ) : (
-                                <span className="text-muted">Pendente</span>
-                              )}
-                            </td>
-                            <td>
-                              {item.feito && item.concluidoEm
-                                ? new Date(item.concluidoEm).toLocaleString()
-                                : "—"}
-                            </td>
-                          </tr>
+                          <SortableChecklistItem key={item.id} id={item.id}>
+                            <div className="checklist-linha">
+                              <div className="checklist-esquerda">
+                                <input
+                                  type="checkbox"
+                                  checked={item.feito}
+                                  onChange={() => {
+                                    const atualizado = (lembrete.checklist ?? []).map(i =>
+                                      i.id === item.id
+                                        ? { ...i, feito: !i.feito, concluidoEm: !i.feito ? new Date().toISOString() : undefined }
+                                        : i
+                                    );
+                                    onSalvarChecklist?.(atualizado);
+                                  }}
+                                />
+                                {editandoId === item.id ? (
+                                  <input
+                                    value={textoEditado}
+                                    onChange={(e) => setTextoEditado(e.target.value)}
+                                    onBlur={salvarEdicao}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") salvarEdicao();
+                                    }}
+                                    autoFocus
+                                    className="form-control form-control-sm"
+                                  />
+                                ) : (
+                                  <span className={item.feito ? "feito" : ""}>{item.texto}</span>
+                                )}
+                              </div>
+                              <div className="checklist-acoes">
+                                <button
+                                  className="btn-acao"
+                                  onClick={() => editarItem(item.id, item.texto)}
+                                >
+                                  Editar
+                                </button>
+                                <button
+                                  className="btn-acao"
+                                  onClick={() => {
+                                    const atualizado = (lembrete.checklist ?? []).filter(i => i.id !== item.id);
+                                    onSalvarChecklist?.(atualizado);
+                                  }}
+                                >
+                                  Remover
+                                </button>
+                              </div>
+                            </div>
+                          </SortableChecklistItem>
                         ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 </div>
-              )}
+                  <div className="d-flex gap-2 mt-3">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Novo item"
+                      value={novoItem}
+                      onChange={(e) => setNovoItem(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          adicionarItem();
+                        }
+                      }}
+                    />
+                    <Button variant="success" onClick={adicionarItem}>+</Button>
+                  </div>
+              </div>
+            )}
           </>
         )}
 
