@@ -7,7 +7,6 @@ import {
   faCalendarAlt,
   faTrash,
   faEdit,
-  faInfoCircle,
   faCircle,
   faCheckCircle,
   faBoxArchive,
@@ -78,43 +77,50 @@ export default function LembreteCard({
   const hashtags = extrairHashtags(descricao);
 
   return (
-    <div className={`card card-borda-${cor} ${fixado ? "fixado" : ""}`}>
-      {!fixado && dragHandle && (
-        <div className="position-absolute top-0 end-0 p-2">{dragHandle}</div>
-      )}
+    <div
+      className={`card card-borda-${cor} ${fixado ? "fixado" : ""}`}
+      onClick={onAbrirDetalhes}
+      style={{ cursor: "pointer" }}
+    >
       <div className="card-body">
-        <h5 className="card-title d-flex align-items-center gap-1">
-          {status.tipo !== "nulo" && (
-            <>
-              {status.tipo === "finalizado" ? (
-                <FontAwesomeIcon
-                  icon={faCircleCheck}
-                  className="text-success fa-sm me-1"
-                  title="Checklist finalizado"
-                />
-              ) : status.tipo === "ok" ? (
-                <FontAwesomeIcon
-                  icon={faCircleCheck}
-                  className="text-success fa-sm me-1"
-                  title="Prazo em dia"
-                />
-              ) : status.tipo === "proximo" ? (
-                <FontAwesomeIcon
-                  icon={faCircleExclamation}
-                  className="text-warning fa-sm me-1"
-                  title="Prazo se aproximando"
-                />
-              ) : (
-                <FontAwesomeIcon
-                  icon={faCircleXmark}
-                  className="text-danger fa-sm me-1"
-                  title="Prazo atrasado"
-                />
-              )}
-            </>
-          )}
+        <h5 className="card-title d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-center gap-1">
+            {status.tipo !== "nulo" && (
+              <>
+                {status.tipo === "finalizado" ? (
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    className="text-success fa-sm me-1"
+                    title="Checklist finalizado"
+                  />
+                ) : status.tipo === "ok" ? (
+                  <FontAwesomeIcon
+                    icon={faCircleCheck}
+                    className="text-success fa-sm me-1"
+                    title="Prazo em dia"
+                  />
+                ) : status.tipo === "proximo" ? (
+                  <FontAwesomeIcon
+                    icon={faCircleExclamation}
+                    className="text-warning fa-sm me-1"
+                    title="Prazo se aproximando"
+                  />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={faCircleXmark}
+                    className="text-danger fa-sm me-1"
+                    title="Prazo atrasado"
+                  />
+                )}
+              </>
+            )}
+            <span className="text-truncate" title={titulo} >{titulo}</span>
+          </div>
 
-          <span>{titulo}</span>
+          {/* drag handle encaixado no flex */}
+          {!fixado && dragHandle && (
+            <div className="drag-handle ms-2">{dragHandle}</div>
+          )}
         </h5>
 
         <p className="card-text card-text-limitada">
@@ -184,7 +190,10 @@ export default function LembreteCard({
       </div>
 
 
-      <div className="card-footer">
+        <div
+          className="card-footer"
+          onClick={(e) => e.stopPropagation()}
+        >
       {prazo && (
           <div className="d-flex justify-content-between align-items-center mb-1">
             <span className={`prazo prazo-${status.tipo}`}>
@@ -252,14 +261,6 @@ export default function LembreteCard({
           title="Excluir"
         >
           <FontAwesomeIcon icon={faTrash} />
-        </button>
-
-        <button
-          className="btn-icon acao-detalhes"
-          onClick={onAbrirDetalhes}
-          title="Detalhes"
-        >
-          <FontAwesomeIcon icon={faInfoCircle} />
         </button>
       </div>
 </div>

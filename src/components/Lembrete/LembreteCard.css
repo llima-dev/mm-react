@@ -1,39 +1,23 @@
 .card {
-    position: relative;
-    background: #fff;
-    border-left: 6px solid transparent;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  background: #fff;
+  border: 1px solid #e2e8f0;   /* borda suave padrão */
+  border-left: 4px solid transparent;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.452);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Cores personalizadas */
-.card-borda-vermelho {
-    border-left-color: #dc3545;
-    /* vermelho Bootstrap */
-    background: #fdeaea;
-}
+.card-borda-vermelho { border-left-color: #dc3545; }
+.card-borda-azul    { border-left-color: #0d6efd; }
+.card-borda-verde   { border-left-color: #198754; }
+.card-borda-amarelo { border-left-color: #ffc107; }
+.card-borda-branco  { border-left-color: #212529; }
 
-.card-borda-azul {
-    border-left-color: #0d6efd;
-    background: #e7f1ff;
-}
-
-.card-borda-verde {
-    border-left-color: #198754;
-    background: #e8f5e9;
-}
-
-.card-borda-amarelo {
-    border-left-color: #ffc107;
-    background: #fff8e1;
-}
-
-.card-borda-branco {
-    border-left: 6px solid #212529;
-    /* preto Bootstrap */
-    background: #ffffff;
-    /* ou #fdfdfd para suavizar */
+.card:hover {
+  border-color: #94a3b8;             /* cinza mais forte no hover */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .card-title {
@@ -384,4 +368,31 @@
 .card-footer .acoes {
   border-left: 1px solid #dee2e6;
   padding-left: 0.5rem;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.card-title .text-truncate {
+  max-width: 220px; /* ajusta conforme largura do card */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-title .text-truncate {
+  flex: 1;
+  min-width: 0; /* 🔑 isso força o flex a respeitar truncamento */
+}
+
+.drag-handle {
+  cursor: grab;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.drag-handle:hover {
+  opacity: 1;
 }

@@ -132,7 +132,17 @@ export default function App() {
       }
 
       lembretes.forEach((l) => {
-        if (l.arquivado && l.prazo && l.prazo <= hojeStr) {
+        const checklist = l.checklist ?? [];
+        const checklistExiste = checklist.length > 0;
+        const checklistCompleto = checklistExiste && checklist.every((item) => item.feito);
+
+        const deveDesarquivar =
+          l.arquivado &&
+          l.prazo &&
+          l.prazo <= hojeStr &&
+          (!checklistExiste || !checklistCompleto);
+
+        if (deveDesarquivar) {
           atualizar(l.id, { ...l, arquivado: false });
         }
       });
