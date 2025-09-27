@@ -195,15 +195,17 @@ export default function LembreteCard({
           onClick={(e) => e.stopPropagation()}
         >
       {prazo && (
-          <div className="d-flex justify-content-between align-items-center mb-1">
-            <span className={`prazo prazo-${status.tipo}`}>
-              <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
-              {formatarData(prazo)}
-            </span>
-            <span className="text-muted small">{percentual}% concluído</span>
-          </div>
-        )}
+        <div className="d-flex justify-content-between align-items-center mb-1">
+          <span className={`prazo prazo-${status.tipo}`}>
+            <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
+            {formatarData(prazo)}
+          </span>
 
+          {Array.isArray(checklist) && checklist.length > 0 && (
+            <span className="text-muted small">{percentual}% concluído</span>
+          )}
+        </div>
+      )}
 
       <div className="d-flex justify-content-end gap-1 mt-2">
         <button
