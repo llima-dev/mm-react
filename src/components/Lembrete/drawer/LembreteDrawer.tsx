@@ -192,7 +192,14 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                                     className="form-control form-control-sm"
                                   />
                                 ) : (
-                                  <span className={item.feito ? "feito" : ""}>{item.texto}</span>
+                                  <div className="d-flex flex-column">
+                                    <span className={item.feito ? "feito" : ""}>{item.texto}</span>
+                                    {item.concluidoEm && (
+                                      <small className="text-muted mt-2">
+                                        concluído em {new Date(item.concluidoEm).toLocaleDateString()}
+                                      </small>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                               <div className="checklist-acoes">

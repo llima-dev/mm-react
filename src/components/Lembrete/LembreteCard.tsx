@@ -1,5 +1,3 @@
-import { useState } from "react";
-import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChecklistItem, Comentario } from "../../types";
 import { confirmarExclusao, getStatusPrazo, formatarData, extrairHashtags } from "../common/helper.ts";
@@ -10,11 +8,13 @@ import {
   faTrash,
   faEdit,
   faInfoCircle,
-  faFlagCheckered,
   faCircle,
   faCheckCircle,
   faBoxArchive,
   faThumbtack,
+  faCircleCheck,
+  faCircleExclamation,
+  faCircleXmark,
   faCopy,
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -75,15 +75,6 @@ export default function LembreteCard({
 
   const status = getStatusPrazo(prazo, checklist);
 
-  const corBarra =
-    percentual === 100
-      ? "#16a34a" // verde
-      : percentual >= 66
-      ? "#84cc16" // verde limão
-      : percentual >= 33
-      ? "#facc15" // amarelo
-      : "#dc2626"; // vermelho
-
   const hashtags = extrairHashtags(descricao);
 
   return (
@@ -92,37 +83,36 @@ export default function LembreteCard({
         <div className="position-absolute top-0 end-0 p-2">{dragHandle}</div>
       )}
       <div className="card-body">
-        <h5 className="card-title d-flex align-items-center gap-2">
-          {status.tipo !== "nulo" &&
-            (status.tipo === "finalizado" ? (
-              <FontAwesomeIcon
-                icon={faFlagCheckered}
-                className="text-secondary"
-                title="Checklist finalizado"
-              />
-            ) : (
-              <span
-                title={
-                  status.tipo === "ok"
-                    ? "Prazo em dia"
-                    : status.tipo === "proximo"
-                    ? "Prazo se aproximando"
-                    : "Prazo atrasado"
-                }
-                style={{
-                  width: "10px",
-                  height: "10px",
-                  borderRadius: "50%",
-                  backgroundColor:
-                    status.tipo === "ok"
-                      ? "#198754"
-                      : status.tipo === "proximo"
-                      ? "#facc15"
-                      : "#dc3545",
-                  display: "inline-block",
-                }}
-              ></span>
-            ))}
+        <h5 className="card-title d-flex align-items-center gap-1">
+          {status.tipo !== "nulo" && (
+            <>
+              {status.tipo === "finalizado" ? (
+                <FontAwesomeIcon
+                  icon={faCircleCheck}
+                  className="text-success fa-sm me-1"
+                  title="Checklist finalizado"
+                />
+              ) : status.tipo === "ok" ? (
+                <FontAwesomeIcon
+                  icon={faCircleCheck}
+                  className="text-success fa-sm me-1"
+                  title="Prazo em dia"
+                />
+              ) : status.tipo === "proximo" ? (
+                <FontAwesomeIcon
+                  icon={faCircleExclamation}
+                  className="text-warning fa-sm me-1"
+                  title="Prazo se aproximando"
+                />
+              ) : (
+                <FontAwesomeIcon
+                  icon={faCircleXmark}
+                  className="text-danger fa-sm me-1"
+                  title="Prazo atrasado"
+                />
+              )}
+            </>
+          )}
 
           <span>{titulo}</span>
         </h5>
@@ -145,29 +135,8 @@ export default function LembreteCard({
           </div>
         )}
 
-        {prazo && (
-          <p className="prazo">
-            <FontAwesomeIcon icon={faCalendarAlt} className="me-1 text-muted" />
-            {formatarData(prazo)}
-          </p>
-        )}
         {checklist.length > 0 && (
           <div className="checklist-resumo mt-3">
-
-            {/* Barra de progresso */}
-            <div className="barra-status-wrapper d-flex align-items-center mb-2">
-              <div className="barra flex-grow-1 me-2">
-                <div
-                  className="barra-preenchida"
-                  style={{
-                    width: `${percentual}%`,
-                    backgroundColor: corBarra,
-                  }}
-                >
-                  {percentual}%
-                </div>
-              </div>
-            </div>
 
             {/* Tabela enxuta */}
             <table className="table table-sm mb-0">
@@ -212,83 +181,89 @@ export default function LembreteCard({
             </table>
           </div>
         )}
-        <div className="d-flex justify-content-end gap-2 mt-3">
-          <div className="pin-btn">
-            <Button
-              variant="link"
-              className="p-0 icon-hoverable"
-              onClick={onToggleFixado}
-              title={fixado ? "Desafixar" : "Fixar no topo"}
-            >
-              <FontAwesomeIcon
-                icon={faThumbtack}
-                className={fixado ? "text-danger" : "text-muted"}
-                style={{ transform: fixado ? "rotate(0deg)" : "rotate(45deg)" }}
-              />
-            </Button>
-          </div>
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable"
-            onClick={onToggleFavorito}
-            title={
-              favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"
-            }
-          >
-            <FontAwesomeIcon
-              icon={favorito ? faStarSolid : faStarRegular}
-              className={favorito ? "text-warning" : "text-muted"}
-            />
-          </Button>
-
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable text-secondary opacity-50"
-            onClick={onToggleArquivar}
-            title="Arquivar"
-          >
-            <FontAwesomeIcon icon={faBoxArchive} />
-          </Button>
-
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable text-secondary opacity-50"
-            title="Duplicar lembrete"
-            onClick={onDuplicar}
-          >
-            <FontAwesomeIcon icon={faCopy} />
-          </Button>
-
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable text-secondary opacity-50"
-            onClick={onEditar}
-            title="Editar"
-          >
-            <FontAwesomeIcon icon={faEdit} />
-          </Button>
-
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable text-secondary opacity-50"
-            onClick={() => {
-              if (onExcluir) confirmarExclusao(onExcluir);
-            }}
-            title="Excluir"
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </Button>
-
-          <Button
-            variant="link"
-            className="p-0 icon-hoverable text-secondary opacity-50"
-            title="Detalhes"
-            onClick={onAbrirDetalhes}
-          >
-            <FontAwesomeIcon icon={faInfoCircle} />
-          </Button>
-        </div>
       </div>
+
+
+      <div className="card-footer">
+      {prazo && (
+          <div className="d-flex justify-content-between align-items-center mb-1">
+            <span className={`prazo prazo-${status.tipo}`}>
+              <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
+              {formatarData(prazo)}
+            </span>
+            <span className="text-muted small">{percentual}% concluído</span>
+          </div>
+        )}
+
+
+      <div className="d-flex justify-content-end gap-1 mt-2">
+        <button
+          className="btn-icon acao-pin"
+          onClick={onToggleFixado}
+          title={fixado ? "Desafixar" : "Fixar no topo"}
+        >
+          <FontAwesomeIcon
+            icon={faThumbtack}
+            className={fixado ? "text-danger" : "text-muted"}
+            style={{ transform: fixado ? "rotate(0deg)" : "rotate(45deg)" }}
+          />
+        </button>
+
+        <button
+          className="btn-icon acao-favorito"
+          onClick={onToggleFavorito}
+          title={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+        >
+          <FontAwesomeIcon
+            icon={favorito ? faStarSolid : faStarRegular}
+            className={favorito ? "text-warning" : "text-muted"}
+          />
+        </button>
+
+        <button
+          className="btn-icon acao-arquivar"
+          onClick={onToggleArquivar}
+          title="Arquivar"
+        >
+          <FontAwesomeIcon icon={faBoxArchive} />
+        </button>
+
+        <button
+          className="btn-icon acao-duplicar"
+          onClick={onDuplicar}
+          title="Duplicar lembrete"
+        >
+          <FontAwesomeIcon icon={faCopy} />
+        </button>
+
+        <button
+          className="btn-icon acao-editar"
+          onClick={onEditar}
+          title="Editar"
+        >
+          <FontAwesomeIcon icon={faEdit} />
+        </button>
+
+        <button
+          className="btn-icon acao-excluir"
+          onClick={() => {
+            if (onExcluir) confirmarExclusao(onExcluir);
+          }}
+          title="Excluir"
+        >
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+
+        <button
+          className="btn-icon acao-detalhes"
+          onClick={onAbrirDetalhes}
+          title="Detalhes"
+        >
+          <FontAwesomeIcon icon={faInfoCircle} />
+        </button>
+      </div>
+</div>
+
     </div>
   );
 }

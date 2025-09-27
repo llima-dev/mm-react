@@ -16,3 +16,39 @@ textarea::-webkit-scrollbar-thumb {
 textarea::-webkit-scrollbar-track {
     background-color: #f1f1f1;
 }
+
+/* Lista de sugestões de hashtags */
+.sugestoes {
+  max-height: 150px;   /* evita lista gigante */
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Firefox */
+.sugestoes {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 transparent;
+}
+
+/* Chrome, Edge, Safari */
+.sugestoes::-webkit-scrollbar {
+  width: 6px;
+}
+.sugestoes::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sugestoes::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}
+.sugestoes::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.sugestoes li {
+  padding: 6px 10px;
+  cursor: pointer;
+  user-select: none;
+}

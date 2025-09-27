@@ -179,7 +179,8 @@ export function corPorTipo(tipo: string): badgeStyle {
   }
 }
 
-export function formatarData(data: string) {
+export function formatarData(data: string|undefined) {
+  if (!data) return;
   const [ano, mes, dia] = data.split("-");
   return `${dia}/${mes}/${ano}`;
 }

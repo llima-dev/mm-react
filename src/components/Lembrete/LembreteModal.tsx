@@ -4,6 +4,17 @@ import type { Lembrete } from '../../types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+const HASHTAG_OPCOES = [
+  "CODE_REVIEW",
+  "TASK",
+  "LEMBRETE",
+  "URGENTE",
+  "PENDENTE",
+  "BUG",
+  "SACAR",
+  "ANALISE"
+];
+
 import './LembreteModal.css';
 
 type Props = {
@@ -24,6 +35,9 @@ export default function LembreteModal({
   const [prazo, setPrazo] = useState('');
   const [cor, setCor] = useState('branco');
   const [diasRecorrencia, setDiasRecorrencia] = useState<number[]>([]);
+  const [sugestoes, setSugestoes] = useState<string[]>([]);
+  const [posicaoCursor, setPosicaoCursor] = useState<number | null>(null);
+  const [campoAtivo, setCampoAtivo] = useState<"titulo" | "descricao" | null>(null);
 
   useEffect(() => {
     if (lembreteParaEditar) {
@@ -58,6 +72,21 @@ export default function LembreteModal({
     setCor('branco');
   };
 
+  function inserirHashtag(hashtag: string, valor: string, setValor: (v: string) => void) {
+    if (typeof valor !== "string") return; // segurança extra
+
+    const cursor = posicaoCursor ?? valor.length;
+    const antes = valor.slice(0, cursor);
+    const depois = valor.slice(cursor);
+
+    // substitui o último #... pela hashtag escolhida
+    const novoTexto = antes.replace(/#\w*$/, `#${hashtag}`) + depois;
+    setValor(novoTexto);
+
+    setSugestoes([]);
+    setCampoAtivo(null);
+  }
+
   const limparModal = () => {
       setTitulo('');
       setDescricao('');
@@ -78,19 +107,76 @@ export default function LembreteModal({
           className="form-control mb-2"
           placeholder="Título"
           value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
+          onChange={(e) => {
+            setTitulo(e.target.value);
+            setCampoAtivo("titulo");
+
+            const cursor = e.target.selectionStart ?? 0;
+            const antes = e.target.value.slice(0, cursor);
+            const match = antes.match(/#(\w*)$/);
+
+            if (match) {
+              const termo = match[1].toUpperCase();
+              const filtradas = HASHTAG_OPCOES.filter(op => op.startsWith(termo));
+              setSugestoes(filtradas);
+              setPosicaoCursor(cursor);
+            } else {
+              setSugestoes([]);
+              setPosicaoCursor(null);
+            }
+          }}
         />
+        {campoAtivo === "titulo" && sugestoes.length > 0 && (
+          <ul className="list-group sugestoes position-absolute" style={{ zIndex: 2000 }}>
+            {sugestoes.map((s, i) => (
+              <li
+                key={i}
+                className="list-group-item list-group-item-action"
+                onClick={() => inserirHashtag(s, titulo, setTitulo)}
+              >
+                #{s}
+              </li>
+            ))}
+          </ul>
+        )}
         <textarea
           className="form-control mb-2"
           placeholder="Descrição"
           value={descricao}
           onChange={(e) => {
             setDescricao(e.target.value);
-            e.target.style.height = "auto";
-            e.target.style.height = e.target.scrollHeight + "px";
+            setCampoAtivo("descricao");
+
+            const cursor = e.target.selectionStart ?? 0;
+            const antes = e.target.value.slice(0, cursor);
+            const match = antes.match(/#(\w*)$/);
+
+            if (match) {
+              const termo = match[1].toUpperCase();
+              const filtradas = HASHTAG_OPCOES.filter(op => op.startsWith(termo));
+              setSugestoes(filtradas);
+              setPosicaoCursor(cursor);
+            } else {
+              setSugestoes([]);
+              setPosicaoCursor(null);
+            }
           }}
-          style={{ minHeight: "80px", resize: "none", overflow: "hidden" }}
+          rows={3}
         />
+
+        {campoAtivo === "descricao" && sugestoes.length > 0 && (
+          <ul className="list-group sugestoes position-absolute" style={{ zIndex: 2000 }}>
+            {sugestoes.map((s, i) => (
+              <li
+                key={i}
+                className="list-group-item list-group-item-action"
+                onClick={() => inserirHashtag(s, descricao, setDescricao)}
+              >
+                #{s}
+              </li>
+            ))}
+          </ul>
+        )}
         <div>
           <DatePicker
             selected={prazo ? new Date(prazo + "T00:00:00") : null}
