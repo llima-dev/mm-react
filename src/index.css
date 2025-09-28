@@ -30,7 +30,8 @@ html.dark, body.dark {
   --scroll-thumb: #3a3a3c;
   --border: rgba(255,255,255,0.06);
   --invert-close: invert(0.95);
-  --hashtag: #2a2a2c;
+  
+  : #2a2a2c;
 }
 
 /* manter preferência do sistema como fallback */
