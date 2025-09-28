@@ -4,6 +4,12 @@ import type { Lembrete } from '../../types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUpRightAndDownLeftFromCenter, // expandir
+  faDownLeftAndUpRightToCenter,   // contrair
+} from "@fortawesome/free-solid-svg-icons";
+
 const HASHTAG_OPCOES = [
   "CODE_REVIEW",
   "TASK",
@@ -38,6 +44,7 @@ export default function LembreteModal({
   const [sugestoes, setSugestoes] = useState<string[]>([]);
   const [posicaoCursor, setPosicaoCursor] = useState<number | null>(null);
   const [campoAtivo, setCampoAtivo] = useState<"titulo" | "descricao" | null>(null);
+  const [expandirModal, setExpandirModal] = useState(false);
 
   useEffect(() => {
     if (lembreteParaEditar) {
@@ -96,12 +103,35 @@ export default function LembreteModal({
   }
 
   return (
-    <Modal show={show} onHide={limparModal} centered>
-      <Modal.Header closeButton>
+    <Modal
+      show={show}
+      onHide={limparModal}
+      centered
+      size="lg"
+      fullscreen={expandirModal ? true : undefined}
+    >
+      <Modal.Header className="d-flex justify-content-between align-items-center">
         <Modal.Title>
           {lembreteParaEditar ? "Editar" : "Novo"} Lembrete
         </Modal.Title>
+
+        <div className="d-flex gap-2">
+          <Button
+            variant="light"
+            size="sm"
+            onClick={() => setExpandirModal(!expandirModal)}
+          >
+            <FontAwesomeIcon
+              icon={
+                expandirModal
+                  ? faDownLeftAndUpRightToCenter
+                  : faUpRightAndDownLeftFromCenter
+              }
+            />
+          </Button>
+        </div>
       </Modal.Header>
+
       <Modal.Body>
         <input
           className="form-control mb-2"
@@ -168,7 +198,7 @@ export default function LembreteModal({
               setPosicaoCursor(null);
             }
           }}
-          rows={3}
+          rows={expandirModal ? 15 : 3} 
         />
 
         {campoAtivo === "descricao" && sugestoes.length > 0 && (

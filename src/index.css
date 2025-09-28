@@ -30,8 +30,6 @@ html.dark, body.dark {
   --scroll-thumb: #3a3a3c;
   --border: rgba(255,255,255,0.06);
   --invert-close: invert(0.95);
-  
-  : #2a2a2c;
 }
 
 /* manter preferência do sistema como fallback */
@@ -164,6 +162,10 @@ body.swal2-shown.swal2-height-auto {
   padding-right: 0 !important;
 }
 
+.form-control {
+  overflow: auto;
+}
+
 .form-control, 
 .form-control-sm, 
 .form-select {
@@ -175,4 +177,9 @@ body.swal2-shown.swal2-height-auto {
 .form-control::placeholder,
 .form-control-sm::placeholder {
   color: var(--muted) !important;
+}
+
+.modal-grande {
+  max-width: 900px; /* ajuste para o tamanho desejado */
+  width: 100%;       /* ocupa 90% da largura da tela */
 }
