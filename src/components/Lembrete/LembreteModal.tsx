@@ -117,7 +117,9 @@ export default function LembreteModal({
 
             if (match) {
               const termo = match[1].toUpperCase();
-              const filtradas = HASHTAG_OPCOES.filter(op => op.startsWith(termo));
+              const filtradas = HASHTAG_OPCOES.filter((op) =>
+                op.startsWith(termo)
+              );
               setSugestoes(filtradas);
               setPosicaoCursor(cursor);
             } else {
@@ -127,7 +129,10 @@ export default function LembreteModal({
           }}
         />
         {campoAtivo === "titulo" && sugestoes.length > 0 && (
-          <ul className="list-group sugestoes position-absolute" style={{ zIndex: 2000 }}>
+          <ul
+            className="list-group sugestoes position-absolute"
+            style={{ zIndex: 2000 }}
+          >
             {sugestoes.map((s, i) => (
               <li
                 key={i}
@@ -153,7 +158,9 @@ export default function LembreteModal({
 
             if (match) {
               const termo = match[1].toUpperCase();
-              const filtradas = HASHTAG_OPCOES.filter(op => op.startsWith(termo));
+              const filtradas = HASHTAG_OPCOES.filter((op) =>
+                op.startsWith(termo)
+              );
               setSugestoes(filtradas);
               setPosicaoCursor(cursor);
             } else {
@@ -165,7 +172,10 @@ export default function LembreteModal({
         />
 
         {campoAtivo === "descricao" && sugestoes.length > 0 && (
-          <ul className="list-group sugestoes position-absolute" style={{ zIndex: 2000 }}>
+          <ul
+            className="list-group sugestoes position-absolute"
+            style={{ zIndex: 2000 }}
+          >
             {sugestoes.map((s, i) => (
               <li
                 key={i}
@@ -190,41 +200,43 @@ export default function LembreteModal({
         </div>
         <label className="form-label">Cor do card:</label>
         <div className="d-flex gap-2">
-          {["branco", "azul", "verde", "vermelho", "amarelo"].map((c) => (
-            <label key={c}>
-              <input
-                type="radio"
-                name="corCard"
-                value={c}
-                checked={cor === c}
-                onChange={() => setCor(c)}
-                className="visually-hidden"
-              />
-              <span
-                className="rounded-circle d-inline-block"
-                style={{
-                  width: "24px",
-                  height: "24px",
-                  backgroundColor:
-                    c === "branco"
-                      ? "#fff"
-                      : c === "azul"
-                      ? "#3b82f6"
-                      : c === "verde"
-                      ? "#10b981"
-                      : c === "vermelho"
-                      ? "#ef4444"
-                      : "#facc15",
-                  border: "2px solid #ccc",
-                  cursor: "pointer",
-                  boxShadow: cor === c ? "0 0 0 3px #0004" : "none",
-                }}
-              ></span>
-            </label>
-          ))}
+          {["branco", "azul", "verde", "vermelho", "amarelo"].map((c) => {
+            const cores: Record<string, string> = {
+              branco: "#fff",
+              azul: "#3b82f6",
+              verde: "#10b981",
+              vermelho: "#ef4444",
+              amarelo: "#facc15",
+            };
+
+            return (
+              <label key={c}>
+                <input
+                  type="radio"
+                  name="corCard"
+                  value={c}
+                  checked={cor === c}
+                  onChange={() => setCor(c)}
+                  className="visually-hidden"
+                />
+                <span
+                  className="rounded-circle d-inline-block cor-card"
+                  style={{
+                    backgroundColor: cores[c],
+                    boxShadow: cor === c ? "0 0 0 3px var(--accent)" : "none",
+                  }}
+                ></span>
+              </label>
+            );
+          })}
         </div>
         <hr />
-        <label className="form-label" title='Define se o lembrete será recriado semanalmente'>Recorrência semanal:</label>
+        <label
+          className="form-label"
+          title="Define se o lembrete será recriado semanalmente"
+        >
+          Recorrência semanal:
+        </label>
         <div className="d-flex gap-2 flex-wrap mb-2">
           {["D", "S", "T", "Q", "Q", "S", "S"].map((dia, index) => (
             <button

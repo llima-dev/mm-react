@@ -1,9 +1,27 @@
+.snippet-card {
+  background: var(--card-bg) !important;             /* #f8fafc -> var */
+  border-radius: 8px;
+  border: 1px solid var(--border);        /* #e2e8f0 -> var */
+  min-height: 80px;
+  padding: 1rem;
+  overflow: hidden;
+  color: var(--text);
+}
+
+.snippet-title {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  font-size: 1rem;
+  color: var(--text);                     /* #334155 -> var */
+}
+
 .snippet-card pre {
   max-width: 100%;
+  max-height: 240px;
   overflow-x: auto;
-  white-space: pre;
-  background: #23272e;
-  color: #fff;
+  overflow-y: auto;
+  background: #23272e; /* pode deixar fixo, já é “dark mode” */
+  color: #fff;         /* mantém contraste */
   border-radius: 0.4em;
   padding: 0.5em;
   margin-bottom: 0;
@@ -12,43 +30,14 @@
 .snippet-card code {
   font-size: 0.95em;
   font-family: 'Fira Mono', 'Consolas', monospace;
-  /* Se quiser: */
   word-break: break-all;
-}
-
-.snippet-card {
-  background: #f8fafc;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  min-height: 80px;
-  padding: 1rem;
-  overflow: hidden;
-}
-
-.snippet-title {
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-  font-size: 1rem;
-  color: #334155;
-}
-
-.snippet-card pre {
-  max-width: 100%;
-  max-height: 240px;
-  overflow-x: auto;
-  overflow-y: auto;
-  background: #23272e;
-  color: #fff;
-  border-radius: 0.4em;
-  padding: 0.5em;
-  margin-bottom: 0;
 }
 
 /* container da aba snippets */
 .snippets-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%; /* ocupa toda a altura da aba */
+  height: 100%;
 }
 
 /* campo de busca */
@@ -56,7 +45,8 @@
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--bs-body-bg);
+  background: var(--card-bg);             /* var no lugar do body-bg */
+  border-bottom: 1px solid var(--border);
 }
 
 /* lista flexível */
@@ -64,15 +54,15 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* evita estourar */
+  overflow: hidden;
   min-height: 0;
 }
 
 .snippets-list {
   flex-grow: 1;
-  overflow-y: auto; /* scroll só na lista */
+  overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f8fafc;
+  scrollbar-color: var(--scroll-thumb) transparent; /* #cbd5e1 -> var */
   padding-bottom: 2rem;
   max-height: 60vh;
 }
@@ -80,8 +70,7 @@
 .snippets-list::-webkit-scrollbar {
   width: 6px;
 }
-
 .snippets-list::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
+  background-color: var(--scroll-thumb); /* var no lugar de #cbd5e1 */
   border-radius: 3px;
 }

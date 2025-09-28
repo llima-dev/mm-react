@@ -1,54 +1,119 @@
+/* Textarea */
 textarea {
-    resize: none;
-    overflow: hidden;
-    min-height: 100px;
+  resize: none;
+  overflow: hidden;
+  min-height: 100px;
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
 }
 
+/* Scrollbar */
 textarea::-webkit-scrollbar {
-    width: 6px;
+  width: 6px !important;
 }
-
 textarea::-webkit-scrollbar-thumb {
-    background-color: #bbb;
-    border-radius: 3px;
+  background-color: var(--scroll-thumb) !important;
+  border-radius: 3px !important;
 }
-
 textarea::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
+  background-color: transparent !important;
 }
 
 /* Lista de sugestões de hashtags */
 .sugestoes {
-  max-height: 150px;   /* evita lista gigante */
+  max-height: 150px;
   overflow-y: auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border) !important;
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
 }
 
 /* Firefox */
 .sugestoes {
-  scrollbar-width: thin;
-  scrollbar-color: #94a3b8 transparent;
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--scroll-thumb) transparent !important;
 }
 
 /* Chrome, Edge, Safari */
 .sugestoes::-webkit-scrollbar {
-  width: 6px;
+  width: 6px !important;
 }
 .sugestoes::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
 }
 .sugestoes::-webkit-scrollbar-thumb {
-  background-color: #cbd5e1;
-  border-radius: 9999px;
+  background-color: var(--scroll-thumb) !important;
+  border-radius: 9999px !important;
 }
 .sugestoes::-webkit-scrollbar-thumb:hover {
-  background-color: #94a3b8;
+  background-color: var(--scroll-thumb) !important;
 }
 
 .sugestoes li {
-  padding: 6px 10px;
+  padding: 6px 10px !important;
   cursor: pointer;
   user-select: none;
+}
+
+/* modal principal */
+.modal-content {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* header e footer também */
+.modal-header,
+.modal-footer {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+/* título */
+.modal-title {
+  color: var(--text) !important;
+}
+
+/* inputs do modal */
+.modal .form-control {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+.modal .form-control:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 0.2rem rgba(59,130,246,.25) !important; /* igual bootstrap */
+}
+
+/* sugestões de hashtag dentro do modal */
+.modal .sugestoes {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+.modal .sugestoes .list-group-item {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+.modal .sugestoes .list-group-item:hover {
+  background: var(--input-bg) !important;
+}
+
+/* placeholder nos inputs e textareas */
+.form-control::placeholder {
+  color: var(--muted) !important;
+  opacity: 1 !important; /* garante que não fique translúcido demais */
+}
+
+.cor-card {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--hashtag);
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }

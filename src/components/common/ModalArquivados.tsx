@@ -3,6 +3,8 @@ import type { Lembrete } from '../../types';
 import { faTrash, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
+import "./SplashScreen.css";
+
 type Props = {
   arquivados: Lembrete[];
   onFechar: () => void;
