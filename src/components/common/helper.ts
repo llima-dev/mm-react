@@ -9,23 +9,40 @@ type badgeStyle = {
 
 export function confirmarExclusao(callback: () => void) {
   Swal.fire({
-    title: 'Excluir lembrete?',
-    text: 'Essa ação não pode ser desfeita!',
-    icon: 'warning',
+    title: "Excluir lembrete?",
+    text: "Essa ação não pode ser desfeita!",
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonText: 'Sim, excluir',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar",
+    willOpen: () => {
+      document.body.style.overflowY = "scroll"; // mantém scroll
+    },
+    didClose: () => {
+      document.body.style.overflowY = ""; // reseta ao normal
+    },
+    confirmButtonColor: "#ef4444", // vermelho de destaque
+    cancelButtonColor: "#6b7280", // cinza neutro
+    background: "var(--card-bg)", // segue o tema
+    color: "var(--text)", // segue o tema
+    iconColor: "#facc15", // amarelo no warning
+    customClass: {
+      popup: "alerto-tematico",
+      confirmButton: "alerto-confirmar",
+      cancelButton: "alerto-cancelar",
+      title: "alerto-titulo",
+    },
   }).then((result) => {
     if (result.isConfirmed) {
       callback();
       Swal.fire({
-        title: 'Excluído!',
-        text: 'O lembrete foi removido.',
-        icon: 'success',
+        title: "Excluído!",
+        text: "O lembrete foi removido.",
+        icon: "success",
         timer: 1500,
         showConfirmButton: false,
+        background: "var(--card-bg)",
+        color: "var(--text)",
       });
     }
   });

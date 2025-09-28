@@ -57,12 +57,38 @@ import {
   faUpload,
   faBroom,
   faExpand,
+  faMoon,
+  faSun
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
   const { usadoKB, porcentagem } = calcularUsoLocalStorage();
 
   const [mostrarSplash, setMostrarSplash] = useState(true);
+
+    // dark mode
+  const [modoEscuro, setModoEscuro] = useState<boolean>(() => {
+    try {
+      const salvo = localStorage.getItem("modoEscuro");
+      return salvo ? JSON.parse(salvo) : false;
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    const html = document.documentElement;
+    if (modoEscuro) {
+      html.classList.add("dark");
+    } else {
+      html.classList.remove("dark");
+    }
+
+    if (modoEscuro !== null) {
+      html.classList.add("theme-forced");
+    }
+    localStorage.setItem("modoEscuro", JSON.stringify(modoEscuro));
+  }, [modoEscuro]);
 
   const [filtros, setFiltros] = useState<TipoFiltro[]>(() => {
     try {
@@ -264,6 +290,14 @@ export default function App() {
               <>
                 {/* Desktop */}
                 <div className="d-none d-md-flex gap-2 flex-wrap">
+                    <button
+                      className="btn btn-outline-secondary btn-sm no-border"
+                      onClick={() => setModoEscuro((atual) => !atual)}
+                      title={modoEscuro ? "Alternar para tema claro" : "Alternar para tema escuro"}
+                      style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
+                    >
+                      <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />
+                    </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={toggleFullScreen}
@@ -462,9 +496,9 @@ export default function App() {
                   <div className="d-flex flex-column filtros-container">
                     <div className="d-flex align-items-baseline">
                       <button
-                        className={`no-border btn ${
-                          filtroFavoritos ? "text-warning" : "text-dark"
-                        } btn-sm btn-fav`}
+                        className={`no-border btn btn-sm btn-fav ${
+                          filtroFavoritos ? "btn-fav-ativo" : ""
+                        }`}
                         onClick={() => setFiltroFavoritos((atual) => !atual)}
                       >
                         <FontAwesomeIcon icon={faStar} />
@@ -518,7 +552,7 @@ export default function App() {
               <div className="d-flex flex-row align-items-start mb-3 advanced-filter-container">
                 <div className="d-flex w-100 align-items-start justify-content-between">
                   <h5 className="mb-0 d-flex align-items-center gap-2">
-                    <i className="fas fa-note-sticky text-dark"></i> Lembretes{" "}
+                    <i className="fas fa-note-sticky"></i> Lembretes{" "}
                     <span className="text-muted">
                       ({lembretesFiltrados.length})
                     </span>
@@ -641,8 +675,8 @@ export default function App() {
           />
 
           <footer
-            className="text-center text-muted small mt-auto border-top pt-1"
-            style={{ marginBottom: "-30px", opacity: "0.5" }}
+            className="text-center footer-custom small mt-auto border-top pt-1"
+            style={{ opacity: "0.5" }}
           >
             <span>
               <a

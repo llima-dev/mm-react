@@ -114,7 +114,9 @@ export default function LembreteCard({
                 )}
               </>
             )}
-            <span className="text-truncate" title={titulo} >{titulo}</span>
+            <span className="text-truncate" title={titulo}>
+              {titulo}
+            </span>
           </div>
 
           {/* drag handle encaixado no flex */}
@@ -130,11 +132,7 @@ export default function LembreteCard({
         {hashtags.length > 0 && (
           <div className="mt-2 d-flex flex-wrap gap-1">
             {hashtags.map((tag, idx) => (
-              <span
-                key={idx}
-                className="badge rounded-pill"
-                style={{ backgroundColor: "#e2e8f0", color: "#1e293b" }}
-              >
+              <span key={idx} className="badge rounded-pill hashtag-badge">
                 {tag}
               </span>
             ))}
@@ -143,7 +141,6 @@ export default function LembreteCard({
 
         {checklist.length > 0 && (
           <div className="checklist-resumo mt-3">
-
             {/* Tabela enxuta */}
             <table className="table table-sm mb-0">
               <tbody>
@@ -157,17 +154,14 @@ export default function LembreteCard({
                           title="Concluído"
                         />
                       ) : (
-                        <FontAwesomeIcon
-                          icon={faCircle}
-                          className="text-muted"
-                          title="Pendente"
-                        />
+                        <FontAwesomeIcon icon={faCircle} title="Pendente" />
                       )}
                     </td>
                     <td
                       className={
-                        (item.feito ? "text-decoration-line-through text-muted " : "") +
-                        "text-truncate"
+                        (item.feito
+                          ? "text-decoration-line-through text-muted "
+                          : "") + "text-truncate"
                       }
                       style={{ maxWidth: "180px" }}
                       title={item.texto}
@@ -189,84 +183,81 @@ export default function LembreteCard({
         )}
       </div>
 
+      <div className="card-footer" onClick={(e) => e.stopPropagation()}>
+        {prazo && (
+          <div className="d-flex justify-content-between align-items-center mb-1">
+            <span className={`prazo prazo-${status.tipo}`}>
+              <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
+              {formatarData(prazo)}
+            </span>
 
-        <div
-          className="card-footer"
-          onClick={(e) => e.stopPropagation()}
-        >
-      {prazo && (
-        <div className="d-flex justify-content-between align-items-center mb-1">
-          <span className={`prazo prazo-${status.tipo}`}>
-            <FontAwesomeIcon icon={faCalendarAlt} className="me-1" />
-            {formatarData(prazo)}
-          </span>
+            {Array.isArray(checklist) && checklist.length > 0 && (
+              <span className="text-muted small">{percentual}% concluído</span>
+            )}
+          </div>
+        )}
 
-          {Array.isArray(checklist) && checklist.length > 0 && (
-            <span className="text-muted small">{percentual}% concluído</span>
-          )}
+        <div className="d-flex justify-content-end gap-1 mt-2">
+          <button
+            className="btn-icon acao-pin"
+            onClick={onToggleFixado}
+            title={fixado ? "Desafixar" : "Fixar no topo"}
+          >
+            <FontAwesomeIcon
+              icon={faThumbtack}
+              className={fixado ? "text-danger" : "text-muted"}
+              style={{ transform: fixado ? "rotate(0deg)" : "rotate(45deg)" }}
+            />
+          </button>
+
+          <button
+            className="btn-icon acao-favorito"
+            onClick={onToggleFavorito}
+            title={
+              favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"
+            }
+          >
+            <FontAwesomeIcon
+              icon={favorito ? faStarSolid : faStarRegular}
+              className={favorito ? "text-warning" : "text-muted"}
+            />
+          </button>
+
+          <button
+            className="btn-icon acao-arquivar"
+            onClick={onToggleArquivar}
+            title="Arquivar"
+          >
+            <FontAwesomeIcon icon={faBoxArchive} />
+          </button>
+
+          <button
+            className="btn-icon acao-duplicar"
+            onClick={onDuplicar}
+            title="Duplicar lembrete"
+          >
+            <FontAwesomeIcon icon={faCopy} />
+          </button>
+
+          <button
+            className="btn-icon acao-editar"
+            onClick={onEditar}
+            title="Editar"
+          >
+            <FontAwesomeIcon icon={faEdit} />
+          </button>
+
+          <button
+            className="btn-icon acao-excluir"
+            onClick={() => {
+              if (onExcluir) confirmarExclusao(onExcluir);
+            }}
+            title="Excluir"
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
         </div>
-      )}
-
-      <div className="d-flex justify-content-end gap-1 mt-2">
-        <button
-          className="btn-icon acao-pin"
-          onClick={onToggleFixado}
-          title={fixado ? "Desafixar" : "Fixar no topo"}
-        >
-          <FontAwesomeIcon
-            icon={faThumbtack}
-            className={fixado ? "text-danger" : "text-muted"}
-            style={{ transform: fixado ? "rotate(0deg)" : "rotate(45deg)" }}
-          />
-        </button>
-
-        <button
-          className="btn-icon acao-favorito"
-          onClick={onToggleFavorito}
-          title={favorito ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-        >
-          <FontAwesomeIcon
-            icon={favorito ? faStarSolid : faStarRegular}
-            className={favorito ? "text-warning" : "text-muted"}
-          />
-        </button>
-
-        <button
-          className="btn-icon acao-arquivar"
-          onClick={onToggleArquivar}
-          title="Arquivar"
-        >
-          <FontAwesomeIcon icon={faBoxArchive} />
-        </button>
-
-        <button
-          className="btn-icon acao-duplicar"
-          onClick={onDuplicar}
-          title="Duplicar lembrete"
-        >
-          <FontAwesomeIcon icon={faCopy} />
-        </button>
-
-        <button
-          className="btn-icon acao-editar"
-          onClick={onEditar}
-          title="Editar"
-        >
-          <FontAwesomeIcon icon={faEdit} />
-        </button>
-
-        <button
-          className="btn-icon acao-excluir"
-          onClick={() => {
-            if (onExcluir) confirmarExclusao(onExcluir);
-          }}
-          title="Excluir"
-        >
-          <FontAwesomeIcon icon={faTrash} />
-        </button>
       </div>
-</div>
-
     </div>
   );
 }

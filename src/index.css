@@ -1,3 +1,63 @@
+/* index.css — adicionar no topo */
+:root {
+  /* cores gerais (tema claro) */
+  --bg: #f9f9f9;
+  --app-bg: #ffffff;
+  --card-bg: #ffffff;
+  --text: #213547;
+  --muted: rgba(33, 53, 71, 0.6);
+  --accent: #00406bc9;
+  --btn-bg: #f9f9f9;
+  --input-bg: #f8f9fa;
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --scroll-thumb: #ccc;
+  --border: #dee2e6;
+  --invert-close: invert(0.5);
+  --hashtag: #246dad2a;
+}
+
+/* Modo escuro */
+html.dark, body.dark {
+  --bg: #121214;
+  --app-bg: #18181a;
+  --card-bg: #222225;
+  --text: rgba(255,255,255,0.92);
+  --muted: rgb(81 89 97);
+  --accent: #e4e4e498;
+  --btn-bg: #1a1a1a;
+  --input-bg: #2a2a2c;
+  --shadow: 0 6px 16px rgba(0,0,0,0.6);
+  --scroll-thumb: #3a3a3c;
+  --border: rgba(255,255,255,0.06);
+  --invert-close: invert(0.95);
+  --hashtag: #2a2a2c;
+}
+
+/* manter preferência do sistema como fallback */
+@media (prefers-color-scheme: dark) {
+  :root:not(.theme-forced) {
+    /* aplicamos escuro por padrão quando o sistema pede */
+    --bg: #121214;
+    --app-bg: #18181a;
+    --card-bg: #222225;
+    --text: rgba(255,255,255,0.92);
+    --muted: rgba(255,255,255,0.6);
+    --accent: #8b92ff;
+    --btn-bg: #1a1a1a;
+    --input-bg: #2a2a2c;
+    --shadow: 0 6px 16px rgba(0,0,0,0.6);
+    --scroll-thumb: #3a3a3c;
+    --border: rgba(255, 255, 255, 0.11);
+    --invert-close: invert(0.95);
+  }
+}
+
+/* garantir legibilidade base */
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -69,4 +129,49 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.meu-alerto {
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.meu-botao-confirmar {
+  background: var(--accent) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.meu-botao-cancelar {
+  background: transparent !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+}
+
+.meu-titulo {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+body.swal2-shown {
+  padding-right: 0 !important;
+}
+
+body.swal2-shown.swal2-height-auto {
+  padding-right: 0 !important;
+}
+
+.form-control, 
+.form-control-sm, 
+.form-select {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.form-control::placeholder,
+.form-control-sm::placeholder {
+  color: var(--muted) !important;
 }

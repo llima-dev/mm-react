@@ -1,6 +1,5 @@
 .toolbar {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--card-bg) !important;
   border-radius: 7px;
   padding: 4px 6px 2px 6px;
   display: flex;
@@ -14,7 +13,7 @@
 .toolbar-btn {
   border: none !important;
   background: transparent !important;
-  color: #64748b;
+  color: var(--muted) !important;                  /* #64748b -> var */
   font-size: 1.05em;
   border-radius: 4px !important;
   padding: 4px 8px !important;
@@ -24,14 +23,14 @@
 
 .toolbar-btn:hover,
 .toolbar-btn.active {
-  background: #e2e8f0 !important;
-  color: #1e293b !important;
+  background: var(--hover-bg, rgba(0,0,0,0.06)) !important; /* #e2e8f0 -> var */
+  color: var(--text) !important;                               /* #1e293b -> var */
 }
 
 .toolbar-divider {
   width: 1px;
   height: 24px;
-  background: #e2e8f0;
+  background: var(--border) !important;            /* #e2e8f0 -> var */
   margin: 0 6px;
   border-radius: 2px;
 }
@@ -54,91 +53,97 @@
   min-height: 200px;
   max-height: none;
   overflow-y: auto;
-  background: #fff;
-  border: 1.5px solid #e2e8f0;
+  background: var(--card-bg) !important;      /* #fff -> var */
   border-radius: 8px;
   padding: 14px 18px;
   font-size: 1.1em;
-  box-shadow: 0 1px 2px rgba(30, 41, 59, 0.03);
   transition: border 0.18s;
   outline: none;
-}
-
-.tiptap.ProseMirror,
-.tiptap .ProseMirror {
-  min-height: 0 !important;
-  max-height: none !important;
-  height: auto !important;
-  overflow: visible !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: none !important;
-  box-shadow: none !important;
-  background: none !important;
-}
-
-
-.tiptap.ProseMirror {
-  margin: 0 !important;
-  padding: 0 !important;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
+  color: var(--text) !important;             /* garante contraste */
 }
 
 .tiptap:focus {
-  border: 1.5px solid #60a5fa;
-  box-shadow: 0 0 0 2px #bae6fd;
   outline: none;
 }
 
 .tiptap {
   scrollbar-width: thin;
-  scrollbar-color: #e2e8f0 #fff;
+  scrollbar-color: var(--scroll-thumb) var(--card-bg);   /* #e2e8f0 #fff */
 }
 
 .tiptap::-webkit-scrollbar {
   width: 6px;
-  background: #fff;
+  background: var(--card-bg);                            /* #fff */
 }
 
 .tiptap::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
+  background: var(--scroll-thumb);                       /* #e2e8f0 */
   border-radius: 8px;
 }
 
 .tiptap::-webkit-scrollbar-thumb:hover {
-  background: #cbd5e1;
+  background: var(--scroll-thumb-hover, #cbd5e1);        /* #cbd5e1 */
 }
 
 .tiptap table {
   width: 100%;
   border-collapse: collapse;
   margin: 16px 0;
-  background: #fff;
-  box-shadow: 0 1px 3px #0001;
+  background: var(--card-bg);                            /* #fff */
+  box-shadow: var(--shadow);                             /* #0001 */
 }
 
 .tiptap th, .tiptap td {
-  border: 1px solid #cbd5e1;
   padding: 7px 12px;
   text-align: left;
   font-size: 1em;
 }
 
 .tiptap th {
-  background: #f1f5f9;
+  background: var(--hover-bg-light, #f1f5f9);            /* #f1f5f9 */
   font-weight: bold;
-  color: #334155;
+  color: var(--text-strong, #334155);                    /* #334155 */
 }
 
 .tiptap td {
-  background: #f8fafc;
-  color: #334155;
+  background: var(--card-bg-alt, #f8fafc);               /* #f8fafc */
+  color: var(--text, #334155);                           /* #334155 */
 }
 
 .tiptap tr:hover td {
-  background: #e0e7ef;
+  background: var(--hover-bg, #e0e7ef);                  /* #e0e7ef */
+}
+
+.tableWrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card-bg);     /* fundo adaptável */
+  color: var(--text);             /* texto adaptável */
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+
+.tableWrapper th,
+.tableWrapper td {
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  text-align: left;
+  font-size: 1em;
+  color: var(--text);
+}
+
+.tableWrapper th {
+  background: var(--hover-bg);   /* cabeçalho */
+  font-weight: bold;
+}
+
+.tableWrapper td {
+  background: var(--card-bg);
+}
+
+.tableWrapper tr:hover td {
+  background: var(--hover-bg);   /* hover na linha */
 }
 
 .color-btn {

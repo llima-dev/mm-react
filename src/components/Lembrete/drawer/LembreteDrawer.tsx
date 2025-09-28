@@ -128,8 +128,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                   {hashtags.map((tag, idx) => (
                     <span
                       key={idx}
-                      className="badge rounded-pill"
-                      style={{ backgroundColor: "#e2e8f0", color: "#1e293b" }}
+                      className="badge rounded-pill hashtag-badge"
                     >
                       {tag}
                     </span>
@@ -148,7 +147,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
 
                 {/* Campo fixo de adicionar item */}
                 <div
-                  className="checklist-input d-flex gap-2 mb-2 sticky-top bg-white pt-2 pb-2"
+                  className="checklist-input d-flex gap-2 mb-2 sticky-top checklist-input-themed"
                   style={{ zIndex: 1 }}
                 >
                   <input

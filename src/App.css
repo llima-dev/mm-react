@@ -1,193 +1,138 @@
+/* App.css — darkmode + layout estável (sem conflitos com Bootstrap) */
+
 .app {
   width: 100%;
-  min-height: 100vh;
-  padding: 2rem;
-  background-color: #f9f9f9;
+  height: 100%;
+  padding-top: 5px;
+  background-color: var(--bg);
   font-family: 'Quicksand', sans-serif;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
 }
 
 .painel {
+  /* mantém o comportamento original (gap 0, largura total) */
+  flex: 1;
   display: flex;
-  gap: 1rem;
-  margin: 0 auto;
+  gap: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 8px;
 }
 
+/* borda sutil apenas entre as colunas, mantendo o visual anterior */
 .col-esquerda {
   flex: 2;
-  background: #fff;
-  border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
 }
 
 .col-direita {
   flex: 1;
-  background: #fff;
+  padding: 1.5rem;
+  background: var(--card-bg);
   border-radius: 8px;
-  padding: 1rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  border: 1px solid var(--border);
 }
 
+/* Responsividade (como no seu CSS original) */
 @media (max-width: 768px) {
   .painel {
     flex-direction: column;
+    height: auto !important; /* evita travar altura em telas pequenas */
+    flex: unset !important;
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 
 html, body, #root {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #f9f9f9;
-  overflow-x: hidden;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: var(--bg);
+  color: var(--text);
 }
 
-.painel {
-  display: flex;
-  gap: 0;
-  width: 100%;
-  padding: 0 2rem;
-  box-sizing: border-box;
-
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
-}
-
-/* borda sutil apenas entre as colunas */
-.col-esquerda {
-  flex: 2;
-  padding: 1.5rem;
-}
-
-.col-direita {
-  flex: 1;
-  padding: 1.5rem;
-}
-
+/* Inputs e badges */
 input.rounded-pill,
 select.rounded-pill {
   border-radius: 999px !important;
-  background-color: #f8f9fa;
+  background-color: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .badge.rounded-pill {
   font-size: 0.75rem;
   padding: 0.3em 0.7em;
+  color: var(--text);
 }
 
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.app {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.painel {
-  flex: 1;
-  display: flex;
-  height: calc(100vh - 60px); /* deixa espaço pro footer */
-}
-
-.card-checklist-scroll {
-  max-height: 180px;
-  overflow-y: auto;
-}
-
-.card-checklist-scroll::-webkit-scrollbar,
-.checklist-scroll-container::-webkit-scrollbar {
-  width: 6px;
-  margin-left: 5px;
-}
-.card-checklist-scroll::-webkit-scrollbar-thumb,
-.checklist-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #ced4da;
-  border-radius: 3px;
-}
-
-.no-border {
-  border: none;
-}
-
-.btn-fav {
-  background-color: #f8f9fa;
-}
-
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.app {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.painel {
-  flex: 1;
-  padding: 1rem 2rem;
-}
-
+/* Scroll de listas */
 .lista-lembretes {
-  max-height: calc(100vh - 300px); /* ajusta conforme o layout */
+  max-height: calc(100vh - 300px);
   overflow-y: auto;
   padding-right: 10px;
   padding-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scroll-thumb) transparent;
 }
 
 .lista-lembretes::-webkit-scrollbar {
   width: 8px;
 }
-
 .lista-lembretes::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .lista-lembretes::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: var(--scroll-thumb);
   border-radius: 4px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 
-/* Firefox */
-.lista-lembretes {
-  scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+/* Botões utilitários */
+.no-border { border: none; }
+
+.btn-fav {
+  background-color: var(--btn-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
-  .painel {
-    padding-left: 10px;
-    padding-right: 10px;
-    height: auto !important;
-    flex: unset !important;
-  }
+/* Checklist scroll */
+.card-checklist-scroll { max-height: 180px; overflow-y: auto; }
+.card-checklist-scroll::-webkit-scrollbar,
+.checklist-scroll-container::-webkit-scrollbar { width: 6px; margin-left: 5px; }
+.card-checklist-scroll::-webkit-scrollbar-thumb,
+.checklist-scroll-container::-webkit-scrollbar-thumb { background-color: var(--scroll-thumb); border-radius: 3px; }
+
+/* Wrapper de filtros */
+.filtros-wrapper {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: -1px;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.03);
 }
 
-@media (max-width: 768px) {
-  .painel {
-    height: auto !important;
-    flex: unset !important;
-  }
+/* Footer */
+footer { color: var(--muted); }
 
-  .lista-lembretes {
-    max-height: 60vh;
-    overflow-y: auto;
-    padding-bottom: 1rem;
-  }
+.footer-custom {
+  color: var(--muted) !important;
 }
 
+/* Mobile ajustes extras (como no original) */
 @media (max-width: 480px) {
   .lista-lembretes {
     display: flex !important;
@@ -195,55 +140,44 @@ html, body, #root {
     gap: 1rem !important;
     padding-top: 10px;
   }
-
-  .lista-lembretes > * {
-    width: 100%;
-  }
-
-  .col-esquerda {
-    padding: 0;
-  }
-
-  .painel {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .drawer-fechar {
-    position: relative;
-  }
-  
-  .filtros-container, .advanced-filter-container {
-    flex-direction: column !important;
-  }
-
-  .filtros-wrapper {
-    display: none !important;
-  }
-
-  footer {
-    display: none;
-  }
+  .lista-lembretes > * { width: 100%; }
+  .col-esquerda { padding: 0; }
+  .drawer-fechar { position: relative; }
+  .filtros-container, .advanced-filter-container { flex-direction: column !important; }
+  .filtros-wrapper { display: none !important; }
+  footer { display: none; }
 }
 
 @media (max-height: 420px) {
-  html, body, .app, .painel {
-    height: auto !important;
-    overflow-y: auto !important;
-  }
-
-  .dropdown-menu {
-    position: static !important; /* Faz ele empurrar conteúdo */
-  }
+  html, body, .app, .painel { height: auto !important; overflow-y: auto !important; }
+  .dropdown-menu { position: static !important; }
 }
 
-.filtros-wrapper {
-  background-color: #fff;
-  border: 1px solid #dee2e6;
-  border-bottom: none;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  padding: 0.75rem 1rem;
-  margin-bottom: -1px;
-  box-shadow: 0 -2px 5px rgba(0,0,0,0.03);
+/* botão base */
+.btn-fav {
+  background-color: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--card-bg);
+}
+
+/* quando ativo (favorito) */
+.btn-fav-ativo {
+  color: gold; /* ou usa uma var --accent se quiser */
+}
+
+.muted {
+  color: var(--muted) !important;
+}
+
+.hashtag-badge {
+  background-color: var(--hashtag) !important; /* #e2e8f0 → var */
+  color: var(--text) !important;                /* #1e293b → var */
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+}
+
+.checklist-input-themed {
+  background: var(--card-bg); /* em vez de branco fixo */
+  border-top: 1px solid var(--border);
+  color: var(--text);
 }

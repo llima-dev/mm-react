@@ -36,3 +36,37 @@
 #mm-titulo small {
   color: #5e5d5d;
 }
+
+/* corrige texto apagado */
+.text-muted {
+  color: var(--muted) !important;
+}
+
+/* lista dentro de modal */
+.modal .list-group-item {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+
+/* hover nos itens */
+.modal .list-group-item:hover {
+  background: var(--hover-bg, rgba(255,255,255,0.05)) !important;
+}
+
+/* botões outline no dark */
+.modal .btn-outline-secondary {
+  color: var(--text) !important;
+  border-color: var(--border) !important;
+}
+.modal .btn-outline-secondary:hover {
+  background: var(--hover-bg, rgba(255,255,255,0.1)) !important;
+}
+
+.modal .btn-outline-danger {
+  color: #ef4444 !important;   /* vermelho */
+  border-color: #ef4444 !important;
+}
+.modal .btn-outline-danger:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+}
