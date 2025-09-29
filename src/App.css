@@ -26,9 +26,9 @@
 /* borda sutil apenas entre as colunas, mantendo o visual anterior */
 .col-esquerda {
   flex: 2;
-  padding: 1.5rem;
+  padding: 0 1.5rem;
   background: var(--card-bg);
-  border: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 .col-direita {
@@ -178,6 +178,12 @@ footer { color: var(--muted); }
 
 .checklist-input-themed {
   background: var(--card-bg); /* em vez de branco fixo */
-  border-top: 1px solid var(--border);
   color: var(--text);
+}
+
+.badge {
+  border-radius: 4px !important; /* cantos levemente arredondados */
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
 }

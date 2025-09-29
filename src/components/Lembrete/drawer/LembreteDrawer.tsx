@@ -14,6 +14,10 @@ import { extrairHashtags, formatarData } from '../../common/helper';
 import {
   DndContext,
   closestCenter,
+  MouseSensor,
+  useSensor,
+  TouchSensor,
+  useSensors
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -43,6 +47,16 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
   const [textoEditado, setTextoEditado] = useState("");
 
   const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
+
+  const sensors = useSensors(
+    useSensor(MouseSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    })
+  ); 
 
   const adicionarComentario = () => {
     if (!comentarioNovo.trim()) return;
@@ -81,7 +95,31 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
     setTextoEditado("");
   };
 
+  const salvarEdicaoComentario = (id: string) => {
+    if (!textoEditado.trim()) return;
+
+    const atualizado = (lembrete.comentarios ?? []).map((c) =>
+      c.id === id
+        ? {
+            ...c,
+            texto: textoEditado.trim(),
+            editado: true,
+            ultimaEdicao: new Date().toISOString(),
+          }
+        : c
+    );
+
+    onSalvarComentario?.(atualizado);
+    setEditandoId(null);
+    setTextoEditado("");
+  };
+
   const hashtags = extrairHashtags(lembrete.descricao);
+
+  const calcularRows = (texto: string) => {
+    const linhas = Math.ceil(texto.length / 80);
+    return Math.min(Math.max(linhas, 1), 10);
+  };
 
   return createPortal(
     <div className="drawer aberto">
@@ -122,7 +160,10 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
           <>
             <div className="campo">
               <label>Descrição</label>
-              <div>{lembrete.descricao.replace(/#\w+/g, "").trim()}</div>
+              <div>
+                {lembrete.descricao.replace(/#\w+/g, "").trim().slice(0, 400)}
+                {lembrete.descricao.length > 400 ? "..." : ""}
+              </div>
               {hashtags.length > 0 && (
                 <div className="mt-2 d-flex flex-wrap gap-1">
                   {hashtags.map((tag, idx) => (
@@ -164,7 +205,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                     }}
                   />
                   <Button
-                    variant="secondary"
+                    variant="outline-primary"
                     size="sm"
                     className="d-flex align-items-center gap-1"
                     onClick={adicionarItem}
@@ -176,6 +217,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                 {/* Lista rolável */}
                 <div className="checklist-list flex-grow-1 overflow-auto">
                   <DndContext
+                    sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={({ active, over }) => {
                       if (active.id !== over?.id) {
@@ -301,10 +343,39 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                 <ul className="list-unstyled small">
                   {lembrete.comentarios.map((c) => (
                     <li key={c.id} className="mb-2 border-bottom pb-2">
-                      <div className="text-muted">
-                        {new Date(c.data).toLocaleString()}
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="text-muted small">
+                          {new Date(c.data).toLocaleString()}
+                          {c.editado && <span className="fst-italic"> · editado</span>}
+                        </span>
+                        <button
+                          className="btn btn-sm btn-link text-secondary"
+                          onClick={() => {
+                            setEditandoId(c.id);
+                            setTextoEditado(c.texto);
+                          }}
+                        >
+                          Editar
+                        </button>
                       </div>
-                      <div>{c.texto}</div>
+
+                      {editandoId === c.id ? (
+                        <textarea
+                          className="form-control form-control-sm mt-1"
+                          value={textoEditado}
+                          onChange={(e) => setTextoEditado(e.target.value)}
+                          onBlur={() => salvarEdicaoComentario(c.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey)
+                              salvarEdicaoComentario(c.id);
+                          }}
+                          rows={calcularRows(textoEditado)}
+                        />
+                      ) : (
+                        <div>
+                          {c.texto}{" "}
+                        </div>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -312,28 +383,34 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
             </div>
 
             <div className="comentarios-input">
-              <textarea
-                className="form-control mb-2"
-                value={comentarioNovo}
-                onChange={(e) => setComentarioNovo(e.target.value)}
-                placeholder="Escreva um comentário..."
-                rows={3}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    adicionarComentario();
-                  }
-                }}
-              />
+              <div className="input-group">
+                <textarea
+                  className="form-control auto-resize"
+                  value={comentarioNovo}
+                  maxLength={400}
+                  onChange={(e) => {
+                    setComentarioNovo(e.target.value);
 
-              <Button
-                variant="outline-primary btn-sm"
-                size="sm"
-                disabled={!comentarioNovo.trim()}
-                onClick={adicionarComentario}
-              >
-                Adicionar
-              </Button>
+                    e.target.style.height = "auto";
+                    e.target.style.height = e.target.scrollHeight + "px";
+                  }}
+                  placeholder="Escreva um comentário..."
+                  rows={2}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      adicionarComentario();
+                    }
+                  }}
+                />
+                <button
+                  className="btn btn-outline-primary"
+                  disabled={!comentarioNovo.trim()}
+                  onClick={adicionarComentario}
+                >
+                  <FontAwesomeIcon icon={faPlus} /> {/* ícone ao lado */}
+                </button>
+              </div>
             </div>
           </div>
         )}

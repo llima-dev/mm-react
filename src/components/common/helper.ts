@@ -2,11 +2,6 @@ import Swal from 'sweetalert2';
 import type { ChecklistItem, Lembrete } from "../../types";
 import { STORAGE_CHAVE_LEMBRETES } from '../../utils/constants';
 
-type badgeStyle = {
-  bg: string;
-  text: string;
-}
-
 export function confirmarExclusao(callback: () => void) {
   Swal.fire({
     title: "Excluir lembrete?",
@@ -179,21 +174,6 @@ export function limparMural() {
       location.reload();
     }
   });
-}
-
-export function corPorTipo(tipo: string): badgeStyle {
-  switch (tipo) {
-    case "status":
-      return { bg: "warning", text: "text-dark" };
-    case "prazo":
-      return { bg: "primary", text: "text-white" };
-    case "titulo":
-      return { bg: "light", text: "text-dark" };
-    case "descricao":
-      return { bg: "secondary", text: "text-white" };
-    default:
-      return { bg: "light", text: "text-dark" };
-  }
 }
 
 export function formatarData(data: string|undefined) {

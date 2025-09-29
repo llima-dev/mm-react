@@ -178,6 +178,7 @@ export default function LembreteModal({
           className="form-control mb-2"
           placeholder="Descrição"
           value={descricao}
+          maxLength={400}
           onChange={(e) => {
             setDescricao(e.target.value);
             setCampoAtivo("descricao");

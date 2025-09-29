@@ -33,7 +33,6 @@ import {
   importarLembretesDoArquivo,
   limparMural,
   getStatusPrazo,
-  corPorTipo,
   formatarData,
   calcularUsoLocalStorage,
   toggleFullScreen,
@@ -451,11 +450,10 @@ export default function App() {
                           </strong>
                           <div className="d-flex flex-column gap-2 mt-1">
                             {filtros.map((f, i) => {
-                              const cor = corPorTipo(f.tipo);
                               return (
                                 <span
                                   key={i}
-                                  className={`border badge d-flex align-items-center justify-content-between px-2 py-1 rounded-pill bg-${cor.bg} ${cor.text}`}
+                                  className={`border badge d-flex align-items-center justify-content-between px-2 py-1 rounded-pill bg-light text-dark`}
                                   style={{
                                     fontSize: "0.75rem",
                                     fontWeight: 500,
@@ -510,11 +508,10 @@ export default function App() {
 
                     <div className="d-flex">
                       {filtros.map((f, i) => {
-                        const cor = corPorTipo(f.tipo);
                         return (
                           <span
                             key={i}
-                            className={`border badge d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-${cor.bg} ${cor.text}`}
+                            className={`border badge d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-light text-dark`}
                             style={{
                               fontSize: "0.75rem",
                               fontWeight: 500,
@@ -686,12 +683,9 @@ export default function App() {
               >
                 L.L Dev
               </a>{" "}
-              — Meu Mural v{APP_VERSAO}
+              — Meu Mural v{APP_VERSAO} - <small>Armazenamento: {usadoKB} KB ({porcentagem}%)</small>
             </span>
             <br />
-            <span>
-              Armazenamento: {usadoKB} KB ({porcentagem}%)
-            </span>
           </footer>
         </div>
       )}

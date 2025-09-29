@@ -102,7 +102,6 @@
   flex-shrink: 0;
   background: var(--card-bg);           /* #fff -> var */
   padding-top: 0.5rem;
-  border-top: 1px solid var(--border);  /* #eee -> var */
 }
 
 .checklist-list {
@@ -123,10 +122,6 @@
   background-color: var(--scroll-thumb); /* #94a3b8 -> var */
 }
 
-/* blocos repetidos lá no fim (mantidos, só trocando cores) */
-.checklist-input {
-  border-bottom: 1px solid var(--border); /* #eee -> var */
-}
 @media (max-width: 768px) {
   .drawer {
     width: 100% !important;
@@ -154,4 +149,42 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.comentarios-input {
+  padding: 8px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 6px;
+}
+
+.comentarios-input textarea {
+  border-radius: 8px;
+  resize: none;
+  font-size: 0.9rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comentarios-input textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  outline: none;
+}
+
+.comentarios-input button {
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 500;
+  transition: transform 0.1s ease;
+}
+
+.comentarios-input button:active {
+  transform: scale(0.95);
+}
+
+.auto-resize {
+  overflow: hidden;
 }

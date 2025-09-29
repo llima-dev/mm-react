@@ -30,6 +30,7 @@ export type Comentario = {
   id: string;
   texto: string;
   data: string;
+  editado?: boolean;
 };
 
 export type Snippet = {

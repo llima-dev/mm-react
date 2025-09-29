@@ -2,6 +2,8 @@ import { useState } from "react";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import "./FiltroAvancado.css";
+
 export type FiltroTipo = "titulo" | "descricao" | "prazo" | "status" | "recorrencia";
 
 export type FiltroAvancado = {
@@ -86,7 +88,7 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
       )}
 
       <button
-        className="btn btn-sm btn-outline-secondary"
+        className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
         style={{
           padding: "0.25rem 0.75rem",
           fontSize: "0.8rem",
@@ -94,7 +96,7 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
         }}
         onClick={adicionar}
       >
-        + Filtro
+        Adicionar filtro
       </button>
     </div>
   );
