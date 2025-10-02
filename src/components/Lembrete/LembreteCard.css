@@ -319,3 +319,12 @@ html.dark {
 
 .snippets-list { padding-bottom: 3rem; }
 
+/* Destaque quando o drawer do card está aberto */
+.card-aberto {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.3); /* azul suave */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.dark .card-aberto {
+  box-shadow: 0 0 12px rgba(13, 110, 253, 0.5);
+}

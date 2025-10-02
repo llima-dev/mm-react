@@ -63,7 +63,8 @@ export default function LembreteCard({
   onToggleFixado,
   dragHandle,
   fixado,
-  onDuplicar
+  onDuplicar,
+  drawerAberto
 }: Props) {
   const percentual =
     checklist.length > 0
@@ -78,7 +79,9 @@ export default function LembreteCard({
 
   return (
     <div
-      className={`card card-borda-${cor} ${fixado ? "fixado" : ""}`}
+      className={`card card-borda-${cor} ${fixado ? "fixado" : ""} ${
+        drawerAberto ? "card-aberto" : ""
+      }`}
       onClick={onAbrirDetalhes}
       style={{ cursor: "pointer" }}
     >

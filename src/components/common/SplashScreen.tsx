@@ -36,17 +36,6 @@ export default function SplashScreen({ onComplete }: { onComplete: () => void })
             animate={{ scale: [0, 1.2, 1], opacity: 1 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           />
-
-          <motion.span
-            id="mm-titulo"
-            className="splash-titulo"
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 1.2, duration: 0.5, ease: 'easeOut' }}
-          >
-            <span className="mm-azul"><b>M</b></span><small>eu</small>{" "}
-            <span className="mm-verde"><b>M</b></span><small>ural</small>
-          </motion.span>
         </motion.div>
       )}
     </AnimatePresence>

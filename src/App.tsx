@@ -38,6 +38,7 @@ import {
   toggleFullScreen,
   duplicarLembrete,
   gerarLembretesRecorrentes,
+  atualizarFavicon
 } from "./components/common/helper";
 import FiltroAvancado from "./components/common/FiltroAvancado";
 import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAvancado";
@@ -175,6 +176,25 @@ export default function App() {
 
     return () => clearInterval(intervalo);
   }, [lembretes, adicionar, atualizar, modalAberta]);
+
+  useEffect(() => {
+    const ativos = lembretes.filter((l) => {
+      const status = getStatusPrazo(l.prazo, l.checklist);
+      return !l.arquivado && status.tipo !== "finalizado";
+    });
+
+    const atrasados = ativos.some(
+      (l) => getStatusPrazo(l.prazo, l.checklist).tipo === "atrasado"
+    );
+
+    const proximos = ativos.some(
+      (l) => getStatusPrazo(l.prazo, l.checklist).tipo === "proximo"
+    );
+
+    if (atrasados) atualizarFavicon("danger");
+    else if (proximos) atualizarFavicon("warning");
+    else atualizarFavicon("default");
+  }, [lembretes]);
 
   useEffect(() => {
     if (jaVerificouRecorrencia.current) return;

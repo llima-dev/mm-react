@@ -79,6 +79,23 @@ export function copiarCodigoComAlerta(codigo: string) {
     });
 }
 
+export function atualizarFavicon(tipo: "default" | "warning" | "danger") {
+    let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+
+    const base = import.meta.env.BASE_URL;
+
+    const versao = Date.now();
+    if (tipo === "danger") link.href = `${base}favicon-venc.png?v=${versao}`;
+    else if (tipo === "warning")
+      link.href = `${base}favicon-prox.png?v=${versao}`;
+    else link.href = `${base}favicon-default.png?v=${versao}`;
+}
+
 export function getStatusPrazo(prazo?: string, checklist: ChecklistItem[] = []) {
   const todosFeitos = checklist.length > 0 && checklist.every(i => i.feito);
   if (todosFeitos) return { tipo: 'finalizado' };
