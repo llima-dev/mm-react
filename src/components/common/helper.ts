@@ -4,7 +4,7 @@ import { STORAGE_CHAVE_LEMBRETES } from '../../utils/constants';
 
 export function confirmarExclusao(callback: () => void) {
   Swal.fire({
-    title: "Excluir lembrete?",
+    title: "Excluir registro?",
     text: "Essa ação não pode ser desfeita!",
     icon: "warning",
     showCancelButton: true,
