@@ -39,3 +39,13 @@ export type Snippet = {
   linguagem: string;
   codigo: string;
 };
+
+export type Categoria = {
+  id: string;
+  titulo: string
+  descricao?: string;
+  hashtags?: string[];
+  checklist?: string[];
+  mascaraTitulo?: string;
+  mascaraDescricao?: string;
+};
