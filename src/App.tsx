@@ -23,6 +23,7 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import SortableItem from "./components/common/SortableItem";
 import LembreteCard from "./components/Lembrete/LembreteCard";
 import LembreteModal from "./components/Lembrete/LembreteModal";
+import CategoriaManager from "./components/Lembrete/categorias/CategoriaManager";
 import { useLembretes } from "./hooks/useLembretes";
 import type { Lembrete, Comentario } from "./types";
 import LembreteDrawer from "./components/Lembrete/drawer/LembreteDrawer";
@@ -128,6 +129,7 @@ export default function App() {
     null
   );
   const [modalArquivadosAberta, setModalArquivadosAberta] = useState(false);
+  const [modalCategoriasAberta, setModalCategoriasAberta] = useState(false);
 
   const salvarComentarios = (id: string, novos: Comentario[]) => {
     atualizar(id, { comentarios: novos });
@@ -309,14 +311,22 @@ export default function App() {
               <>
                 {/* Desktop */}
                 <div className="d-none d-md-flex gap-2 flex-wrap">
-                    <button
-                      className="btn btn-outline-secondary btn-sm no-border"
-                      onClick={() => setModoEscuro((atual) => !atual)}
-                      title={modoEscuro ? "Alternar para tema claro" : "Alternar para tema escuro"}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
-                    >
-                      <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />
-                    </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() => setModoEscuro((atual) => !atual)}
+                    title={
+                      modoEscuro
+                        ? "Alternar para tema claro"
+                        : "Alternar para tema escuro"
+                    }
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />
+                  </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={toggleFullScreen}
@@ -337,6 +347,12 @@ export default function App() {
                     onClick={abrirModalNovo}
                   >
                     + Adicionar Lembrete
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() => setModalCategoriasAberta(true)}
+                  >
+                    Gerenciar Categorias
                   </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
@@ -400,6 +416,14 @@ export default function App() {
                           onClick={abrirModalNovo}
                         >
                           + Adicionar Lembrete
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => setModalCategoriasAberta(true)}
+                        >
+                          Gerenciar Categorias
                         </button>
                       </li>
                       <li>
@@ -691,6 +715,10 @@ export default function App() {
             onExcluir={(id) => remover(id)}
           />
 
+          {modalCategoriasAberta && (
+            <CategoriaManager onClose={() => setModalCategoriasAberta(false)} show={modalCategoriasAberta} />
+          )}
+
           <footer
             className="text-center footer-custom small mt-auto border-top pt-1"
             style={{ opacity: "0.5" }}
@@ -703,7 +731,10 @@ export default function App() {
               >
                 L.L Dev
               </a>{" "}
-              — Meu Mural v{APP_VERSAO} - <small>Armazenamento: {usadoKB} KB ({porcentagem}%)</small>
+              — Meu Mural v{APP_VERSAO} -{" "}
+              <small>
+                Armazenamento: {usadoKB} KB ({porcentagem}%)
+              </small>
             </span>
             <br />
           </footer>

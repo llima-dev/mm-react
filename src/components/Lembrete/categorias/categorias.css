@@ -1,0 +1,345 @@
+/* Overlay genérico */
+.cat-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Containers */
+.cat-container,
+.cat-modal {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  color: var(--text);
+}
+
+.cat-container {
+  width: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.cat-modal {
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+/* Header */
+.cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.cat-header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Inputs */
+.cat-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+.cat-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(22,119,255,0.15);
+}
+
+/* Lista de categorias */
+.cat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cat-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.cat-item:hover {
+  box-shadow: var(--shadow);
+}
+
+.cat-info h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.cat-info p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Tabela (caso ainda use em algum lugar) */
+.cat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cat-table th,
+.cat-table td {
+  border: 1px solid var(--border);
+  padding: 8px;
+}
+
+.cat-table th {
+  background: var(--app-bg);
+  text-align: left;
+}
+
+.cat-table td.acoes,
+.cat-table th.acoes {
+  text-align: center;
+}
+
+/* Mensagem "vazio" */
+.cat-empty {
+  color: var(--muted);
+  font-style: italic;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Ações (linha de botões do modal) */
+.cat-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Botões */
+.cat-btn {
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+.cat-btn.add {
+  background: #1677ff;
+  color: #fff;
+}
+
+.cat-btn.close {
+  background: var(--btn-bg);
+  color: var(--text);
+}
+
+.cat-btn.edit {
+  background: #1677ff;
+  color: white;
+}
+
+.cat-btn.delete {
+  background: #f5222d;
+  color: white;
+}
+
+.cat-btn.save {
+  background: #4caf50;
+  color: white;
+}
+
+.cat-btn:hover {
+  opacity: 0.9;
+}
+
+.cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cat-header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cat-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cat-table th {
+  text-align: left;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--app-bg);
+}
+
+.cat-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.cat-btn.icon {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.3rem;
+}
+
+.cat-btn.icon.edit {
+  color: #1677ff;
+}
+
+.cat-btn.icon.delete {
+  color: #f5222d;
+}
+
+.cat-btn.icon:hover {
+  opacity: 0.8;
+}
+
+.modal-dialog {
+  max-width: 90% !important; /* aumenta a largura */
+}
+
+.modal-content {
+  min-height: 90vh; /* aumenta altura */
+}
+
+/* Fundo do DataGrid no dark */
+.cat-table-wrapper .MuiDataGrid-root {
+  background-color: var(--bs-dark); /* usa o bg do bootstrap dark */
+  color: var(--bs-light);
+  border: none;
+}
+
+/* Cabeçalho */
+.cat-table-wrapper .MuiDataGrid-columnHeaders {
+  background-color: #2a2a2a;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Linhas */
+.cat-table-wrapper .MuiDataGrid-row {
+  background-color: #1e1e1e;
+}
+
+.cat-table-wrapper .MuiDataGrid-row:hover {
+  background-color: #2c2c2c;
+}
+
+/* Paginação */
+.cat-table-wrapper .MuiTablePagination-root {
+  color: #ccc;
+}
+
+/* categorias.css */
+.MuiDataGrid-root {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: none !important;
+}
+
+.MuiDataGrid-columnHeaders {
+  background: var(--app-bg) !important;
+  color: var(--text) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.MuiDataGrid-row {
+  background: var(--card-bg) !important;
+}
+
+.MuiDataGrid-row:hover {
+  background: var(--hashtag) !important;
+}
+
+.MuiDataGrid-cell {
+  border-color: var(--border) !important;
+}
+
+.MuiTablePagination-root,
+.MuiSvgIcon-root {
+  color: var(--text) !important;
+}
+
+/* Ajusta o cabeçalho do DataGrid */
+.MuiDataGrid-columnHeaders {
+  background: var(--card-bg) !important; /* deixa igual aos cards */
+  color: var(--text) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* Garante que a row do cabeçalho também siga */
+.MuiDataGrid-columnHeaderRow {
+  background: var(--card-bg) !important;
+}
+
+/* Cada célula do cabeçalho */
+.MuiDataGrid-columnHeader {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+
+/* Botões da coluna de ações */
+.cat-table-wrapper .MuiIconButton-root {
+  color: var(--muted) !important;
+  transition: 0.2s;
+}
+
+.cat-table-wrapper .MuiIconButton-root:hover {
+  color: var(--accent) !important; /* destaque no hover */
+  background: transparent !important;
+}
+
+.modal.show {
+  overflow-y: hidden !important;
+}
+
+.modal-open {
+  padding-right: 0 !important;
+}
+
+/* categorias.css */
+.nav-tabs .nav-link {
+  color: var(--text); /* cor padrão do texto */
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary); /* quando estiver ativa */
+  background-color: var(--card-bg); /* fundo da aba ativa */
+  border-color: var(--border) var(--border) var(--card-bg);
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--accent); /* hover */
+}
