@@ -727,19 +727,10 @@ export default function App() {
                           categoria={categorias.find(
                             (c) => c.id === l.categoriaId
                           )}
-                          favorito={l.favorito ?? false}
-                          titulo={l.titulo}
-                          descricao={l.descricao}
-                          prazo={l.prazo}
-                          cor={l.cor}
-                          checklist={l.checklist}
                           onEditar={() => editarLembrete(l)}
                           onExcluir={() => remover(l.id)}
                           onAbrirDetalhes={() => abrirDetalhes(l.id)}
-                          onFecharDetalhes={() => fecharDetalhes()}
                           drawerAberto={idDetalhesAberto === l.id}
-                          comentarios={l.comentarios}
-                          fixado={l.fixado}
                           onDuploClick={(l) => {
                             setLembreteParaEditar(l);
                             setModalAberta(true);
@@ -757,9 +748,6 @@ export default function App() {
                           }}
                           onToggleFavorito={() =>
                             atualizar(l.id, { ...l, favorito: !l.favorito })
-                          }
-                          onSalvarComentario={(comentarios) =>
-                            salvarComentarios(l.id, comentarios)
                           }
                         />
                       </SortableItem>

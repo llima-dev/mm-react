@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ChecklistItem, Comentario, Lembrete } from "../../types";
+import type { Lembrete } from "../../types";
 import { confirmarExclusao, getStatusPrazo, formatarData, extrairHashtags } from "../common/helper.ts";
 import 'highlight.js/styles/github-dark.css';
 
@@ -23,64 +23,49 @@ import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
 import "./LembreteCard.css";
 
 type Props = {
-  titulo: string;
-  descricao: string;
-  prazo?: string;
-  cor?: string;
-  checklist?: ChecklistItem[];
+  lembrete: Lembrete;
+  categoria?: { id: string; titulo: string };
+  drawerAberto?: boolean;
+  dragHandle?: React.ReactNode;
   onEditar?: () => void;
   onExcluir?: () => void;
-  onReordenarChecklist?: (novoChecklist: ChecklistItem[]) => void;
-  onToggleChecklistItem?: (itemId: string) => void;
-  onSalvarAnotacoes?: (texto: string) => void;
   onAbrirDetalhes?: () => void;
-  onFecharDetalhes?: () => void;
-  onSalvarComentario?: (comentarios: Comentario[]) => void;
-  drawerAberto?: boolean;
-  comentarios?: Comentario[];
-  dragHandle?: React.ReactNode;
-  favorito?: boolean;
   onToggleFavorito?: () => void;
-  arquivado?: boolean;
   onToggleArquivar?: () => void;
-  fixado?: boolean;
   onToggleFixado?: () => void;
   onDuplicar: () => void;
-  categoria?: { id: string; titulo: string };
   onDuploClick?: (lembrete: Lembrete) => void;
-  lembrete: Lembrete;
 };
 
 export default function LembreteCard({
+  lembrete,
   categoria,
-  titulo,
-  descricao,
-  prazo,
-  favorito,
-  cor = "azul",
+  drawerAberto,
+  dragHandle,
   onEditar,
   onExcluir,
-  checklist = [],
   onAbrirDetalhes,
   onToggleFavorito,
   onToggleArquivar,
   onToggleFixado,
-  dragHandle,
-  fixado,
   onDuplicar,
-  drawerAberto,
-  lembrete,
   onDuploClick
 }: Props) {
-  const percentual =
-    checklist.length > 0
-      ? Math.round(
-          (checklist.filter((i) => i.feito).length / checklist.length) * 100
-        )
-      : 0;
+  const {
+    titulo,
+    descricao,
+    prazo,
+    checklist = [],
+    favorito,
+    fixado,
+    cor = "azul",
+  } = lembrete;
+
+  const percentual = checklist.length
+    ? Math.round((checklist.filter((i) => i.feito).length / checklist.length) * 100)
+    : 0;
 
   const status = getStatusPrazo(prazo, checklist);
-
   const hashtags = extrairHashtags(descricao);
 
   return (
@@ -94,50 +79,51 @@ export default function LembreteCard({
     >
       <div className="card-body">
         <h5 className="card-title d-flex align-items-center justify-content-between">
-          <div className="d-flex align-items-center gap-1">
-            {status.tipo !== "nulo" && (
+          <div className="d-flex flex-column flex-grow-1">
+            {/* Categoria no topo */}
+            {categoria && (
               <>
-                {status.tipo === "finalizado" ? (
-                  <FontAwesomeIcon
-                    icon={faCircleCheck}
-                    className="text-success fa-sm me-1"
-                    title="Checklist finalizado"
-                  />
-                ) : status.tipo === "ok" ? (
-                  <FontAwesomeIcon
-                    icon={faCircleCheck}
-                    className="text-success fa-sm me-1"
-                    title="Prazo em dia"
-                  />
-                ) : status.tipo === "proximo" ? (
-                  <FontAwesomeIcon
-                    icon={faCircleExclamation}
-                    className="text-warning fa-sm me-1"
-                    title="Prazo se aproximando"
-                  />
-                ) : (
-                  <FontAwesomeIcon
-                    icon={faCircleXmark}
-                    className="text-danger fa-sm me-1"
-                    title="Prazo atrasado"
-                  />
-                )}
+                <small
+                  className="text-muted text-truncate"
+                  style={{ maxWidth: "200px" }}
+                  title={categoria.titulo}
+                >
+                  {categoria.titulo}
+                </small>
+                <hr className="hr-fina" />
               </>
             )}
-            <div className="d-flex flex-column flex-grow-1">
-              {/* Categoria no topo */}
-              {categoria && (
-                <small
-                    className="text-muted text-truncate"
-                    style={{ maxWidth: "200px" }}
-                    title={categoria.titulo}
-                  >
-                    {categoria.titulo}
-                  </small>
-              )}
 
-              {categoria && (
-                <hr className="hr-fina" />
+            {/* Linha principal: ícone + título */}
+            <div className="d-flex align-items-center gap-1">
+              {status.tipo !== "nulo" && (
+                <>
+                  {status.tipo === "finalizado" ? (
+                    <FontAwesomeIcon
+                      icon={faCircleCheck}
+                      className="text-success fa-sm"
+                      title="Checklist finalizado"
+                    />
+                  ) : status.tipo === "ok" ? (
+                    <FontAwesomeIcon
+                      icon={faCircleCheck}
+                      className="text-success fa-sm"
+                      title="Prazo em dia"
+                    />
+                  ) : status.tipo === "proximo" ? (
+                    <FontAwesomeIcon
+                      icon={faCircleExclamation}
+                      className="text-warning fa-sm"
+                      title="Prazo se aproximando"
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faCircleXmark}
+                      className="text-danger fa-sm"
+                      title="Prazo atrasado"
+                    />
+                  )}
+                </>
               )}
 
               <span

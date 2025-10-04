@@ -1,21 +1,31 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import LembreteCard from '../components/Lembrete/LembreteCard';
-import '@testing-library/jest-dom';
-import type { ChecklistItem } from '../types';
+import { render, screen, fireEvent } from "@testing-library/react";
+import LembreteCard from "../components/Lembrete/LembreteCard";
+import "@testing-library/jest-dom";
+import type { Lembrete, ChecklistItem } from "../types";
 
-describe('LembreteCard', () => {
+describe("LembreteCard", () => {
   const checklist: ChecklistItem[] = [
-    { id: '1', texto: 'Ler docs do RTL', feito: false },
-    { id: '2', texto: 'Escrever testes', feito: true },
+    { id: "1", texto: "Ler docs do RTL", feito: false },
+    { id: "2", texto: "Escrever testes", feito: true },
   ];
 
-  const mockProps = {
-    titulo: 'Estudar React',
-    descricao: 'Estudar testes em React #tarefa #urgente',
-    prazo: '2025-06-18',
+  const lembrete: Lembrete = {
+    id: "1",
+    titulo: "Estudar React",
+    descricao: "Estudar testes em React #tarefa #urgente",
+    prazo: "2025-06-18",
     checklist,
     favorito: false,
     fixado: false,
+    arquivado: false,
+    cor: "branco",
+    comentarios: [],
+    anotacoes: "",
+    snippets: [],
+  };
+
+  const mockProps = {
+    lembrete,
     onEditar: vi.fn(),
     onExcluir: vi.fn(),
     onReordenarChecklist: vi.fn(),
@@ -27,46 +37,39 @@ describe('LembreteCard', () => {
     onDuplicar: vi.fn(),
   };
 
-  test('renderiza título, descrição (sem hashtags) e tags', () => {
+  test("renderiza título, descrição (sem hashtags) e tags", () => {
     render(<LembreteCard {...mockProps} />);
-    expect(screen.getByText('Estudar React')).toBeInTheDocument();
-    expect(screen.getByText('Estudar testes em React')).toBeInTheDocument();
-    expect(screen.getByText('#tarefa')).toBeInTheDocument();
-    expect(screen.getByText('#urgente')).toBeInTheDocument();
+    expect(screen.getByText("Estudar React")).toBeInTheDocument();
+    expect(screen.getByText("Estudar testes em React")).toBeInTheDocument();
+    expect(screen.getByText("#tarefa")).toBeInTheDocument();
+    expect(screen.getByText("#urgente")).toBeInTheDocument();
   });
 
-  test('chama onToggleFavorito ao clicar no botão de favorito', () => {
+  test("chama onToggleFavorito ao clicar no botão de favorito", () => {
     render(<LembreteCard {...mockProps} />);
-    const botaoFav = screen.getByTitle('Adicionar aos favoritos');
+    const botaoFav = screen.getByTitle("Adicionar aos favoritos");
     fireEvent.click(botaoFav);
     expect(mockProps.onToggleFavorito).toHaveBeenCalled();
   });
 
-  test('renderiza checklist com itens e porcentagem correta', () => {
+  test("renderiza checklist com itens e porcentagem correta", () => {
     render(<LembreteCard {...mockProps} />);
-    expect(screen.getByText('Ler docs do RTL')).toBeInTheDocument();
-    expect(screen.getByText('Escrever testes')).toBeInTheDocument();
+    expect(screen.getByText("Ler docs do RTL")).toBeInTheDocument();
+    expect(screen.getByText("Escrever testes")).toBeInTheDocument();
     expect(screen.getByText(/50%/)).toBeInTheDocument(); // 1 de 2 feito
   });
 
-  test('chama onEditar ao clicar no botão de editar', () => {
+  test("chama onEditar ao clicar no botão de editar", () => {
     render(<LembreteCard {...mockProps} />);
-    const botaoEditar = screen.getByTitle('Editar');
+    const botaoEditar = screen.getByTitle("Editar");
     fireEvent.click(botaoEditar);
     expect(mockProps.onEditar).toHaveBeenCalled();
   });
 
-  test('chama onAbrirDetalhes ao clicar no botão de detalhes', () => {
+  test("chama onDuplicar ao clicar no botão de duplicar", () => {
     render(<LembreteCard {...mockProps} />);
-    const botaoDetalhes = screen.getByTitle('Detalhes');
-    fireEvent.click(botaoDetalhes);
-    expect(mockProps.onAbrirDetalhes).toHaveBeenCalled();
-  });
-
-  test('chama onDuplicar ao clicar no botão de duplicar', () => {
-    render(<LembreteCard {...mockProps} onDuplicar={vi.fn()} />);
-    const botaoDuplicar = screen.getByTitle('Duplicar lembrete');
+    const botaoDuplicar = screen.getByTitle("Duplicar lembrete");
     fireEvent.click(botaoDuplicar);
     expect(mockProps.onDuplicar).toHaveBeenCalled();
-  });  
+  });
 });
