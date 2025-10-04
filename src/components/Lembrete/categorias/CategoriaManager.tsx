@@ -2,22 +2,33 @@ import { useState } from "react";
 import { Modal, Button } from "react-bootstrap";
 import CategoriaTable from "./CategoriaTable";
 import CategoriaModal from "./CategoriaModal";
-import { useCategorias } from "../../../hooks/useCategorias";
-import type { Categoria } from "../../../types";
+import type { Categoria, Lembrete } from "../../../types";
 import { confirmarExclusao } from "../../common/helper";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-
 import "./categorias.css";
 
 type Props = {
   show: boolean;
   onClose: () => void;
+
+  categorias: Categoria[];
+  onAdicionar: (categoria: Categoria) => void;
+  onAtualizar: (id: string, dados: Partial<Categoria>) => void;
+  onRemover: (id: string) => void;
+
+  lembretes: Lembrete[];
 };
 
-export default function CategoriaManager({ show, onClose }: Props) {
-  const { categorias, adicionar, atualizar, remover } = useCategorias();
+export default function CategoriaManager({
+  show,
+  onClose,
+  categorias,
+  onAdicionar,
+  onAtualizar,
+  onRemover,
+  lembretes,
+}: Props) {
   const [busca, setBusca] = useState("");
   const [modalAberto, setModalAberto] = useState(false);
   const [categoriaParaEditar, setCategoriaParaEditar] =
@@ -29,16 +40,16 @@ export default function CategoriaManager({ show, onClose }: Props) {
 
   const handleSalvar = (categoria: Categoria) => {
     if (categoriaParaEditar) {
-      atualizar(categoriaParaEditar.id, categoria);
+      onAtualizar(categoriaParaEditar.id, categoria);
     } else {
-      adicionar(categoria);
+      onAdicionar(categoria);
     }
     setModalAberto(false);
     setCategoriaParaEditar(null);
   };
 
   const handleExcluir = (id: string) => {
-    confirmarExclusao(() => {remover(id)})
+    confirmarExclusao(() => onRemover(id));
   };
 
   return (
@@ -74,7 +85,8 @@ export default function CategoriaManager({ show, onClose }: Props) {
                 setCategoriaParaEditar(cat);
                 setModalAberto(true);
               }}
-              onExcluir={(id) => handleExcluir(id)}
+              onExcluir={handleExcluir}
+              lembretes={lembretes}
             />
           ) : (
             <p className="text-muted text-center mt-3">
@@ -98,6 +110,7 @@ export default function CategoriaManager({ show, onClose }: Props) {
         }}
         onSalvar={handleSalvar}
         categoriaParaEditar={categoriaParaEditar}
+        categoriasExistentes={categorias}
       />
     </>
   );

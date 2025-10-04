@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
 import SplashScreen from "./components/common/SplashScreen";
@@ -25,7 +26,8 @@ import LembreteCard from "./components/Lembrete/LembreteCard";
 import LembreteModal from "./components/Lembrete/LembreteModal";
 import CategoriaManager from "./components/Lembrete/categorias/CategoriaManager";
 import { useLembretes } from "./hooks/useLembretes";
-import type { Lembrete, Comentario } from "./types";
+import { useCategorias } from "./hooks/useCategorias";
+import type { Lembrete, Comentario, ChecklistItem } from "./types";
 import LembreteDrawer from "./components/Lembrete/drawer/LembreteDrawer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalArquivados from "./components/common/ModalArquivados";
@@ -146,7 +148,39 @@ export default function App() {
     idDetalhesAberto,
   } = useLembretes();
 
+  const {
+    categorias,
+    adicionar: adicionarCategoria,
+    remover: removerCategoria,
+    atualizar: atualizarCategoria,
+  } = useCategorias();
+
   const jaVerificouRecorrencia = useRef(false);
+
+  useEffect(() => {
+    const listener = (e: Event) => {
+      const customEvent = e as CustomEvent<{
+        id: string;
+        checklist: { texto: string; feito: boolean }[];
+      }>;
+
+      const { id, checklist } = customEvent.detail;
+
+      const l = lembretes.find((x) => x.id === id);
+      if (!l) return;
+
+      const checklistComId: ChecklistItem[] = checklist.map((item) => ({
+        id: uuidv4(),
+        texto: item.texto,
+        feito: item.feito,
+      }));
+
+      atualizar(id, { ...l, checklist: checklistComId });
+    };
+
+    window.addEventListener("aplicar-checklist", listener);
+    return () => window.removeEventListener("aplicar-checklist", listener);
+  }, [lembretes, atualizar]);
 
   useEffect(() => {
     const intervalo = setInterval(() => {
@@ -633,6 +667,10 @@ export default function App() {
                     {lembretesOrdenados.map((l) => (
                       <SortableItem key={l.id} id={l.id}>
                         <LembreteCard
+                          lembrete={l}
+                          categoria={categorias.find(
+                            (c) => c.id === l.categoriaId
+                          )}
                           favorito={l.favorito ?? false}
                           titulo={l.titulo}
                           descricao={l.descricao}
@@ -646,6 +684,10 @@ export default function App() {
                           drawerAberto={idDetalhesAberto === l.id}
                           comentarios={l.comentarios}
                           fixado={l.fixado}
+                          onDuploClick={(l) => {
+                            setLembreteParaEditar(l);
+                            setModalAberta(true);
+                          }}
                           onDuplicar={() => {
                             const copia = duplicarLembrete(l);
                             adicionar(copia);
@@ -673,6 +715,7 @@ export default function App() {
                   <LembreteDrawer
                     key={`drawer-${l.id}`}
                     lembrete={l}
+                    categoria={categorias.find((c) => c.id === l.categoriaId)}
                     onFechar={fecharDetalhes}
                     onSalvarChecklist={(novoChecklist) =>
                       atualizar(l.id, { ...l, checklist: novoChecklist })
@@ -700,6 +743,7 @@ export default function App() {
             }}
             onSalvar={handleSalvar}
             lembreteParaEditar={lembreteParaEditar}
+            categorias={categorias}
           />
 
           <ModalArquivados
@@ -716,7 +760,15 @@ export default function App() {
           />
 
           {modalCategoriasAberta && (
-            <CategoriaManager onClose={() => setModalCategoriasAberta(false)} show={modalCategoriasAberta} />
+            <CategoriaManager
+              show={modalCategoriasAberta}
+              onClose={() => setModalCategoriasAberta(false)}
+              categorias={categorias}
+              onAdicionar={adicionarCategoria}
+              onAtualizar={atualizarCategoria}
+              onRemover={removerCategoria}
+              lembretes={lembretes}
+            />
           )}
 
           <footer

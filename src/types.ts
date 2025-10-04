@@ -24,6 +24,7 @@ export type Lembrete = {
   criadoPorRecorrencia?: boolean;
   geradoPor?: string;
   diasRecorrencia?: number[];
+  categoriaId?: string;
 };
 
 export type Comentario = {

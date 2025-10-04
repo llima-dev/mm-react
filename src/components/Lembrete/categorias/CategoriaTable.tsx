@@ -1,17 +1,18 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
-import type { Categoria } from "../../../types";
+import type { Categoria, Lembrete } from "../../../types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { IconButton } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 
 type Props = {
   categorias: Categoria[];
   onEditar: (cat: Categoria) => void;
   onExcluir: (id: string) => void;
+  lembretes?: Lembrete[];
 };
 
-export default function CategoriaTable({ categorias, onEditar, onExcluir }: Props) {
+export default function CategoriaTable({ categorias, onEditar, onExcluir, lembretes = [] }: Props) {
   const rows = categorias.map((c) => ({
     id: c.id,
     titulo: c.titulo,
@@ -27,25 +28,46 @@ export default function CategoriaTable({ categorias, onEditar, onExcluir }: Prop
       sortable: false,
       filterable: false,
       width: 120,
-      renderCell: (params) => (
-        <>
-          <IconButton
-            size="small"
-            onClick={() =>
-              onEditar(categorias.find((c) => c.id === params.row.id)!)
-            }
-          >
-            <FontAwesomeIcon icon={faPen} />
-          </IconButton>
-          <IconButton
-            className="btn-delete"
-            size="small"
-            onClick={() => onExcluir(params.row.id)}
-          >
-            <FontAwesomeIcon icon={faTrash} />
-          </IconButton>
-        </>
-      ),
+      renderCell: (params) => {
+        const categoriaId = params.row.id;
+
+        const possuiLembretes = lembretes.some(
+          (l) => l.categoriaId === categoriaId
+        );
+
+        return (
+          <>
+            <IconButton
+              size="small"
+              onClick={() =>
+                onEditar(categorias.find((c) => c.id === categoriaId)!)
+              }
+            >
+              <FontAwesomeIcon icon={faPen} />
+            </IconButton>
+
+            <Tooltip
+              title={
+                possuiLembretes
+                  ? "Não é possível excluir: há lembretes associados."
+                  : "Excluir categoria"
+              }
+            >
+              <span>
+                <IconButton
+                  className="btn-delete"
+                  size="small"
+                  color={possuiLembretes ? "default" : "error"}
+                  onClick={() => !possuiLembretes && onExcluir(categoriaId)}
+                  disabled={possuiLembretes}
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </IconButton>
+              </span>
+            </Tooltip>
+          </>
+        );
+      },
     },
   ];
 
