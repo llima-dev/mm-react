@@ -78,7 +78,7 @@ export default function CategoriaTable({ categorias, onEditar, onExcluir, lembre
           className="cat-table"
           rows={rows}
           columns={columns}
-          pageSizeOptions={[5, 10, 20]}
+          pageSizeOptions={[10]}
           initialState={{
             pagination: { paginationModel: { pageSize: 5, page: 0 } },
           }}
