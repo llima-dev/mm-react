@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 
 import SplashScreen from "./components/common/SplashScreen";
@@ -23,14 +24,16 @@ import type { DragEndEvent } from "@dnd-kit/core";
 import SortableItem from "./components/common/SortableItem";
 import LembreteCard from "./components/Lembrete/LembreteCard";
 import LembreteModal from "./components/Lembrete/LembreteModal";
+import CategoriaManager from "./components/Lembrete/categorias/CategoriaManager";
 import { useLembretes } from "./hooks/useLembretes";
-import type { Lembrete, Comentario } from "./types";
+import { useCategorias } from "./hooks/useCategorias";
+import type { Lembrete, Comentario, ChecklistItem } from "./types";
 import LembreteDrawer from "./components/Lembrete/drawer/LembreteDrawer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalArquivados from "./components/common/ModalArquivados";
 import {
-  exportarLembretes,
-  importarLembretesDoArquivo,
+  exportarDadosMural,
+  importarDadosMural,
   limparMural,
   getStatusPrazo,
   formatarData,
@@ -45,6 +48,7 @@ import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAva
 
 import {
   STORAGE_CHAVE_LEMBRETES,
+  STORAGE_CHAVE_CATEGORIAS,
   STORAGE_CHAVE_FILTROS,
   STORAGE_CHAVE_FILTRO_FAVORITO,
   APP_VERSAO,
@@ -58,7 +62,8 @@ import {
   faBroom,
   faExpand,
   faMoon,
-  faSun
+  faSun,
+  faCircleInfo
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
@@ -128,6 +133,7 @@ export default function App() {
     null
   );
   const [modalArquivadosAberta, setModalArquivadosAberta] = useState(false);
+  const [modalCategoriasAberta, setModalCategoriasAberta] = useState(false);
 
   const salvarComentarios = (id: string, novos: Comentario[]) => {
     atualizar(id, { comentarios: novos });
@@ -144,7 +150,39 @@ export default function App() {
     idDetalhesAberto,
   } = useLembretes();
 
+  const {
+    categorias,
+    adicionar: adicionarCategoria,
+    remover: removerCategoria,
+    atualizar: atualizarCategoria,
+  } = useCategorias();
+
   const jaVerificouRecorrencia = useRef(false);
+
+  useEffect(() => {
+    const listener = (e: Event) => {
+      const customEvent = e as CustomEvent<{
+        id: string;
+        checklist: { texto: string; feito: boolean }[];
+      }>;
+
+      const { id, checklist } = customEvent.detail;
+
+      const l = lembretes.find((x) => x.id === id);
+      if (!l) return;
+
+      const checklistComId: ChecklistItem[] = checklist.map((item) => ({
+        id: uuidv4(),
+        texto: item.texto,
+        feito: item.feito,
+      }));
+
+      atualizar(id, { ...l, checklist: checklistComId });
+    };
+
+    window.addEventListener("aplicar-checklist", listener);
+    return () => window.removeEventListener("aplicar-checklist", listener);
+  }, [lembretes, atualizar]);
 
   useEffect(() => {
     const intervalo = setInterval(() => {
@@ -225,11 +263,26 @@ export default function App() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    importarLembretesDoArquivo(file, lembretes, (novos, nomeDoArquivo) => {
-      localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(novos));
-      if (nomeDoArquivo) localStorage.setItem("nomeProjeto", nomeDoArquivo);
-      location.reload();
-    });
+    importarDadosMural(
+      file,
+      lembretes,
+      categorias,
+      (novosLembretes, novasCategorias, nomeProjetoImportado) => {
+        localStorage.setItem(
+          STORAGE_CHAVE_LEMBRETES,
+          JSON.stringify(novosLembretes)
+        );
+        
+        localStorage.setItem(STORAGE_CHAVE_CATEGORIAS,
+          JSON.stringify(novasCategorias)
+        );
+
+        if (nomeProjetoImportado)
+          localStorage.setItem("nomeProjeto", nomeProjetoImportado);
+
+        location.reload();
+      }
+    );
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -271,6 +324,7 @@ export default function App() {
     .filter((l) =>
       filtros.every((f) => {
         const v = f.valor.toLowerCase();
+
         switch (f.tipo) {
           case "titulo":
             return l.titulo.toLowerCase().includes(v);
@@ -284,6 +338,10 @@ export default function App() {
             if (v === "com-recorrencia") return !!l.diasRecorrencia?.length;
             if (v === "gerados") return l.criadoPorRecorrencia === true;
             return true;
+          case "categoria": {
+            const cat = categorias.find((c) => c.id === l.categoriaId);
+            return cat ? cat.titulo.toLowerCase().includes(v) : false;
+          }
           default:
             return true;
         }
@@ -309,14 +367,35 @@ export default function App() {
               <>
                 {/* Desktop */}
                 <div className="d-none d-md-flex gap-2 flex-wrap">
-                    <button
-                      className="btn btn-outline-secondary btn-sm no-border"
-                      onClick={() => setModoEscuro((atual) => !atual)}
-                      title={modoEscuro ? "Alternar para tema claro" : "Alternar para tema escuro"}
-                      style={{ display: "inline-flex", alignItems: "center", gap: 6 }}
-                    >
-                      <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />
-                    </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      const base = import.meta.env.BASE_URL;
+                      link.href = `${base}Manual_do_Usuario_Meu_Mural.pdf`;
+                      link.download = "Manual_do_Usuario_Meu_Mural.pdf";
+                      link.click();
+                    }}
+                    title="Manual do Usuário"
+                  >
+                    <FontAwesomeIcon icon={faCircleInfo} />
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() => setModoEscuro((atual) => !atual)}
+                    title={
+                      modoEscuro
+                        ? "Alternar para tema claro"
+                        : "Alternar para tema escuro"
+                    }
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                    }}
+                  >
+                    <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />
+                  </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={toggleFullScreen}
@@ -326,9 +405,10 @@ export default function App() {
                   </button>
                   <input
                     type="text"
-                    className="form-control form-control-sm"
+                    className="mural-title"
                     placeholder="Nome do mural"
                     value={nomeProjeto}
+                    maxLength={15}
                     onChange={(e) => setNomeProjeto(e.target.value)}
                     style={{ maxWidth: "200px" }}
                   />
@@ -340,7 +420,15 @@ export default function App() {
                   </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => exportarLembretes(lembretes, nomeProjeto)}
+                    onClick={() => setModalCategoriasAberta(true)}
+                  >
+                    Gerenciar Categorias
+                  </button>
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() =>
+                      exportarDadosMural(lembretes, categorias, nomeProjeto)
+                    }
                   >
                     <FontAwesomeIcon icon={faDownload} /> Exportar
                   </button>
@@ -397,6 +485,15 @@ export default function App() {
                       <li>
                         <button
                           className="dropdown-item"
+                          onClick={() => setModoEscuro((atual) => !atual)}
+                        >
+                          <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />{" "}
+                          {modoEscuro ? "Modo Claro" : "Modo Escuro"}
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
                           onClick={abrirModalNovo}
                         >
                           + Adicionar Lembrete
@@ -405,8 +502,20 @@ export default function App() {
                       <li>
                         <button
                           className="dropdown-item"
+                          onClick={() => setModalCategoriasAberta(true)}
+                        >
+                          Gerenciar Categorias
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
                           onClick={() =>
-                            exportarLembretes(lembretes, nomeProjeto)
+                            exportarDadosMural(
+                              lembretes,
+                              categorias,
+                              nomeProjeto
+                            )
                           }
                         >
                           Exportar
@@ -452,6 +561,7 @@ export default function App() {
                       <li>
                         <div className="px-2">
                           <FiltroAvancado
+                            categorias={categorias}
                             onAdicionarFiltro={(f) =>
                               setFiltros([...filtros, f])
                             }
@@ -522,7 +632,11 @@ export default function App() {
                         <FontAwesomeIcon icon={faStar} />
                       </button>
                       <FiltroAvancado
-                        onAdicionarFiltro={(f) => setFiltros([...filtros, f])}
+                        categorias={categorias}
+                        onAdicionarFiltro={(f) => {
+                          setFiltros([...filtros, f]);
+                          fecharDetalhes();
+                        }}
                       />
                     </div>
 
@@ -609,19 +723,18 @@ export default function App() {
                     {lembretesOrdenados.map((l) => (
                       <SortableItem key={l.id} id={l.id}>
                         <LembreteCard
-                          favorito={l.favorito ?? false}
-                          titulo={l.titulo}
-                          descricao={l.descricao}
-                          prazo={l.prazo}
-                          cor={l.cor}
-                          checklist={l.checklist}
+                          lembrete={l}
+                          categoria={categorias.find(
+                            (c) => c.id === l.categoriaId
+                          )}
                           onEditar={() => editarLembrete(l)}
                           onExcluir={() => remover(l.id)}
                           onAbrirDetalhes={() => abrirDetalhes(l.id)}
-                          onFecharDetalhes={() => fecharDetalhes()}
                           drawerAberto={idDetalhesAberto === l.id}
-                          comentarios={l.comentarios}
-                          fixado={l.fixado}
+                          onDuploClick={(l) => {
+                            setLembreteParaEditar(l);
+                            setModalAberta(true);
+                          }}
                           onDuplicar={() => {
                             const copia = duplicarLembrete(l);
                             adicionar(copia);
@@ -629,14 +742,12 @@ export default function App() {
                           onToggleFixado={() =>
                             atualizar(l.id, { ...l, fixado: !l.fixado })
                           }
-                          onToggleArquivar={() =>
-                            atualizar(l.id, { ...l, arquivado: true })
-                          }
+                          onToggleArquivar={() => {
+                            atualizar(l.id, { ...l, arquivado: true });
+                            fecharDetalhes();
+                          }}
                           onToggleFavorito={() =>
                             atualizar(l.id, { ...l, favorito: !l.favorito })
-                          }
-                          onSalvarComentario={(comentarios) =>
-                            salvarComentarios(l.id, comentarios)
                           }
                         />
                       </SortableItem>
@@ -649,6 +760,7 @@ export default function App() {
                   <LembreteDrawer
                     key={`drawer-${l.id}`}
                     lembrete={l}
+                    categoria={categorias.find((c) => c.id === l.categoriaId)}
                     onFechar={fecharDetalhes}
                     onSalvarChecklist={(novoChecklist) =>
                       atualizar(l.id, { ...l, checklist: novoChecklist })
@@ -676,9 +788,11 @@ export default function App() {
             }}
             onSalvar={handleSalvar}
             lembreteParaEditar={lembreteParaEditar}
+            categorias={categorias}
           />
 
           <ModalArquivados
+            categorias={categorias}
             show={modalArquivadosAberta}
             arquivados={arquivados}
             onFechar={() => setModalArquivadosAberta(false)}
@@ -690,6 +804,18 @@ export default function App() {
             }
             onExcluir={(id) => remover(id)}
           />
+
+          {modalCategoriasAberta && (
+            <CategoriaManager
+              show={modalCategoriasAberta}
+              onClose={() => setModalCategoriasAberta(false)}
+              categorias={categorias}
+              onAdicionar={adicionarCategoria}
+              onAtualizar={atualizarCategoria}
+              onRemover={removerCategoria}
+              lembretes={lembretes}
+            />
+          )}
 
           <footer
             className="text-center footer-custom small mt-auto border-top pt-1"
@@ -703,7 +829,10 @@ export default function App() {
               >
                 L.L Dev
               </a>{" "}
-              — Meu Mural v{APP_VERSAO} - <small>Armazenamento: {usadoKB} KB ({porcentagem}%)</small>
+              — Meu Mural v{APP_VERSAO} -{" "}
+              <small>
+                Armazenamento: {usadoKB} KB ({porcentagem}%)
+              </small>
             </span>
             <br />
           </footer>

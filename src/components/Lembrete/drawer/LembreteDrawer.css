@@ -188,3 +188,13 @@
 .auto-resize {
   overflow: hidden;
 }
+
+.hr-fina {
+  width: 40%;
+  border: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 0.3rem;
+  margin-bottom: 0.6rem;
+  background-color: var(--accent);
+  opacity: 0.4;
+}

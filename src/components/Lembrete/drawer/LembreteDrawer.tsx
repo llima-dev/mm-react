@@ -7,7 +7,13 @@ import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
 import EditorAnotacoes from "../EditorAnotacoes";
 import AbaSnippets from "../AbaSnippets";
 
-import type { Lembrete, Comentario, Snippet, ChecklistItem } from "../../../types";
+import type { 
+  Lembrete,
+  Comentario,
+  Snippet,
+  ChecklistItem,
+  Categoria
+} from "../../../types";
 
 import { extrairHashtags, formatarData } from '../../common/helper';
 
@@ -37,9 +43,18 @@ type Props = {
   onSalvarAnotacoes?: (texto: string) => void;
   onSalvarSnippets?: (snips: Snippet[]) => void;
   onSalvarChecklist?: (novoChecklist: ChecklistItem[]) => void;
+  categoria?: Categoria;
 };
 
-export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario, onSalvarAnotacoes, onSalvarSnippets, onSalvarChecklist }: Props) {
+export default function LembreteDrawer({ 
+  lembrete,
+  onFechar,
+  onSalvarComentario,
+  onSalvarAnotacoes,
+  onSalvarSnippets,
+  onSalvarChecklist,
+  categoria
+}: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
   const [anotacoes, setAnotacoes] = useState(lembrete.anotacoes || '');
   const [novoItem, setNovoItem] = useState("");
@@ -123,10 +138,30 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
 
   return createPortal(
     <div className="drawer aberto">
-      <button className="drawer-fechar" onClick={onFechar} title="Fechar">
+      {categoria && (
+        <div className="d-flex flex-column mb-2 pb-2">
+          <span
+            className="text-muted text-truncate"
+            style={{
+              fontSize: "0.8rem",
+              maxWidth: "600px",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+            }}
+            title={categoria.titulo}
+          >
+            {categoria.titulo}
+          </span>
+          <hr className="hr-fina" />
+        </div>
+      )}
+      
+      <h5>{lembrete.titulo}</h5>
+
+      <button className="drawer-fechar mt-2" onClick={onFechar} title="Fechar">
         <FontAwesomeIcon icon={faTimes} />
       </button>
-      <h5>{lembrete.titulo}</h5>
 
       <div className="abas">
         <button
@@ -346,7 +381,9 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                       <div className="d-flex justify-content-between align-items-center">
                         <span className="text-muted small">
                           {new Date(c.data).toLocaleString()}
-                          {c.editado && <span className="fst-italic"> · editado</span>}
+                          {c.editado && (
+                            <span className="fst-italic"> · editado</span>
+                          )}
                         </span>
                         <button
                           className="btn btn-sm btn-link text-secondary"
@@ -372,9 +409,7 @@ export default function LembreteDrawer({ lembrete, onFechar, onSalvarComentario,
                           rows={calcularRows(textoEditado)}
                         />
                       ) : (
-                        <div>
-                          {c.texto}{" "}
-                        </div>
+                        <div>{c.texto} </div>
                       )}
                     </li>
                   ))}

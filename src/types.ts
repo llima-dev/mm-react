@@ -24,6 +24,7 @@ export type Lembrete = {
   criadoPorRecorrencia?: boolean;
   geradoPor?: string;
   diasRecorrencia?: number[];
+  categoriaId?: string;
 };
 
 export type Comentario = {
@@ -38,4 +39,14 @@ export type Snippet = {
   titulo: string;
   linguagem: string;
   codigo: string;
+};
+
+export type Categoria = {
+  id: string;
+  titulo: string
+  descricao?: string;
+  hashtags?: string[];
+  checklist?: string[];
+  mascaraTitulo?: string;
+  mascaraDescricao?: string;
 };
