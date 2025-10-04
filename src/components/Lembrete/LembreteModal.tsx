@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import type { Lembrete } from '../../types';
+import type { Lembrete, Categoria } from '../../types';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -28,6 +28,7 @@ type Props = {
   onClose: () => void;
   onSalvar: (l: Lembrete) => void;
   lembreteParaEditar?: Lembrete | null;
+  categorias: Categoria[];
 };
 
 export default function LembreteModal({
@@ -35,6 +36,7 @@ export default function LembreteModal({
   onClose,
   onSalvar,
   lembreteParaEditar,
+  categorias
 }: Props) {
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -45,16 +47,51 @@ export default function LembreteModal({
   const [posicaoCursor, setPosicaoCursor] = useState<number | null>(null);
   const [campoAtivo, setCampoAtivo] = useState<"titulo" | "descricao" | null>(null);
   const [expandirModal, setExpandirModal] = useState(false);
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>("");
+  const checklistCategoria = useRef<string[] | null>(null);
+  const carregandoInicial = useRef(true);
+
+  useEffect(() => {
+    if (show && !lembreteParaEditar) {
+      setCategoriaSelecionada("");
+      checklistCategoria.current = null;
+    }
+  }, [show, lembreteParaEditar]);
 
   useEffect(() => {
     if (lembreteParaEditar) {
+      carregandoInicial.current = true;
       setTitulo(lembreteParaEditar.titulo);
       setDescricao(lembreteParaEditar.descricao);
-      setPrazo(lembreteParaEditar.prazo ?? '');
-      setCor(lembreteParaEditar.cor || 'branco');
+      setPrazo(lembreteParaEditar.prazo ?? "");
+      setCor(lembreteParaEditar.cor || "branco");
       setDiasRecorrencia(lembreteParaEditar.diasRecorrencia ?? []);
+      setCategoriaSelecionada(lembreteParaEditar.categoriaId ?? "");
+    } else {
+      setTitulo("");
+      setDescricao("");
+      setPrazo("");
+      setCor("branco");
+      setDiasRecorrencia([]);
+      setCategoriaSelecionada("");
+      checklistCategoria.current = null;
     }
-  }, [lembreteParaEditar]);  
+  }, [lembreteParaEditar]);
+
+  useEffect(() => {
+    if (carregandoInicial.current) {
+      carregandoInicial.current = false;
+      return;
+    }
+
+    if (!categoriaSelecionada) return;
+    const cat = categorias.find((c) => c.id === categoriaSelecionada);
+    if (!cat) return;
+
+    if (cat.mascaraTitulo) setTitulo(cat.mascaraTitulo);
+    if (cat.mascaraDescricao) setDescricao(cat.mascaraDescricao);
+    if (cat.checklist) checklistCategoria.current = cat.checklist;
+  }, [categoriaSelecionada, categorias]);
 
   const handleSalvar = () => {
     if (!titulo.trim()) return;
@@ -70,9 +107,24 @@ export default function LembreteModal({
       arquivado: lembreteParaEditar?.arquivado ?? false,
       fixado: lembreteParaEditar?.fixado ?? false,
       diasRecorrencia: diasRecorrencia.length ? diasRecorrencia : undefined,
+      categoriaId: categoriaSelecionada || undefined,
     };
   
     onSalvar(lembrete);
+
+    if (checklistCategoria.current?.length) {
+      const id = lembrete.id;
+      setTimeout(() => {
+        const checklist = checklistCategoria.current!.map(texto => ({
+          texto,
+          feito: false
+        }));
+
+        const event = new CustomEvent('aplicar-checklist', { detail: { id, checklist } });
+        window.dispatchEvent(event);
+      }, 200);
+    }
+
     setTitulo('');
     setDescricao('');
     setPrazo('');
@@ -99,6 +151,8 @@ export default function LembreteModal({
       setDescricao('');
       setPrazo('');
       setCor('branco');
+      setCategoriaSelecionada('');
+      checklistCategoria.current = null;
       onClose();
   }
 
@@ -109,6 +163,7 @@ export default function LembreteModal({
       centered
       size="lg"
       fullscreen={expandirModal ? true : undefined}
+      backdrop="static"
     >
       <Modal.Header className="d-flex justify-content-between align-items-center">
         <Modal.Title>
@@ -133,6 +188,20 @@ export default function LembreteModal({
       </Modal.Header>
 
       <Modal.Body>
+        <label className="form-label">Categoria:</label>
+        <select
+          className="form-select mb-3"
+          value={categoriaSelecionada}
+          onChange={(e) => setCategoriaSelecionada(e.target.value)}
+          disabled={!!lembreteParaEditar}
+        >
+          <option value="">Selecione...</option>
+          {categorias.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.titulo}
+            </option>
+          ))}
+        </select>
         <input
           className="form-control mb-2"
           placeholder="Título"
@@ -199,7 +268,7 @@ export default function LembreteModal({
               setPosicaoCursor(null);
             }
           }}
-          rows={expandirModal ? 15 : 3} 
+          rows={expandirModal ? 15 : 3}
         />
 
         {campoAtivo === "descricao" && sugestoes.length > 0 && (

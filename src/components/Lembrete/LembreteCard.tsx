@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ChecklistItem, Comentario } from "../../types";
+import type { ChecklistItem, Comentario, Lembrete } from "../../types";
 import { confirmarExclusao, getStatusPrazo, formatarData, extrairHashtags } from "../common/helper.ts";
 import 'highlight.js/styles/github-dark.css';
 
@@ -46,9 +46,13 @@ type Props = {
   fixado?: boolean;
   onToggleFixado?: () => void;
   onDuplicar: () => void;
+  categoria?: { id: string; titulo: string };
+  onDuploClick?: (lembrete: Lembrete) => void;
+  lembrete: Lembrete;
 };
 
 export default function LembreteCard({
+  categoria,
   titulo,
   descricao,
   prazo,
@@ -64,7 +68,9 @@ export default function LembreteCard({
   dragHandle,
   fixado,
   onDuplicar,
-  drawerAberto
+  drawerAberto,
+  lembrete,
+  onDuploClick
 }: Props) {
   const percentual =
     checklist.length > 0
@@ -83,6 +89,7 @@ export default function LembreteCard({
         drawerAberto ? "card-aberto" : ""
       }`}
       onClick={onAbrirDetalhes}
+      onDoubleClick={() => onDuploClick?.(lembrete)}
       style={{ cursor: "pointer" }}
     >
       <div className="card-body">
@@ -117,9 +124,34 @@ export default function LembreteCard({
                 )}
               </>
             )}
-            <span className="text-truncate" title={titulo}>
-              {titulo}
-            </span>
+            <div className="d-flex flex-column flex-grow-1">
+              {/* Categoria no topo */}
+              {categoria && (
+                <small
+                    className="text-muted text-truncate"
+                    style={{ maxWidth: "200px" }}
+                    title={categoria.titulo}
+                  >
+                    {categoria.titulo}
+                  </small>
+              )}
+
+              <hr className="hr-fina" />
+
+              <span
+                className="fw-semibold text-truncate"
+                style={{
+                  display: "inline-block",
+                  maxWidth: "100%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+                title={titulo}
+              >
+                {titulo}
+              </span>
+            </div>
           </div>
 
           {/* drag handle encaixado no flex */}

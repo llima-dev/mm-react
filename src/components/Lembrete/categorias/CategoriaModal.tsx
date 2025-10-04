@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Modal, Button, Tabs, Tab } from "react-bootstrap";
 import type { Categoria } from "../../../types";
+import { mostrarAlerta } from "../../common/helper";
 
 type Props = {
   show: boolean;
   onClose: () => void;
   onSalvar: (categoria: Categoria) => void;
   categoriaParaEditar?: Categoria | null;
+  categoriasExistentes: Categoria[];
 };
 
 export default function CategoriaModal({
@@ -14,6 +16,7 @@ export default function CategoriaModal({
   onClose,
   onSalvar,
   categoriaParaEditar,
+  categoriasExistentes,
 }: Props) {
   const [activeKey, setActiveKey] = useState("dados");
 
@@ -45,6 +48,19 @@ export default function CategoriaModal({
 
   const salvar = () => {
     if (!titulo.trim()) return;
+
+    const tituloNormalizado = titulo.trim().toLowerCase();
+
+    const jaExiste = categoriasExistentes.some(
+      (c) =>
+        c.titulo.trim().toLowerCase() === tituloNormalizado &&
+        c.id !== categoriaParaEditar?.id
+    );
+
+    if (jaExiste) {
+      mostrarAlerta("warning", "Título duplicado", "Já existe uma categoria com esse título.");
+      return;
+    }
 
     const novaCategoria: Categoria = {
       id: categoriaParaEditar?.id ?? crypto.randomUUID(),

@@ -18,13 +18,12 @@ export function useLembretes() {
   const abrirDetalhes = (id: string) => setIdDetalhesAberto(id);
   const fecharDetalhes = () => setIdDetalhesAberto(null);
 
-  // 🧠 Salva sempre que mudar
   useEffect(() => {
     localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(lembretes));
   }, [lembretes]);
 
   const adicionar = (lembrete: Lembrete) => {
-    const novo = { ...lembrete, id: uuidv4() };
+    const novo = { ...lembrete, id: lembrete.id ?? uuidv4() };
     setLembretes((prev) => [...prev, novo]);
   };
 

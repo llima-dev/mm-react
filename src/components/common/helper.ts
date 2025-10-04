@@ -296,3 +296,26 @@ export function registrarGeracaoHoje(id: string, data: string): void {
     localStorage.setItem(chave, JSON.stringify(lista));
   }
 }
+
+/**
+ * Exibe um alerta genérico usando SweetAlert2.
+ * @param tipo "success" | "error" | "warning" | "info" | "question"
+ * @param titulo Título do alerta
+ * @param mensagem Mensagem descritiva
+ * @param duracao Tempo opcional em milissegundos (se quiser autodestruir)
+ */
+export function mostrarAlerta(
+  tipo: "success" | "error" | "warning" | "info" | "question",
+  titulo: string,
+  mensagem: string,
+  duracao?: number
+) {
+  Swal.fire({
+    icon: tipo,
+    title: titulo,
+    text: mensagem,
+    timer: duracao,
+    showConfirmButton: !duracao,
+    timerProgressBar: !!duracao,
+  });
+}
