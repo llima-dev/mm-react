@@ -187,3 +187,79 @@ footer { color: var(--muted); }
   font-weight: 500;
   padding: 0.25rem 0.5rem;
 }
+
+.advanced-filter-container {
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+/* inputs e selects dentro do filtro */
+.advanced-filter-container input,
+.advanced-filter-container select {
+  background-color: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+/* placeholder no modo escuro */
+.advanced-filter-container input::placeholder {
+  color: var(--muted);
+}
+
+/* === Ajustes para dropdowns no modo escuro === */
+html.dark .dropdown-menu,
+body.dark .dropdown-menu {
+  background-color: var(--card-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow);
+}
+
+/* Itens do menu */
+html.dark .dropdown-item,
+body.dark .dropdown-item {
+  color: var(--text) !important;
+}
+
+/* Hover dos itens */
+html.dark .dropdown-item:hover,
+body.dark .dropdown-item:focus {
+  background-color: var(--input-bg) !important;
+  color: var(--text) !important;
+}
+
+/* Divisor dentro do menu */
+html.dark .dropdown-divider,
+body.dark .dropdown-divider {
+  border-color: var(--border) !important;
+}
+
+/* Botão do dropdown (opcional) */
+html.dark .btn-outline-secondary,
+body.dark .btn-outline-secondary {
+  color: var(--text);
+  border-color: var(--border);
+  background-color: var(--btn-bg);
+}
+
+/* Campos desabilitados - estilo global */
+input:disabled,
+select:disabled,
+textarea:disabled,
+button:disabled {
+  background-color: var(--input-bg);
+  color: var(--muted);
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: var(--border);
+}
+
+/* Ajuste visual no modo escuro (já respeitando suas variáveis globais) */
+html.dark input:disabled,
+html.dark select:disabled,
+html.dark textarea:disabled,
+html.dark button:disabled {
+  background-color: #2b2b2d;
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 0.7;
+}

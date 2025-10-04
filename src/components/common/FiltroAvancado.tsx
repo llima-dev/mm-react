@@ -1,10 +1,16 @@
 import { useState } from "react";
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import type { Categoria } from "../../types";
 import "./FiltroAvancado.css";
 
-export type FiltroTipo = "titulo" | "descricao" | "prazo" | "status" | "recorrencia";
+export type FiltroTipo =
+  | "categoria"
+  | "titulo"
+  | "descricao"
+  | "prazo"
+  | "status"
+  | "recorrencia";
 
 export type FiltroAvancado = {
   tipo: FiltroTipo;
@@ -13,10 +19,11 @@ export type FiltroAvancado = {
 
 type Props = {
   onAdicionarFiltro: (filtro: FiltroAvancado) => void;
+  categorias: Categoria[];
 };
 
-export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
-  const [tipo, setTipo] = useState<FiltroTipo>("titulo");
+export default function FiltroAvancado({ onAdicionarFiltro, categorias }: Props) {
+  const [tipo, setTipo] = useState<FiltroTipo>("categoria");
   const [valor, setValor] = useState("");
 
   const adicionar = () => {
@@ -26,21 +33,30 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
     }
   };
 
+  const categoriasOrdenadas = [...categorias].sort((a, b) =>
+    a.titulo.localeCompare(b.titulo, "pt-BR", { sensitivity: "base" })
+  );
+
   return (
     <div className="d-flex gap-2 align-items-center mb-3 advanced-filter-container">
       <select
         className="form-select form-select-sm"
-        style={{ maxWidth: "120px" }}
+        style={{ maxWidth: "140px" }}
         value={tipo}
-        onChange={(e) => setTipo(e.target.value as FiltroTipo)}
+        onChange={(e) => {
+          setTipo(e.target.value as FiltroTipo);
+          setValor("");
+        }}
       >
+        <option value="categoria">Categoria</option>
         <option value="titulo">Título</option>
         <option value="descricao">Descrição</option>
         <option value="prazo">Prazo</option>
         <option value="status">Status</option>
         <option value="recorrencia">Recorrência</option>
       </select>
-      
+
+      {/* Campo dinâmico */}
       {tipo === "prazo" ? (
         <DatePicker
           selected={valor ? new Date(valor) : null}
@@ -70,11 +86,29 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
           className="form-select form-select-sm"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          style={{ minWidth: "140px" }}
+          style={{ minWidth: "160px" }}
         >
           <option value="">Selecione...</option>
           <option value="com-recorrencia">Com recorrência</option>
           <option value="gerados">Gerados automaticamente</option>
+        </select>
+      ) : tipo === "categoria" ? (
+        <select
+          className="form-select form-select-sm"
+          value={valor}
+          onChange={(e) => setValor(e.target.value)}
+          style={{ minWidth: "160px" }}
+        >
+          <option value="">Selecione...</option>
+          {[
+            ...new Map(
+              categoriasOrdenadas.map((cat) => [cat.titulo.toLowerCase(), cat])
+            ).values(),
+          ].map((cat) => (
+            <option key={cat.id} value={cat.titulo}>
+              {cat.titulo}
+            </option>
+          ))}
         </select>
       ) : (
         <input
@@ -83,7 +117,7 @@ export default function FiltroAvancado({ onAdicionarFiltro }: Props) {
           placeholder="Valor..."
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          style={{ minWidth: "140px" }}
+          style={{ minWidth: "160px" }}
         />
       )}
 

@@ -84,13 +84,18 @@ export default function LembreteModal({
       return;
     }
 
-    if (!categoriaSelecionada) return;
+    if (!categoriaSelecionada) {
+      checklistCategoria.current = null;
+      return;
+    }
+
     const cat = categorias.find((c) => c.id === categoriaSelecionada);
     if (!cat) return;
 
-    if (cat.mascaraTitulo) setTitulo(cat.mascaraTitulo);
-    if (cat.mascaraDescricao) setDescricao(cat.mascaraDescricao);
-    if (cat.checklist) checklistCategoria.current = cat.checklist;
+    setTitulo(cat.mascaraTitulo ?? "");
+    setDescricao(cat.mascaraDescricao ?? "");
+
+    checklistCategoria.current = cat.checklist ?? null;
   }, [categoriaSelecionada, categorias]);
 
   const handleSalvar = () => {

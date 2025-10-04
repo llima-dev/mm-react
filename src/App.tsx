@@ -323,6 +323,7 @@ export default function App() {
     .filter((l) =>
       filtros.every((f) => {
         const v = f.valor.toLowerCase();
+
         switch (f.tipo) {
           case "titulo":
             return l.titulo.toLowerCase().includes(v);
@@ -336,6 +337,10 @@ export default function App() {
             if (v === "com-recorrencia") return !!l.diasRecorrencia?.length;
             if (v === "gerados") return l.criadoPorRecorrencia === true;
             return true;
+          case "categoria": {
+            const cat = categorias.find((c) => c.id === l.categoriaId);
+            return cat ? cat.titulo.toLowerCase().includes(v) : false;
+          }
           default:
             return true;
         }
@@ -406,7 +411,9 @@ export default function App() {
                   </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => exportarDadosMural(lembretes, categorias, nomeProjeto)}
+                    onClick={() =>
+                      exportarDadosMural(lembretes, categorias, nomeProjeto)
+                    }
                   >
                     <FontAwesomeIcon icon={faDownload} /> Exportar
                   </button>
@@ -463,6 +470,15 @@ export default function App() {
                       <li>
                         <button
                           className="dropdown-item"
+                          onClick={() => setModoEscuro((atual) => !atual)}
+                        >
+                          <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />{" "}
+                          {modoEscuro ? "Modo Claro" : "Modo Escuro"}
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
                           onClick={abrirModalNovo}
                         >
                           + Adicionar Lembrete
@@ -479,7 +495,13 @@ export default function App() {
                       <li>
                         <button
                           className="dropdown-item"
-                          onClick={() => exportarDadosMural(lembretes, categorias, nomeProjeto)}
+                          onClick={() =>
+                            exportarDadosMural(
+                              lembretes,
+                              categorias,
+                              nomeProjeto
+                            )
+                          }
                         >
                           Exportar
                         </button>
@@ -524,6 +546,7 @@ export default function App() {
                       <li>
                         <div className="px-2">
                           <FiltroAvancado
+                            categorias={categorias}
                             onAdicionarFiltro={(f) =>
                               setFiltros([...filtros, f])
                             }
@@ -594,6 +617,7 @@ export default function App() {
                         <FontAwesomeIcon icon={faStar} />
                       </button>
                       <FiltroAvancado
+                        categorias={categorias}
                         onAdicionarFiltro={(f) => setFiltros([...filtros, f])}
                       />
                     </div>
