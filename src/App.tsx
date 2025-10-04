@@ -62,7 +62,8 @@ import {
   faBroom,
   faExpand,
   faMoon,
-  faSun
+  faSun,
+  faCircleInfo
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
@@ -366,6 +367,19 @@ export default function App() {
               <>
                 {/* Desktop */}
                 <div className="d-none d-md-flex gap-2 flex-wrap">
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      const base = import.meta.env.BASE_URL;
+                      link.href = `${base}Manual_do_Usuario_Meu_Mural.pdf`;
+                      link.download = "Manual_do_Usuario_Meu_Mural.pdf";
+                      link.click();
+                    }}
+                    title="Manual do Usuário"
+                  >
+                    <FontAwesomeIcon icon={faCircleInfo} />
+                  </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={() => setModoEscuro((atual) => !atual)}
