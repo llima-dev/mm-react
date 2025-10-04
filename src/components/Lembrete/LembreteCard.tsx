@@ -136,7 +136,9 @@ export default function LembreteCard({
                   </small>
               )}
 
-              <hr className="hr-fina" />
+              {categoria && (
+                <hr className="hr-fina" />
+              )}
 
               <span
                 className="fw-semibold text-truncate"

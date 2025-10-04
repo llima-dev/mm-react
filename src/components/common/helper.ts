@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import type { ChecklistItem, Lembrete } from "../../types";
+import type { ChecklistItem, Lembrete, Categoria } from "../../types";
 import { STORAGE_CHAVE_LEMBRETES } from '../../utils/constants';
 
 export function confirmarExclusao(callback: () => void) {
@@ -111,65 +111,112 @@ export function getStatusPrazo(prazo?: string, checklist: ChecklistItem[] = []) 
   return { tipo: 'ok' };
 }
 
-export function exportarLembretes(lembretes: Lembrete[], nomeProjeto?: string) {
+export function exportarDadosMural(
+  lembretes: Lembrete[],
+  categorias: Categoria[],
+  nomeProjeto?: string
+) {
   const nomeArquivo = nomeProjeto?.trim()
-    ? `meu-mural-${nomeProjeto.replace(/\s+/g, '_')}.json`
-    : 'meu-mural-export.json';
+    ? `meu-mural-${nomeProjeto.replace(/\s+/g, "_")}.json`
+    : "meu-mural-export.json";
 
   const dados = {
-    nomeProjeto: nomeProjeto || '',
-    lembretes
+    versao: 2,
+    nomeProjeto: nomeProjeto || "",
+    categorias,
+    lembretes,
   };
 
   const blob = new Blob([JSON.stringify(dados, null, 2)], {
-    type: 'application/json',
+    type: "application/json",
   });
 
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = nomeArquivo;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-export function importarLembretesDoArquivo(
+export function importarDadosMural(
   arquivo: File,
   lembretesAtuais: Lembrete[],
-  onImportar: (novos: Lembrete[], nomeProjeto?: string) => void
+  categoriasAtuais: Categoria[],
+  onImportar: (
+    novosLembretes: Lembrete[],
+    novasCategorias: Categoria[],
+    nomeProjeto?: string
+  ) => void
 ) {
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const json = JSON.parse(e.target?.result as string);
 
-      const lista = (Array.isArray(json) ? json : json.lembretes) as Partial<Lembrete>[];
-      const nomeProjeto = typeof json.nomeProjeto === 'string' ? json.nomeProjeto : undefined;
+      if (!json.versao || json.versao < 2) {
+        mostrarAlerta("error", "Falha na importação", "Formato antigo de exportação detectado. Atualize seu arquivo.");
+        return;
+      }
 
-      const validos = lista.filter((l) => l.id && l.titulo);
+      const listaLembretes = (Array.isArray(json)
+        ? json
+        : json.lembretes) as Partial<Lembrete>[];
 
-      const convertidos: Lembrete[] = validos.map((l) => ({
-        id: crypto.randomUUID(),
-        titulo: l.titulo || 'Sem título',
-        descricao: l.descricao || '',
-        cor: l.cor || 'azul',
-        checklist: l.checklist || [],
-        favorito: l.favorito ?? false,
-        fixado: l.fixado ?? false,
-        arquivado: false,
-        comentarios: l.comentarios || [],
-        anotacoes: l.anotacoes || '',
-        snippets: l.snippets || [],
-        prazo: l.prazo || '',
-        criadoPorRecorrencia: l.criadoPorRecorrencia,
-        geradoPor: l.geradoPor,
-        diasRecorrencia: l.diasRecorrencia
-      }));
+      const listaCategorias = (json.categorias || []) as Partial<Categoria>[];
+      const nomeProjeto =
+        typeof json.nomeProjeto === "string" ? json.nomeProjeto : undefined;
 
-      onImportar([...lembretesAtuais, ...convertidos], nomeProjeto);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // === CATEGORIAS ===
+      const novasCategorias: Categoria[] = listaCategorias
+        .filter((c) => c.titulo)
+        .map((c) => ({
+          id: crypto.randomUUID(),
+          titulo: c.titulo || "Sem título",
+          descricao: c.descricao || "",
+          hashtags: c.hashtags || [],
+          checklist: c.checklist || [],
+          mascaraTitulo: c.mascaraTitulo || "",
+          mascaraDescricao: c.mascaraDescricao || "",
+        }));
+
+      // === MAPA DE ID antigo -> novo ===
+      const mapaCategorias = new Map<string, string>();
+      listaCategorias.forEach((c, i) => {
+        if (c.id) mapaCategorias.set(c.id, novasCategorias[i].id);
+      });
+
+      // === LEMBRETES ===
+      const novosLembretes: Lembrete[] = listaLembretes
+        .filter((l) => l.id && l.titulo)
+        .map((l) => ({
+          id: crypto.randomUUID(),
+          titulo: l.titulo || "Sem título",
+          descricao: l.descricao || "",
+          cor: l.cor || "azul",
+          checklist: l.checklist || [],
+          favorito: l.favorito ?? false,
+          fixado: l.fixado ?? false,
+          arquivado: false,
+          comentarios: l.comentarios || [],
+          anotacoes: l.anotacoes || "",
+          snippets: l.snippets || [],
+          prazo: l.prazo || "",
+          criadoPorRecorrencia: l.criadoPorRecorrencia,
+          geradoPor: l.geradoPor,
+          diasRecorrencia: l.diasRecorrencia,
+          categoriaId: l.categoriaId
+            ? mapaCategorias.get(l.categoriaId) || undefined
+            : undefined, // vincula ao novo id
+        }));
+
+      onImportar(
+        [...lembretesAtuais, ...novosLembretes],
+        [...categoriasAtuais, ...novasCategorias],
+        nomeProjeto
+      );
     } catch (erro) {
-      alert("Arquivo inválido.");
+      alert("Arquivo inválido ou corrompido: " + erro);
     }
   };
   reader.readAsText(arquivo);

@@ -32,8 +32,8 @@ import LembreteDrawer from "./components/Lembrete/drawer/LembreteDrawer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ModalArquivados from "./components/common/ModalArquivados";
 import {
-  exportarLembretes,
-  importarLembretesDoArquivo,
+  exportarDadosMural,
+  importarDadosMural,
   limparMural,
   getStatusPrazo,
   formatarData,
@@ -48,6 +48,7 @@ import type { FiltroAvancado as TipoFiltro } from "./components/common/FiltroAva
 
 import {
   STORAGE_CHAVE_LEMBRETES,
+  STORAGE_CHAVE_CATEGORIAS,
   STORAGE_CHAVE_FILTROS,
   STORAGE_CHAVE_FILTRO_FAVORITO,
   APP_VERSAO,
@@ -261,11 +262,26 @@ export default function App() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    importarLembretesDoArquivo(file, lembretes, (novos, nomeDoArquivo) => {
-      localStorage.setItem(STORAGE_CHAVE_LEMBRETES, JSON.stringify(novos));
-      if (nomeDoArquivo) localStorage.setItem("nomeProjeto", nomeDoArquivo);
-      location.reload();
-    });
+    importarDadosMural(
+      file,
+      lembretes,
+      categorias,
+      (novosLembretes, novasCategorias, nomeProjetoImportado) => {
+        localStorage.setItem(
+          STORAGE_CHAVE_LEMBRETES,
+          JSON.stringify(novosLembretes)
+        );
+        
+        localStorage.setItem(STORAGE_CHAVE_CATEGORIAS,
+          JSON.stringify(novasCategorias)
+        );
+
+        if (nomeProjetoImportado)
+          localStorage.setItem("nomeProjeto", nomeProjetoImportado);
+
+        location.reload();
+      }
+    );
   }
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -390,7 +406,7 @@ export default function App() {
                   </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => exportarLembretes(lembretes, nomeProjeto)}
+                    onClick={() => exportarDadosMural(lembretes, categorias, nomeProjeto)}
                   >
                     <FontAwesomeIcon icon={faDownload} /> Exportar
                   </button>
@@ -463,9 +479,7 @@ export default function App() {
                       <li>
                         <button
                           className="dropdown-item"
-                          onClick={() =>
-                            exportarLembretes(lembretes, nomeProjeto)
-                          }
+                          onClick={() => exportarDadosMural(lembretes, categorias, nomeProjeto)}
                         >
                           Exportar
                         </button>
