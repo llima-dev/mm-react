@@ -1,6 +1,9 @@
 import Swal from 'sweetalert2';
 import type { ChecklistItem, Lembrete, Categoria } from "../../types";
-import { STORAGE_CHAVE_LEMBRETES } from '../../utils/constants';
+import { 
+  STORAGE_CHAVE_LEMBRETES,
+  STORAGE_CHAVE_CATEGORIAS
+} from '../../utils/constants';
 
 export function confirmarExclusao(callback: () => void) {
   Swal.fire({
@@ -235,6 +238,7 @@ export function limparMural() {
   }).then((result) => {
     if (result.isConfirmed) {
       localStorage.removeItem(STORAGE_CHAVE_LEMBRETES);
+      localStorage.removeItem(STORAGE_CHAVE_CATEGORIAS);
       location.reload();
     }
   });
