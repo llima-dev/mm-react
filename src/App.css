@@ -239,7 +239,7 @@ html.dark .btn-outline-secondary,
 body.dark .btn-outline-secondary {
   color: var(--text);
   border-color: var(--border);
-  background-color: var(--btn-bg);
+  background-color: var(--btn-app);
 }
 
 /* Campos desabilitados - estilo global */
@@ -254,7 +254,6 @@ button:disabled {
   border-color: var(--border);
 }
 
-/* Ajuste visual no modo escuro (já respeitando suas variáveis globais) */
 html.dark input:disabled,
 html.dark select:disabled,
 html.dark textarea:disabled,
@@ -262,4 +261,29 @@ html.dark button:disabled {
   background-color: #2b2b2d;
   color: rgba(255, 255, 255, 0.6);
   opacity: 0.7;
+}
+
+.mural-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--bs-accent);
+  border: none;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  width: auto;
+  padding: 2px 4px;
+  margin: 0;
+  transition: border-bottom-color 0.2s ease-in-out;
+  border-bottom: 2px solid transparent;
+}
+
+.mural-title:focus {
+  border-bottom: 2px solid var(--bs-accent);
+  background: transparent;
+}
+
+.mural-title::placeholder {
+  color: #aaa;
+  font-style: italic;
 }

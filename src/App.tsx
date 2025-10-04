@@ -391,9 +391,10 @@ export default function App() {
                   </button>
                   <input
                     type="text"
-                    className="form-control form-control-sm"
+                    className="mural-title"
                     placeholder="Nome do mural"
                     value={nomeProjeto}
+                    maxLength={15}
                     onChange={(e) => setNomeProjeto(e.target.value)}
                     style={{ maxWidth: "200px" }}
                   />
@@ -618,7 +619,10 @@ export default function App() {
                       </button>
                       <FiltroAvancado
                         categorias={categorias}
-                        onAdicionarFiltro={(f) => setFiltros([...filtros, f])}
+                        onAdicionarFiltro={(f) => {
+                          setFiltros([...filtros, f]);
+                          fecharDetalhes();
+                        }}
                       />
                     </div>
 
@@ -733,9 +737,10 @@ export default function App() {
                           onToggleFixado={() =>
                             atualizar(l.id, { ...l, fixado: !l.fixado })
                           }
-                          onToggleArquivar={() =>
-                            atualizar(l.id, { ...l, arquivado: true })
-                          }
+                          onToggleArquivar={() => {
+                            atualizar(l.id, { ...l, arquivado: true });
+                            fecharDetalhes();
+                          }}
                           onToggleFavorito={() =>
                             atualizar(l.id, { ...l, favorito: !l.favorito })
                           }
@@ -785,6 +790,7 @@ export default function App() {
           />
 
           <ModalArquivados
+            categorias={categorias}
             show={modalArquivadosAberta}
             arquivados={arquivados}
             onFechar={() => setModalArquivadosAberta(false)}

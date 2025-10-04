@@ -44,7 +44,18 @@ export default function CategoriaModal({
       setMascaraTitulo("");
       setMascaraDescricao("");
     }
-  }, [categoriaParaEditar]);
+
+      if (!show) {
+        setActiveKey("dados");
+        setTitulo("");
+        setDescricao("");
+        setHashtags([]);
+        setChecklist([]);
+        setMascaraTitulo("");
+        setMascaraDescricao("");
+        setNovoChecklist("");
+      }
+  }, [categoriaParaEditar, show]);
 
   const salvar = () => {
     if (!titulo.trim()) return;

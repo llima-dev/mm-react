@@ -5,10 +5,10 @@ import {
   STORAGE_CHAVE_CATEGORIAS
 } from '../../utils/constants';
 
-export function confirmarExclusao(callback: () => void) {
+export function confirmarExclusao(callback: () => void, mensagemCustom?: string, ) {
   Swal.fire({
-    title: "Excluir registro?",
-    text: "Essa ação não pode ser desfeita!",
+    title: "Confirme a operação",
+    text: mensagemCustom ?? "Essa ação não pode ser desfeita!",
     icon: "warning",
     showCancelButton: true,
     confirmButtonText: "Sim, excluir",
@@ -35,7 +35,7 @@ export function confirmarExclusao(callback: () => void) {
       callback();
       Swal.fire({
         title: "Excluído!",
-        text: "O lembrete foi removido.",
+        text: "O registro foi removido.",
         icon: "success",
         timer: 1500,
         showConfirmButton: false,
