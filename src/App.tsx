@@ -63,7 +63,9 @@ import {
   faExpand,
   faMoon,
   faSun,
-  faCircleInfo
+  faGear,
+  faPlus,
+  faInfo
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function App() {
@@ -369,19 +371,6 @@ export default function App() {
                 <div className="d-none d-md-flex gap-2 flex-wrap">
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => {
-                      const link = document.createElement("a");
-                      const base = import.meta.env.BASE_URL;
-                      link.href = `${base}Manual_do_Usuario_Meu_Mural.pdf`;
-                      link.download = "Manual_do_Usuario_Meu_Mural.pdf";
-                      link.click();
-                    }}
-                    title="Manual do Usuário"
-                  >
-                    <FontAwesomeIcon icon={faCircleInfo} />
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary btn-sm no-border"
                     onClick={() => setModoEscuro((atual) => !atual)}
                     title={
                       modoEscuro
@@ -416,21 +405,24 @@ export default function App() {
                     className="btn btn-sm btn-outline-secondary no-border"
                     onClick={abrirModalNovo}
                   >
-                    + Adicionar Lembrete
+                    <FontAwesomeIcon icon={faPlus} />
+                    <span className="p-1">Lembrete</span>
                   </button>
                   <button
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={() => setModalCategoriasAberta(true)}
                   >
-                    Gerenciar Categorias
+                    <FontAwesomeIcon icon={faGear} />
+                    <span className="p-1">Categorias</span>
                   </button>
                   <button
+                    title="Baixar mural"
                     className="btn btn-outline-secondary btn-sm no-border"
                     onClick={() =>
                       exportarDadosMural(lembretes, categorias, nomeProjeto)
                     }
                   >
-                    <FontAwesomeIcon icon={faDownload} /> Exportar
+                    <FontAwesomeIcon icon={faDownload} />
                   </button>
                   <input
                     type="file"
@@ -441,16 +433,30 @@ export default function App() {
                   />
                   <label
                     htmlFor="inputImportarJson"
-                    className="btn btn-outline-secondary btn-sm no-border"
+                    className="import-label btn btn-outline-secondary btn-sm no-border"
+                    title="Importar mural"
                   >
-                    <FontAwesomeIcon icon={faUpload} /> Importar
+                    <FontAwesomeIcon icon={faUpload} />
                   </label>
+                  <button
+                    className="btn btn-outline-secondary btn-sm no-border"
+                    onClick={() => {
+                      const link = document.createElement("a");
+                      const base = import.meta.env.BASE_URL;
+                      link.href = `${base}Manual_do_Usuario_Meu_Mural.pdf`;
+                      link.download = "Manual_do_Usuario_Meu_Mural.pdf";
+                      link.click();
+                    }}
+                    title="Manual do Usuário"
+                  >
+                    <FontAwesomeIcon icon={faInfo} />
+                  </button>
                   <button
                     className="btn btn-outline-danger btn-sm no-border"
                     onClick={limparMural}
                     style={{ opacity: "0.5" }}
                   >
-                    <FontAwesomeIcon icon={faBroom} /> Limpar Mural
+                    <FontAwesomeIcon icon={faBroom} />
                   </button>
                 </div>
 
@@ -818,7 +824,7 @@ export default function App() {
           )}
 
           <footer
-            className="text-center footer-custom small mt-auto border-top pt-1"
+            className="text-center footer-custom small mt-md-auto border-top pt-1"
             style={{ opacity: "0.5" }}
           >
             <span>

@@ -136,6 +136,8 @@ export default function LembreteDrawer({
     return Math.min(Math.max(linhas, 1), 10);
   };
 
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+
   return createPortal(
     <div className="drawer aberto">
       {categoria && (
@@ -156,7 +158,7 @@ export default function LembreteDrawer({
           <hr className="hr-fina" />
         </div>
       )}
-      
+
       <h5>{lembrete.titulo}</h5>
 
       <button className="drawer-fechar mt-2" onClick={onFechar} title="Fechar">
@@ -176,18 +178,24 @@ export default function LembreteDrawer({
         >
           Comentários
         </button>
-        <button
-          className={aba === "anotacoes" ? "ativo" : ""}
-          onClick={() => setAba("anotacoes")}
-        >
-          Anotações
-        </button>
-        <button
-          className={aba === "snippets" ? "ativo" : ""}
-          onClick={() => setAba("snippets")}
-        >
-          Snippets
-        </button>
+
+        {/* Oculta no mobile */}
+        {!isMobile && (
+          <>
+            <button
+              className={aba === "anotacoes" ? "ativo" : ""}
+              onClick={() => setAba("anotacoes")}
+            >
+              Anotações
+            </button>
+            <button
+              className={aba === "snippets" ? "ativo" : ""}
+              onClick={() => setAba("snippets")}
+            >
+              Snippets
+            </button>
+          </>
+        )}
       </div>
 
       <div className={"conteudo " + aba}>

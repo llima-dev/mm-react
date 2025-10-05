@@ -32,7 +32,15 @@
 }
 
 @media (max-width: 768px) {
-  .drawer { width: 100%; }
+  .drawer {
+    width: 100%;
+  }
+
+  .drawer .conteudo {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
 }
 
 .abas {
@@ -95,7 +103,7 @@
 .checklist-container {
   display: flex;
   flex-direction: column;
-  max-height: 60vh;
+  max-height: 55vh;
 }
 
 .checklist-input {
@@ -197,4 +205,27 @@
   margin-bottom: 0.6rem;
   background-color: var(--accent);
   opacity: 0.4;
+}
+
+@media (max-width: 768px) {
+  /* Deixa o scroll funcional mas invisível */
+  .drawer .conteudo::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+  }
+
+  .drawer .conteudo {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE e Edge antigos */
+  }
+}
+
+@media (max-width: 768px) {
+  .comentario-input-wrapper {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--bg);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 5px);
+    z-index: 10;
+  }
 }
