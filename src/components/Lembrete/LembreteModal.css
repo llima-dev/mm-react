@@ -130,3 +130,9 @@ textarea::-webkit-scrollbar-track {
   color: var(--text) !important;
   border-color: var(--accent) !important;
 }
+
+@media (max-width: 768px) {
+  body .modal-content {
+    height: 100vh !important;
+  }
+}
