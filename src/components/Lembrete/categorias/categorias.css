@@ -232,6 +232,13 @@
   min-height: 90vh; /* aumenta altura */
 }
 
+
+@media (max-width: 768px) {
+  .modal-content {
+    min-height: 100vh !important;
+  }
+}
+
 /* Fundo do DataGrid no dark */
 .cat-table-wrapper .MuiDataGrid-root {
   background-color: var(--bs-dark); /* usa o bg do bootstrap dark */

@@ -326,7 +326,7 @@ html.dark button:disabled {
   }
 
   body .modal-content {
-    height: 100dvh !important;
+    height: 100vh !important;
     border-radius: 0 !important;
     overflow-y: auto !important;
     height: 100% !important;
