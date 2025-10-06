@@ -8,7 +8,7 @@ html.dark {
   background: var(--card-bg) !important;
   color: var(--text);
   border: 1px solid var(--border);
-  border-left: 4px solid transparent;
+  border-left: 2px solid transparent;
   border-radius: 8px;
   padding: 1rem;
   box-shadow: var(--shadow);
@@ -27,7 +27,7 @@ html.dark {
 .card-borda-branco  { border-left-color: #212529; }
 
 .card:hover {
-  border-color: var(--accent);
+  border-color: var(--muted-foreground);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
@@ -337,7 +337,7 @@ html.dark {
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   margin-top: 0.3rem;
   margin-bottom: 0.6rem;
-  background-color: var(--accent);
+  background-color: var(--muted-foreground) !important;
   opacity: 0.4;
 }
 
@@ -366,4 +366,17 @@ html.dark {
 .dark .btn-icon:hover {
   background: var(--hover-dark);
   color: var(--accent-dark);
+}
+
+.hashtag-badge {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: #6366f1;
+  font-weight: 500;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+}
+
+.checklist-resumo div:last-child div {
+  box-shadow: 0 0 4px rgba(99,102,241,0.3);
 }

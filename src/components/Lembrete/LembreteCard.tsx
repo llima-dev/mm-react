@@ -163,45 +163,60 @@ export default function LembreteCard({
         )}
 
         {checklist.length > 0 && (
-          <div className="checklist-resumo mt-3">
-            {/* Tabela enxuta */}
-            <table className="table table-sm mb-0">
-              <tbody>
-                {checklist.slice(0, 4).map((item) => (
-                  <tr key={item.id}>
-                    <td style={{ width: "30px", textAlign: "center" }}>
-                      {item.feito ? (
-                        <FontAwesomeIcon
-                          icon={faCheckCircle}
-                          className="text-success"
-                          title="Concluído"
-                        />
-                      ) : (
-                        <FontAwesomeIcon icon={faCircle} title="Pendente" />
-                      )}
-                    </td>
-                    <td
-                      className={
-                        (item.feito
-                          ? "text-decoration-line-through text-muted "
-                          : "") + "text-truncate"
-                      }
-                      style={{ maxWidth: "180px" }}
-                      title={item.texto}
-                    >
-                      {item.texto}
-                    </td>
-                  </tr>
-                ))}
-                {checklist.length > 4 && (
-                  <tr>
-                    <td colSpan={2} className="text-muted small fst-italic">
-                      + {checklist.length - 4} itens
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          <div className="mt-3 space-y-1">
+            {checklist.slice(0, 4).map((item) => (
+              <div
+                key={item.id}
+                className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-200"
+              >
+                <div className="w-5 flex justify-center pt-0.5">
+                  {item.feito ? (
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      className="text-green-500"
+                      title="Concluído"
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faCircle}
+                      className="text-neutral-400"
+                      title="Pendente"
+                    />
+                  )}
+                </div>
+
+                <span
+                  title={item.texto}
+                  className={`flex-1 truncate ${
+                    item.feito
+                      ? "line-through text-neutral-400 dark:text-neutral-500"
+                      : "text-neutral-700 dark:text-neutral-200"
+                  }`}
+                >
+                  {item.texto}
+                </span>
+              </div>
+            ))}
+
+            {checklist.length > 4 && (
+              <div className="text-xs italic text-neutral-500 mt-1">
+                + {checklist.length - 4} itens
+              </div>
+            )}
+
+            {/* Barra de progresso sutil */}
+            <div className="mt-2 h-1.5 rounded-full bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  percentual === 100
+                    ? "bg-green-500"
+                    : percentual >= 50
+                    ? "bg-blue-500"
+                    : "bg-yellow-500"
+                }`}
+                style={{ width: `${percentual}%` }}
+              />
+            </div>
           </div>
         )}
       </div>
