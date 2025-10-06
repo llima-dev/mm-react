@@ -85,11 +85,11 @@ export default function Toolbar({
         />
 
         {/* Ações principais */}
-        <button onClick={onNovoLembrete} className={solidButton}>
+        <button onClick={onNovoLembrete} className={solidButton} title="Novo lembrete (Ctrl + A)">
           <FontAwesomeIcon icon={faPlus} /> Lembrete
         </button>
 
-        <button onClick={onCategorias} className={ghostButton}>
+        <button onClick={onCategorias} className={ghostButton} title="Gerenciar categorias (Ctrl + G)">
           <FontAwesomeIcon icon={faGear} /> Categorias
         </button>
       </div>

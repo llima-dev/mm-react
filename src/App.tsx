@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { v4 as uuidv4 } from "uuid";
+import { useHotkeys } from 'react-hotkeys-hook';
 import "./App.css";
 
 import SplashScreen from "./components/common/SplashScreen";
@@ -68,7 +69,7 @@ export default function App() {
 
   const [mostrarSplash, setMostrarSplash] = useState(true);
 
-    // dark mode
+  // dark mode
   const [modoEscuro, setModoEscuro] = useState<boolean>(() => {
     try {
       const salvo = localStorage.getItem("modoEscuro");
@@ -133,6 +134,26 @@ export default function App() {
   const [modalCategoriasAberta, setModalCategoriasAberta] = useState(false);
   const [filtroAtual, setFiltroAtual] = useState<string | null>(null);
 
+  useHotkeys(
+    "ctrl+a",
+    (event) => {
+      event.preventDefault();
+      if (!modalAberta) abrirModalNovo();
+    },
+    { enableOnFormTags: false },
+    [modalAberta]
+  );
+
+  useHotkeys(
+    "ctrl+g",
+    (event) => {
+      event.preventDefault();
+      if (!modalCategoriasAberta) setModalCategoriasAberta(true);
+    },
+    { enableOnFormTags: false },
+    [modalCategoriasAberta]
+  );
+
   const salvarComentarios = (id: string, novos: Comentario[]) => {
     atualizar(id, { comentarios: novos });
   };
@@ -196,7 +217,8 @@ export default function App() {
       lembretes.forEach((l) => {
         const checklist = l.checklist ?? [];
         const checklistExiste = checklist.length > 0;
-        const checklistCompleto = checklistExiste && checklist.every((item) => item.feito);
+        const checklistCompleto =
+          checklistExiste && checklist.every((item) => item.feito);
 
         const deveDesarquivar =
           l.arquivado &&
@@ -234,12 +256,12 @@ export default function App() {
 
   useEffect(() => {
     if (jaVerificouRecorrencia.current) return;
-  
+
     jaVerificouRecorrencia.current = true;
-  
+
     const hoje = new Date();
     const novos = gerarLembretesRecorrentes(lembretes, hoje);
-  
+
     if (novos.length > 0) {
       novos.forEach((l) => adicionar(l));
     }
@@ -255,7 +277,7 @@ export default function App() {
         tolerance: 5,
       },
     })
-  );  
+  );
 
   function handleImportar(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -270,8 +292,9 @@ export default function App() {
           STORAGE_CHAVE_LEMBRETES,
           JSON.stringify(novosLembretes)
         );
-        
-        localStorage.setItem(STORAGE_CHAVE_CATEGORIAS,
+
+        localStorage.setItem(
+          STORAGE_CHAVE_CATEGORIAS,
           JSON.stringify(novasCategorias)
         );
 

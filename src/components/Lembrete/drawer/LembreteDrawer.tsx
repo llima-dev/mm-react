@@ -61,6 +61,16 @@ export default function LembreteDrawer({
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [textoEditado, setTextoEditado] = useState("");
 
+  const [mostrarModalComentario, setMostrarModalComentario] = useState(false);
+
+  const abrirModalComentario = () => setMostrarModalComentario(true);
+  const fecharModalComentario = () => setMostrarModalComentario(false);
+
+  const handleSalvarComentarioMobile = () => {
+    adicionarComentario();
+    fecharModalComentario();
+  };
+
   const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
 
   const sensors = useSensors(
@@ -195,6 +205,61 @@ export default function LembreteDrawer({
               Snippets
             </button>
           </>
+        )}
+
+        {isMobile && mostrarModalComentario && (
+          <div className="modal-backdrop fade show"></div>
+        )}
+
+        {isMobile && (
+          <div
+            className={`modal fade ${
+              mostrarModalComentario ? "show d-block" : ""
+            }`}
+            tabIndex={-1}
+            role="dialog"
+          >
+            <div className="modal-dialog modal-dialog-centered" role="document">
+              <div className="modal-content p-3">
+                <div className="modal-header">
+                  <h5 className="modal-title">Novo comentário</h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={fecharModalComentario}
+                  />
+                </div>
+                <div className="modal-body">
+                  <textarea
+                    className="form-control"
+                    autoFocus
+                    value={comentarioNovo}
+                    onChange={(e) => setComentarioNovo(e.target.value)}
+                    placeholder="Escreva seu comentário..."
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSalvarComentarioMobile();
+                      }
+                    }}
+                    rows={5}
+                  />
+                </div>
+                <div className="modal-footer">
+                  <Button variant="secondary" onClick={fecharModalComentario}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="primary"
+                    disabled={!comentarioNovo.trim()}
+                    onClick={handleSalvarComentarioMobile}
+                  >
+                    Salvar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -426,34 +491,43 @@ export default function LembreteDrawer({
             </div>
 
             <div className="comentarios-input">
-              <div className="input-group">
-                <textarea
-                  className="form-control auto-resize"
-                  value={comentarioNovo}
-                  maxLength={400}
-                  onChange={(e) => {
-                    setComentarioNovo(e.target.value);
-
-                    e.target.style.height = "auto";
-                    e.target.style.height = e.target.scrollHeight + "px";
-                  }}
-                  placeholder="Escreva um comentário..."
-                  rows={2}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      adicionarComentario();
-                    }
-                  }}
-                />
-                <button
-                  className="btn btn-outline-primary"
-                  disabled={!comentarioNovo.trim()}
-                  onClick={adicionarComentario}
+              {isMobile ? (
+                <Button
+                  variant="outline-primary"
+                  className="w-100 mt-2"
+                  onClick={abrirModalComentario}
                 >
-                  <FontAwesomeIcon icon={faPlus} /> {/* ícone ao lado */}
-                </button>
-              </div>
+                  <FontAwesomeIcon icon={faPlus} /> Adicionar comentário
+                </Button>
+              ) : (
+                <div className="input-group">
+                  <textarea
+                    className="form-control auto-resize"
+                    value={comentarioNovo}
+                    maxLength={400}
+                    onChange={(e) => {
+                      setComentarioNovo(e.target.value);
+                      e.target.style.height = "auto";
+                      e.target.style.height = e.target.scrollHeight + "px";
+                    }}
+                    placeholder="Escreva um comentário..."
+                    rows={2}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        adicionarComentario();
+                      }
+                    }}
+                  />
+                  <button
+                    className="btn btn-outline-primary"
+                    disabled={!comentarioNovo.trim()}
+                    onClick={adicionarComentario}
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
