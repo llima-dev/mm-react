@@ -131,7 +131,7 @@ textarea::-webkit-scrollbar-track {
   border-color: var(--accent) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .modal-dialog {
     margin: 0 !important;
     width: 100% !important;
