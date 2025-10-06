@@ -54,6 +54,7 @@
   --sidebar-accent-foreground: oklch(25% 0.015 260);
   --sidebar-border: oklch(88% 0.01 250);
   --sidebar-ring: oklch(72% 0.04 250);
+  --card-branco-borda: #212529;
 }
 
 /* Modo escuro */
@@ -79,6 +80,7 @@ html.dark {
   --accent-foreground: oklch(90% 0.005 250);
   --destructive: oklch(55% 0.22 25);
   --ring: oklch(68% 0.05 250);
+  --card-branco-borda: rgba(120, 140, 170, 0.35);
 }
 
 /* manter preferência do sistema como fallback */

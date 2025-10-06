@@ -78,8 +78,8 @@ export default function LembreteCard({
       style={{ cursor: "pointer" }}
     >
       <div className="card-body">
-        <h5 className="card-title d-flex align-items-center justify-content-between">
-          <div className="d-flex flex-column flex-grow-1">
+        <h5 className="card-title">
+          <div className="d-flex flex-column flex-grow-1 min-w-0">
             {/* Categoria no topo */}
             {categoria && (
               <>
@@ -94,55 +94,45 @@ export default function LembreteCard({
               </>
             )}
 
-            {/* Linha principal: ícone + título */}
-            <div className="d-flex align-items-center gap-1">
+            {/* Título e status */}
+            <div className="titulo-wrapper">
               {status.tipo !== "nulo" && (
                 <>
                   {status.tipo === "finalizado" ? (
                     <FontAwesomeIcon
                       icon={faCircleCheck}
-                      className="text-success fa-sm"
+                      className="text-success fa-sm me-1"
                       title="Checklist finalizado"
                     />
                   ) : status.tipo === "ok" ? (
                     <FontAwesomeIcon
                       icon={faCircleCheck}
-                      className="text-success fa-sm"
+                      className="text-success fa-sm me-1"
                       title="Prazo em dia"
                     />
                   ) : status.tipo === "proximo" ? (
                     <FontAwesomeIcon
                       icon={faCircleExclamation}
-                      className="text-warning fa-sm"
+                      className="text-warning fa-sm me-1"
                       title="Prazo se aproximando"
                     />
                   ) : (
                     <FontAwesomeIcon
                       icon={faCircleXmark}
-                      className="text-danger fa-sm"
+                      className="text-danger fa-sm me-1"
                       title="Prazo atrasado"
                     />
                   )}
                 </>
               )}
 
-              <span
-                className="fw-semibold text-truncate"
-                style={{
-                  display: "inline-block",
-                  maxWidth: "100%",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-                title={titulo}
-              >
+              <span className="fw-semibold text-truncate" title={titulo}>
                 {titulo}
               </span>
             </div>
           </div>
 
-          {/* drag handle encaixado no flex */}
+          {/* Drag handle */}
           {!fixado && dragHandle && (
             <div className="drag-handle ms-2">{dragHandle}</div>
           )}

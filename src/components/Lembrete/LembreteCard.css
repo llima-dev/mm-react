@@ -7,12 +7,18 @@ html.dark {
   position: relative;
   background: var(--card-bg) !important;
   color: var(--text);
-  border: 1px solid var(--border);
+  border: 1.5px solid rgba(120, 140, 170, 0.35); /* cinza-azulado elegante */
+  border-bottom: 1.5px solid rgba(90, 120, 160, 0.55); /* reforço sutil e moderno */
   border-left: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 1rem;
-  box-shadow: var(--shadow);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.card:hover {
+  border-color: rgba(130, 160, 200, 0.6);
+  box-shadow: 0 3px 10px rgba(50, 70, 120, 0.2);
 }
 
 /* no modo escuro, tira a sombra */
@@ -24,12 +30,7 @@ html.dark {
 .card-borda-azul    { border-left-color: #0d6efd; }
 .card-borda-verde   { border-left-color: #198754; }
 .card-borda-amarelo { border-left-color: #ffc107; }
-.card-borda-branco  { border-left-color: #212529; }
-
-.card:hover {
-  border-color: var(--muted-foreground);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
+.card-borda-branco  { border-left-color: var(--card-branco-borda); }
 
 .card-title {
   margin-bottom: 0.5rem;
@@ -379,4 +380,23 @@ html.dark {
 
 .checklist-resumo div:last-child div {
   box-shadow: 0 0 4px rgba(99,102,241,0.3);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.card-title .titulo-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0; /* permite truncar corretamente */
+  overflow: hidden;
+}
+
+.card-title .drag-handle {
+  flex-shrink: 0; /* impede o ícone de ser empurrado */
 }
