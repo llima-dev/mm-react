@@ -2,7 +2,6 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import type { Categoria } from "../../types";
-import "./FiltroAvancado.css";
 
 export type FiltroTipo =
   | "categoria"
@@ -38,10 +37,11 @@ export default function FiltroAvancado({ onAdicionarFiltro, categorias }: Props)
   );
 
   return (
-    <div className="d-flex gap-2 align-items-center mb-3 advanced-filter-container">
+    <div className="flex flex-wrap items-center gap-2 mb-2">
+      {/* Tipo de filtro */}
       <select
-        className="form-select form-select-sm"
-        style={{ maxWidth: "140px" }}
+        className="px-2 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-sm
+                   focus:outline-none focus:ring-1 focus:ring-indigo-400"
         value={tipo}
         onChange={(e) => {
           setTipo(e.target.value as FiltroTipo);
@@ -65,15 +65,15 @@ export default function FiltroAvancado({ onAdicionarFiltro, categorias }: Props)
           }
           dateFormat="dd/MM/yyyy"
           placeholderText="Prazo"
-          className="form-control form-control-sm"
-          wrapperClassName="date-picker-wrapper"
+          className="px-2 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-sm
+                     focus:outline-none focus:ring-1 focus:ring-indigo-400"
         />
       ) : tipo === "status" ? (
         <select
-          className="form-select form-select-sm"
+          className="px-2 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-sm
+                     focus:outline-none focus:ring-1 focus:ring-indigo-400"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          style={{ minWidth: "140px" }}
         >
           <option value="">Selecione...</option>
           <option value="finalizado">Finalizado</option>
@@ -83,10 +83,10 @@ export default function FiltroAvancado({ onAdicionarFiltro, categorias }: Props)
         </select>
       ) : tipo === "recorrencia" ? (
         <select
-          className="form-select form-select-sm"
+          className="px-2 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-sm
+                     focus:outline-none focus:ring-1 focus:ring-indigo-400"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          style={{ minWidth: "160px" }}
         >
           <option value="">Selecione...</option>
           <option value="com-recorrencia">Com recorrência</option>
@@ -94,41 +94,36 @@ export default function FiltroAvancado({ onAdicionarFiltro, categorias }: Props)
         </select>
       ) : tipo === "categoria" ? (
         <select
-          className="form-select form-select-sm"
+          className="px-2 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-sm
+                     focus:outline-none focus:ring-1 focus:ring-indigo-400"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          style={{ minWidth: "160px" }}
         >
           <option value="">Selecione...</option>
-          {[
-            ...new Map(
-              categoriasOrdenadas.map((cat) => [cat.titulo.toLowerCase(), cat])
-            ).values(),
-          ].map((cat) => (
-            <option key={cat.id} value={cat.titulo}>
-              {cat.titulo}
-            </option>
-          ))}
+          {[...new Map(categoriasOrdenadas.map((cat) => [cat.titulo.toLowerCase(), cat])).values()].map(
+            (cat) => (
+              <option key={cat.id} value={cat.titulo}>
+                {cat.titulo}
+              </option>
+            )
+          )}
         </select>
       ) : (
         <input
           type="text"
-          className="form-control form-control-sm"
           placeholder="Valor..."
+          className="px-2 py-1.5 rounded-md border border-border/60 bg-background text-foreground text-sm
+                     focus:outline-none focus:ring-1 focus:ring-indigo-400"
           value={valor}
           onChange={(e) => setValor(e.target.value)}
-          style={{ minWidth: "160px" }}
         />
       )}
 
       <button
-        className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
-        style={{
-          padding: "0.25rem 0.75rem",
-          fontSize: "0.8rem",
-          whiteSpace: "nowrap",
-        }}
         onClick={adicionar}
+        className="inline-flex items-center gap-1 rounded-md border border-border/60 px-3 py-1 text-sm font-medium
+                   text-foreground/80 bg-background hover:bg-neutral-100 dark:hover:bg-neutral-800
+                   focus:outline-none focus:ring-1 focus:ring-indigo-400 transition"
       >
         Adicionar filtro
       </button>

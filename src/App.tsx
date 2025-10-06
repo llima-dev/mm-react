@@ -57,16 +57,11 @@ import {
 import {
   faStar,
   faBoxArchive,
-  faDownload,
-  faUpload,
-  faBroom,
-  faExpand,
-  faMoon,
-  faSun,
-  faGear,
-  faPlus,
-  faInfo
 } from "@fortawesome/free-solid-svg-icons";
+
+import Toolbar from "./components/common/Toolbar";
+import ToolbarMobile from "./components/common/ToolbarMobile";
+import MobileFilterBar from "./components/common/MobileFilterBar";
 
 export default function App() {
   const { usadoKB, porcentagem } = calcularUsoLocalStorage();
@@ -136,6 +131,7 @@ export default function App() {
   );
   const [modalArquivadosAberta, setModalArquivadosAberta] = useState(false);
   const [modalCategoriasAberta, setModalCategoriasAberta] = useState(false);
+  const [filtroAtual, setFiltroAtual] = useState<string | null>(null);
 
   const salvarComentarios = (id: string, novos: Comentario[]) => {
     atualizar(id, { comentarios: novos });
@@ -323,6 +319,7 @@ export default function App() {
   const lembretesFiltrados = lembretes
     .filter((l) => !l.arquivado)
     .filter((l) => (filtroFavoritos ? l.favorito : true))
+    .filter((l) => (filtroAtual ? l.categoriaId === filtroAtual : true))
     .filter((l) =>
       filtros.every((f) => {
         const v = f.valor.toLowerCase();
@@ -368,262 +365,52 @@ export default function App() {
               {/* Lado esquerdo: ações */}
               <>
                 {/* Desktop */}
-                <div className="d-none d-md-flex gap-2 flex-wrap">
-                  <button
-                    className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => setModoEscuro((atual) => !atual)}
-                    title={
-                      modoEscuro
-                        ? "Alternar para tema claro"
-                        : "Alternar para tema escuro"
-                    }
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={toggleFullScreen}
-                    title="Tela cheia"
-                  >
-                    <FontAwesomeIcon icon={faExpand} />
-                  </button>
-                  <input
-                    type="text"
-                    className="mural-title"
-                    placeholder="Nome do mural"
-                    value={nomeProjeto}
-                    maxLength={15}
-                    onChange={(e) => setNomeProjeto(e.target.value)}
-                    style={{ maxWidth: "200px" }}
-                  />
-                  <button
-                    className="btn btn-sm btn-outline-secondary no-border"
-                    onClick={abrirModalNovo}
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                    <span className="p-1">Lembrete</span>
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => setModalCategoriasAberta(true)}
-                  >
-                    <FontAwesomeIcon icon={faGear} />
-                    <span className="p-1">Categorias</span>
-                  </button>
-                  <button
-                    title="Baixar mural"
-                    className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() =>
+                <div className="hidden md:block">
+                  <Toolbar
+                    modoEscuro={modoEscuro}
+                    onToggleModoEscuro={() => setModoEscuro((m) => !m)}
+                    onFullScreen={toggleFullScreen}
+                    nomeProjeto={nomeProjeto}
+                    setNomeProjeto={setNomeProjeto}
+                    onNovoLembrete={abrirModalNovo}
+                    onCategorias={() => setModalCategoriasAberta(true)}
+                    onExportar={() =>
                       exportarDadosMural(lembretes, categorias, nomeProjeto)
                     }
-                  >
-                    <FontAwesomeIcon icon={faDownload} />
-                  </button>
-                  <input
-                    type="file"
-                    accept=".json"
-                    style={{ display: "none" }}
-                    id="inputImportarJson"
-                    onChange={handleImportar}
-                  />
-                  <label
-                    htmlFor="inputImportarJson"
-                    className="import-label btn btn-outline-secondary btn-sm no-border"
-                    title="Importar mural"
-                  >
-                    <FontAwesomeIcon icon={faUpload} />
-                  </label>
-                  <button
-                    className="btn btn-outline-secondary btn-sm no-border"
-                    onClick={() => {
+                    onImportar={handleImportar}
+                    onManual={() => {
                       const link = document.createElement("a");
                       const base = import.meta.env.BASE_URL;
                       link.href = `${base}Manual_do_Usuario_Meu_Mural.pdf`;
                       link.download = "Manual_do_Usuario_Meu_Mural.pdf";
                       link.click();
                     }}
-                    title="Manual do Usuário"
-                  >
-                    <FontAwesomeIcon icon={faInfo} />
-                  </button>
-                  <button
-                    className="btn btn-outline-danger btn-sm no-border"
-                    onClick={limparMural}
-                    style={{ opacity: "0.5" }}
-                  >
-                    <FontAwesomeIcon icon={faBroom} />
-                  </button>
+                    onLimpar={limparMural}
+                  />
                 </div>
 
                 {/* Mobile */}
-                <div className="d-md-none w-100">
-                  <div className="input-group mb-2">
-                    <button
-                      className="btn btn-outline-secondary btn-sm no-border"
-                      onClick={toggleFullScreen}
-                      title="Tela cheia"
-                    >
-                      <FontAwesomeIcon icon={faExpand} />
-                    </button>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      placeholder="Nome do mural"
-                      value={nomeProjeto}
-                      onChange={(e) => setNomeProjeto(e.target.value)}
-                    />
-                  </div>
-                  <div className="dropdown">
-                    <button
-                      className="btn btn-outline-secondary btn-sm dropdown-toggle w-100"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      Ações
-                    </button>
-                    <ul className="dropdown-menu w-100">
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => setModoEscuro((atual) => !atual)}
-                        >
-                          <FontAwesomeIcon icon={modoEscuro ? faSun : faMoon} />{" "}
-                          {modoEscuro ? "Modo Claro" : "Modo Escuro"}
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={abrirModalNovo}
-                        >
-                          + Adicionar Lembrete
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => setModalCategoriasAberta(true)}
-                        >
-                          Gerenciar Categorias
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() =>
-                            exportarDadosMural(
-                              lembretes,
-                              categorias,
-                              nomeProjeto
-                            )
-                          }
-                        >
-                          Exportar
-                        </button>
-                      </li>
-                      <li>
-                        <label
-                          htmlFor="inputImportarJson"
-                          className="dropdown-item"
-                        >
-                          Importar
-                        </label>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item text-danger"
-                          onClick={limparMural}
-                          style={{ opacity: "0.7" }}
-                        >
-                          Limpar Mural
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="dropdown-item"
-                          onClick={() => setModalArquivadosAberta(true)}
-                        >
-                          <FontAwesomeIcon icon={faBoxArchive} /> Arquivados (
-                          {arquivados.length})
-                        </button>
-                      </li>
-                      <hr />
-                      <li>
-                        <button
-                          className={`dropdown-item ${
-                            filtroFavoritos ? "text-warning" : ""
-                          }`}
-                          onClick={() => setFiltroFavoritos((atual) => !atual)}
-                        >
-                          <FontAwesomeIcon icon={faStar} /> Filtrar Favoritos
-                        </button>
-                      </li>
-                      <li>
-                        <div className="px-2">
-                          <FiltroAvancado
-                            categorias={categorias}
-                            onAdicionarFiltro={(f) =>
-                              setFiltros([...filtros, f])
-                            }
-                          />
-                        </div>
-                      </li>
-                      <li>
-                        <div className="dropdown-divider"></div>
-                      </li>
-                      {/* Fora do <details>, mas ainda dentro da <ul> */}
-                      {filtros.length > 0 && (
-                        <li className="px-2">
-                          <div className="dropdown-divider"></div>
-                          <strong className="small text-muted">
-                            Filtros Ativos:
-                          </strong>
-                          <div className="d-flex flex-column gap-2 mt-1">
-                            {filtros.map((f, i) => {
-                              return (
-                                <span
-                                  key={i}
-                                  className={`border badge d-flex align-items-center justify-content-between px-2 py-1 rounded-pill bg-light text-dark`}
-                                  style={{
-                                    fontSize: "0.75rem",
-                                    fontWeight: 500,
-                                    whiteSpace: "nowrap",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                  }}
-                                >
-                                  <span style={{ textTransform: "capitalize" }}>
-                                    {f.tipo === "prazo"
-                                      ? `Prazo: ${formatarData(f.valor)}`
-                                      : `${f.tipo}: `}
-                                    {f.tipo !== "prazo" && (
-                                      <strong>{f.valor}</strong>
-                                    )}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    className="btn-close btn-close-white btn-sm ms-2"
-                                    style={{ filter: "invert(0.5)" }}
-                                    onClick={() =>
-                                      setFiltros(
-                                        filtros.filter((_, idx) => idx !== i)
-                                      )
-                                    }
-                                  ></button>
-                                </span>
-                              );
-                            })}
-                          </div>
-                        </li>
-                      )}
-                    </ul>
-                  </div>
+                <div className="block md:hidden">
+                  <ToolbarMobile
+                    modoEscuro={modoEscuro}
+                    onToggleModoEscuro={() => setModoEscuro((m) => !m)}
+                    onNovoLembrete={abrirModalNovo}
+                    onCategorias={() => setModalCategoriasAberta(true)}
+                    onExportar={() =>
+                      exportarDadosMural(lembretes, categorias, nomeProjeto)
+                    }
+                    onImportar={handleImportar}
+                    onLimpar={limparMural}
+                    onArquivados={() => setModalArquivadosAberta(true)}
+                    arquivadosCount={arquivados.length}
+                    nomeProjeto={nomeProjeto}
+                    setNomeProjeto={setNomeProjeto}
+                  />
+                  <MobileFilterBar
+                    categorias={categorias}
+                    filtroAtual={filtroAtual}
+                    setFiltroAtual={setFiltroAtual}
+                  />
                 </div>
 
                 <div className="filtros-wrapper d-flex flex-column flex-md-row flex-wrap gap-2 mb-1 mt-2">
@@ -646,40 +433,48 @@ export default function App() {
                       />
                     </div>
 
-                    <div className="d-flex">
-                      {filtros.map((f, i) => {
-                        return (
-                          <span
-                            key={i}
-                            className={`border badge d-flex align-items-center gap-2 px-2 py-1 rounded-pill bg-light text-dark`}
-                            style={{
-                              fontSize: "0.75rem",
-                              fontWeight: 500,
-                              maxWidth: "fit-content",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
-                          >
-                            <span style={{ textTransform: "capitalize" }}>
-                              {f.tipo === "prazo"
-                                ? `Prazo: ${formatarData(f.valor)}`
-                                : `${f.tipo}: `}
-                              {f.tipo !== "prazo" && <strong>{f.valor}</strong>}
-                            </span>
-                            <button
-                              type="button"
-                              className="btn-close btn-close-white btn-sm"
-                              style={{ marginLeft: 4, filter: "invert(0.5)" }}
-                              onClick={() =>
-                                setFiltros(
-                                  filtros.filter((_, idx) => idx !== i)
-                                )
-                              }
-                            ></button>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {filtros.map((f, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium
+                 bg-neutral-200/70 dark:bg-neutral-800/70 text-neutral-800 dark:text-neutral-200
+                 border border-neutral-300/60 dark:border-neutral-700/60 shadow-sm hover:bg-neutral-300/70
+                 dark:hover:bg-neutral-700/70 transition-colors"
+                        >
+                          <span className="capitalize">
+                            {f.tipo === "prazo"
+                              ? `Prazo: ${formatarData(f.valor)}`
+                              : `${f.tipo}: `}
+                            {f.tipo !== "prazo" && <strong>{f.valor}</strong>}
                           </span>
-                        );
-                      })}
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setFiltros(filtros.filter((_, idx) => idx !== i))
+                            }
+                            className="ml-1 inline-flex items-center justify-center rounded-full p-[2px]
+                   hover:bg-neutral-400/30 dark:hover:bg-neutral-600/50 transition"
+                            aria-label="Remover filtro"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-3.5 w-3.5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
