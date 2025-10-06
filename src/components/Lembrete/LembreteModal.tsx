@@ -160,6 +160,7 @@ export default function LembreteModal({
     <Modal
       show={show}
       onHide={limparModal}
+      centered
       size="lg"
       backdrop="static"
     >
