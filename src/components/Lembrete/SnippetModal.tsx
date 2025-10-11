@@ -39,7 +39,7 @@ export default function SnippetModal({
   }, [snippet, show]);
 
   // 🔹 Função principal de salvar
-  const salvarSnippet = (auto = false) => {
+  const salvarSnippet = () => {
     if (!codigo.trim() && !titulo.trim()) return;
     const novoSnippet = {
       id: snippet?.id || crypto.randomUUID(),
@@ -48,15 +48,13 @@ export default function SnippetModal({
       codigo,
     };
     onSalvar(novoSnippet);
-    if (auto) {
-      setStatus("🔹 Salvo");
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      timeoutRef.current = setTimeout(() => setStatus(""), 2000);
-    }
+    setStatus("🔹 Salvo");
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => setStatus(""), 2000);
   };
 
   // 🔹 Gatilho do blur (título e editor)
-  const handleBlur = () => salvarSnippet(true);
+  const handleBlur = () => salvarSnippet();
 
   // 🔹 Extensões de linguagem
   const getExtensions = () => {
@@ -110,7 +108,7 @@ export default function SnippetModal({
             value={linguagem}
             onChange={(e) => {
               setLinguagem(e.target.value);
-              salvarSnippet(true);
+              salvarSnippet();
             }}
           >
             <option value="javascript">JavaScript</option>
