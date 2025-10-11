@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import type { Snippet } from "../../types";
 import CodeMirror from "@uiw/react-codemirror";
