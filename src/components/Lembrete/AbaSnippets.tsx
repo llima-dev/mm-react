@@ -224,7 +224,6 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
   return (
     <div style={{ height: "60vh", display: "flex", flexDirection: "column" }}>
       <div className="d-flex justify-content-between align-items-center mb-2">
-        <h6>Snippets</h6>
         <Button
           variant="text"
           color="inherit"

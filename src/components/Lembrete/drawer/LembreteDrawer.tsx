@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faTimes,
+  faPlus,
+  faCog,
+  faInfoCircle,
+  faCommentDots,
+  faStickyNote,
+  faCode,
+} from "@fortawesome/free-solid-svg-icons";
 
 import EditorAnotacoes from "../EditorAnotacoes";
 import AbaSnippets from "../AbaSnippets";
@@ -62,6 +70,27 @@ export default function LembreteDrawer({
   const [textoEditado, setTextoEditado] = useState("");
 
   const [mostrarModalComentario, setMostrarModalComentario] = useState(false);
+
+  const [mostrarConfig, setMostrarConfig] = useState(false);
+
+  const [abasVisiveis, setAbasVisiveis] = useState(() => {
+    const chave = `abasDrawer_${lembrete.id}`;
+    const salvo = localStorage.getItem(chave);
+    const parsed = salvo
+      ? JSON.parse(salvo)
+      : {
+          detalhes: true,
+          comentarios: true,
+          anotacoes: true,
+          snippets: true,
+        };
+    return { ...parsed, detalhes: true };
+  });
+
+  useEffect(() => {
+    const chave = `abasDrawer_${lembrete.id}`;
+    localStorage.setItem(chave, JSON.stringify(abasVisiveis));
+  }, [abasVisiveis, lembrete.id]);
 
   const abrirModalComentario = () => setMostrarModalComentario(true);
   const fecharModalComentario = () => setMostrarModalComentario(false);
@@ -169,40 +198,72 @@ export default function LembreteDrawer({
         </div>
       )}
 
-      <h5>{lembrete.titulo}</h5>
+      <div className="d-flex justify-content-between align-items-center mb-3 drawer-header">
+        <h5 className="m-0 text-truncate">{lembrete.titulo}</h5>
 
-      <button className="drawer-fechar mt-2" onClick={onFechar} title="Fechar">
-        <FontAwesomeIcon icon={faTimes} />
-      </button>
+        <div className="d-flex align-items-center">
+          <button
+            className="btn-sm icon-btn text-secondary p-1"
+            onClick={() => setMostrarConfig(true)}
+            title="Configurar abas"
+          >
+            <FontAwesomeIcon icon={faCog} />
+          </button>
+
+          <button
+            className="btn-sm icon-btn text-danger p-1"
+            onClick={onFechar}
+            title="Fechar"
+          >
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+      </div>
 
       <div className="abas">
-        <button
-          className={aba === "detalhes" ? "ativo" : ""}
-          onClick={() => setAba("detalhes")}
-        >
-          Detalhes
-        </button>
-        <button
-          className={aba === "comentarios" ? "ativo" : ""}
-          onClick={() => setAba("comentarios")}
-        >
-          Comentários
-        </button>
+        {/* 🔹 Botões de abas dinâmicos */}
+        {abasVisiveis.detalhes && (
+          <button
+            className={aba === "detalhes" ? "ativo" : ""}
+            onClick={() => setAba("detalhes")}
+          >
+            <FontAwesomeIcon icon={faInfoCircle} className="me-2" />
+            Detalhes
+          </button>
+        )}
 
-        {/* Oculta no mobile */}
-        <button
-          className={aba === "anotacoes" ? "ativo" : ""}
-          onClick={() => setAba("anotacoes")}
-        >
-          Anotações
-        </button>
-        <button
-          className={aba === "snippets" ? "ativo" : ""}
-          onClick={() => setAba("snippets")}
-        >
-          Snippets
-        </button>
+        {abasVisiveis.comentarios && (
+          <button
+            className={aba === "comentarios" ? "ativo" : ""}
+            onClick={() => setAba("comentarios")}
+          >
+            <FontAwesomeIcon icon={faCommentDots} className="me-2" />
+            Comentários
+          </button>
+        )}
 
+        {/* Oculta no mobile se quiser */}
+        {abasVisiveis.anotacoes && (
+          <button
+            className={aba === "anotacoes" ? "ativo" : ""}
+            onClick={() => setAba("anotacoes")}
+          >
+            <FontAwesomeIcon icon={faStickyNote} className="me-2" />
+            Anotações
+          </button>
+        )}
+
+        {abasVisiveis.snippets && (
+          <button
+            className={aba === "snippets" ? "ativo" : ""}
+            onClick={() => setAba("snippets")}
+          >
+            <FontAwesomeIcon icon={faCode} className="me-2" />
+            Snippets
+          </button>
+        )}
+
+        {/* ⚙️ Modal de comentário (mantido igual) */}
         {isMobile && mostrarModalComentario && (
           <div className="modal-backdrop fade show"></div>
         )}
@@ -544,6 +605,90 @@ export default function LembreteDrawer({
             snippets={lembrete.snippets || []}
             onSalvar={(snips) => onSalvarSnippets?.(snips)}
           />
+        )}
+
+        {mostrarConfig && (
+          <>
+            <div className="modal-backdrop fade show"></div>
+            <div className="modal fade show d-block" tabIndex={-1}>
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h6 className="modal-title">
+                      <FontAwesomeIcon icon={faCog} className="me-2" />
+                      Configurações do Drawer
+                    </h6>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => setMostrarConfig(false)}
+                    />
+                  </div>
+
+                  <div className="modal-body small">
+                    {[
+                      {
+                        key: "detalhes",
+                        icon: faInfoCircle,
+                        label: "Detalhes",
+                      },
+                      {
+                        key: "comentarios",
+                        icon: faCommentDots,
+                        label: "Comentários",
+                      },
+                      {
+                        key: "anotacoes",
+                        icon: faStickyNote,
+                        label: "Anotações",
+                      },
+                      { key: "snippets", icon: faCode, label: "Snippets" },
+                    ].map(({ key, icon, label }) => (
+                      <div
+                        key={key}
+                        className="d-flex justify-content-between align-items-center mb-2"
+                      >
+                        <span>
+                          <FontAwesomeIcon
+                            icon={icon}
+                            className="me-2 text-secondary"
+                          />
+                          {label}
+                        </span>
+                        <div className="form-check form-switch m-0">
+                          <input
+                            type="checkbox"
+                            className="form-check-input"
+                            checked={
+                              abasVisiveis[key as keyof typeof abasVisiveis]
+                            }
+                            disabled={key === "detalhes"}
+                            onChange={(e) => {
+                              if (key === "detalhes") return;
+                              setAbasVisiveis({
+                                ...abasVisiveis,
+                                [key]: e.target.checked,
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="modal-footer py-2">
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() => setMostrarConfig(false)}
+                    >
+                      Fechar
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>,

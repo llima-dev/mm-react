@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import type { Snippet } from "../../types";
 import CodeMirror from "@uiw/react-codemirror";
@@ -18,30 +18,47 @@ type Props = {
   snippet?: Snippet | null;
 };
 
-export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props) {
+export default function SnippetModal({
+  show,
+  onClose,
+  onSalvar,
+  snippet,
+}: Props) {
   const [titulo, setTitulo] = useState(snippet?.titulo ?? "");
   const [codigo, setCodigo] = useState(snippet?.codigo ?? "");
-  const [linguagem, setLinguagem] = useState(snippet?.linguagem ?? "javascript");
+  const [linguagem, setLinguagem] = useState(snippet?.linguagem ?? "sql");
+  const [status, setStatus] = useState("");
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Atualiza estados quando modal abre com snippet diferente
+  // Atualiza estados quando abre o modal com snippet novo
   useEffect(() => {
     setTitulo(snippet?.titulo ?? "");
     setCodigo(snippet?.codigo ?? "");
-    setLinguagem(snippet?.linguagem ?? "javascript");
+    setLinguagem(snippet?.linguagem ?? "sql");
+    setStatus("");
   }, [snippet, show]);
 
-  const handleSalvar = () => {
-    if (!codigo.trim()) return;
-    onSalvar({
+  // 🔹 Função principal de salvar
+  const salvarSnippet = (auto = false) => {
+    if (!codigo.trim() && !titulo.trim()) return;
+    const novoSnippet = {
       id: snippet?.id || crypto.randomUUID(),
       titulo: titulo.trim() || "Sem título",
       linguagem,
       codigo,
-    });
-    onClose();
+    };
+    onSalvar(novoSnippet);
+    if (auto) {
+      setStatus("🔹 Salvo");
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setStatus(""), 2000);
+    }
   };
 
-  // 🔹 Define extensão da linguagem
+  // 🔹 Gatilho do blur (título e editor)
+  const handleBlur = () => salvarSnippet(true);
+
+  // 🔹 Extensões de linguagem
   const getExtensions = () => {
     switch (linguagem) {
       case "javascript":
@@ -71,7 +88,9 @@ export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props
   return (
     <Modal show={show} onHide={onClose} centered size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>{snippet ? "Editar Snippet" : "Novo Snippet"}</Modal.Title>
+        <Modal.Title>
+          {snippet ? "Editar Snippet": "Novo Snippet"}
+        </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -80,6 +99,7 @@ export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props
           <Form.Control
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
+            onBlur={handleBlur}
             placeholder="Título"
           />
         </Form.Group>
@@ -88,7 +108,10 @@ export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props
           <Form.Label>Linguagem</Form.Label>
           <Form.Select
             value={linguagem}
-            onChange={(e) => setLinguagem(e.target.value)}
+            onChange={(e) => {
+              setLinguagem(e.target.value);
+              salvarSnippet(true);
+            }}
           >
             <option value="javascript">JavaScript</option>
             <option value="typescript">TypeScript</option>
@@ -114,6 +137,7 @@ export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props
             theme={vscodeDark}
             extensions={getExtensions()}
             onChange={(value) => setCodigo(value)}
+            onBlur={handleBlur}
             basicSetup={{
               lineNumbers: true,
               highlightActiveLine: true,
@@ -122,13 +146,26 @@ export default function SnippetModal({ show, onClose, onSalvar, snippet }: Props
             }}
           />
         </div>
+
+        {status && (
+          <div
+            style={{
+              marginTop: "6px",
+              fontSize: "0.85rem",
+              color: "#7FB77E",
+              textAlign: "right",
+            }}
+          >
+            {status}
+          </div>
+        )}
       </Modal.Body>
 
       <Modal.Footer>
         <Button size="sm" variant="outline-secondary" onClick={onClose}>
-          Cancelar
+          Fechar
         </Button>
-        <Button size="sm" variant="outline-primary" onClick={handleSalvar}>
+        <Button size="sm" variant="outline-primary" onClick={() => salvarSnippet()}>
           Salvar
         </Button>
       </Modal.Footer>
