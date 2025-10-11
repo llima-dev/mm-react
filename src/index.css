@@ -102,6 +102,28 @@ html.dark {
   }
 }
 
+:root {
+  --badge-js-bg: rgba(247, 223, 30, 0.25);
+  --badge-js-text: #6b5a00;
+  --badge-sql-bg: rgba(0, 117, 143, 0.15);
+  --badge-sql-text: #00485c;
+  --badge-py-bg: rgba(53, 114, 165, 0.15);
+  --badge-py-text: #28597d;
+  --badge-default-bg: rgba(0, 0, 0, 0.05);
+  --badge-default-text: #333;
+}
+
+.dark {
+  --badge-js-bg: rgba(247, 223, 30, 0.15);
+  --badge-js-text: #f7df1e;
+  --badge-sql-bg: rgba(0, 117, 143, 0.2);
+  --badge-sql-text: #4FC3F7;
+  --badge-py-bg: rgba(53, 114, 165, 0.2);
+  --badge-py-text: #7FB3FF;
+  --badge-default-bg: rgba(255, 255, 255, 0.1);
+  --badge-default-text: #bbb;
+}
+
 /* garantir legibilidade base */
 body {
   background-color: var(--bg);

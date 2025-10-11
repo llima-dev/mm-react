@@ -1,152 +1,49 @@
 import { useState } from "react";
 import type { Snippet } from "../../types";
-import hljs from "highlight.js";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import type { GridColDef } from "@mui/x-data-grid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "react-bootstrap";
-import { copiarCodigoComAlerta } from '../common/helper';
-
 import {
-    faGripVertical,
-    faEdit,
-    faCopy,
-    faXmark,
-    faMinus,
-    faPlus
+  faPen,
+  faTrash,
+  faCopy,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-
-import { DndContext, closestCenter, useSensor, useSensors, MouseSensor, TouchSensor } from "@dnd-kit/core";
-import { SortableContext, arrayMove, verticalListSortingStrategy, useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { IconButton, Button, Tooltip } from "@mui/material";
 import SnippetModal from "./SnippetModal";
-
-import "./AbaSnippets.css";
+import hljs from "highlight.js";
+import { copiarCodigoComAlerta } from "../common/helper";
+import "highlight.js/styles/github-dark.css";
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card";
 
 type Props = {
   snippets: Snippet[];
   onSalvar: (snippets: Snippet[]) => void;
 };
 
-type SortableSnippetCardProps = {
-  snippet: Snippet;
-  onCopy: () => void;
-  onEdit: () => void;
-  onRemove: () => void;
-};
-
-function SortableSnippetCard({ snippet, onCopy, onEdit, onRemove }: SortableSnippetCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: snippet.id });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className="snippet-card mb-3 position-relative d-flex align-items-start"
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-        transform: CSS.Transform.toString(transform),
-        transition,
-        background: "#f8fafc",
-        borderRadius: 8,
-        border: "1px solid #e2e8f0",
-        minHeight: 80,
-      }}
-    >
-      <span
-        {...attributes}
-        {...listeners}
-        style={{
-          cursor: "grab",
-          color: "#888",
-          marginRight: 12,
-          marginLeft: 4,
-          marginTop: 16,
-          fontSize: 14,
-          userSelect: "none"
-        }}
-        tabIndex={0}
-        title="Arrastar para ordenar"
-      >
-        <FontAwesomeIcon icon={faGripVertical} />
-      </span>
-      <div className="w-100" style={{ overflow: "hidden" }}>
-        <div className="snippet-title d-flex gap-1">
-          {snippet.titulo}
-          <span className="badge bg-warning text-dark d-flex align-items-center p-1">{snippet.linguagem}</span>
-        </div>
-        <div className="snippet-actions position-absolute top-0 end-0 m-2 d-flex gap-1">
-          <Button variant="outline-secondary btn-sm no-border" size="sm" onClick={onCopy} title="Copiar">
-            <FontAwesomeIcon icon={faCopy} />
-          </Button>
-          <Button variant="outline-primary btn-sm no-border" size="sm" onClick={onEdit} title="Editar">
-            <FontAwesomeIcon icon={faEdit} />
-          </Button>
-          <Button variant="outline-danger btn-sm no-border" size="sm" onClick={onRemove} title="Remover">
-            <FontAwesomeIcon icon={faXmark} />
-          </Button>
-        </div>
-        <pre className="mt-2" style={{ background: "#23272e", color: "#fff", borderRadius: "0.4em", padding: "0.5em" }}>
-          <code
-            dangerouslySetInnerHTML={{
-              __html: hljs.highlight(snippet.codigo, { language: snippet.linguagem }).value,
-            }}
-          />
-        </pre>
-      </div>
-    </div>
-  );
-}
-
 export default function AbaSnippets({ snippets, onSalvar }: Props) {
-  const [titulo, setTitulo] = useState("");
-  const [codigo, setCodigo] = useState("");
-  const [linguagem, setLinguagem] = useState("javascript");
-  const [snips, setSnips] = useState<Snippet[]>(snippets);
-  const [mostrarForm, setMostrarForm] = useState(false);
-
+  const [snips, setSnips] = useState(snippets);
   const [modalAberto, setModalAberto] = useState(false);
-  const [snippetParaEditar, setSnippetParaEditar] = useState<Snippet | null>(null);
-
-  const [busca, setBusca] = useState("");
-
-  // Atualiza snips se vier coisa nova do pai
-  if (snips !== snippets && snippets.length !== snips.length) {
-    setSnips(snippets);
-  }
-
-  const sensors = useSensors(
-    useSensor(MouseSensor),
-    useSensor(TouchSensor)
+  const [snippetParaEditar, setSnippetParaEditar] = useState<Snippet | null>(
+    null
   );
 
-  function handleDragEnd(event: any) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const oldIndex = snips.findIndex(s => s.id === active.id);
-    const newIndex = snips.findIndex(s => s.id === over.id);
-    const novaOrdem = arrayMove(snips, oldIndex, newIndex);
-    setSnips(novaOrdem);
-    onSalvar(novaOrdem);
-  }
-
-  const adicionarSnippet = () => {
-    if (!codigo.trim()) return;
+  const adicionarNovo = () => {
     const novo: Snippet = {
       id: crypto.randomUUID(),
-      titulo: titulo.trim() || "Sem título",
-      linguagem,
-      codigo,
+      titulo: "Novo snippet",
+      linguagem: "javascript",
+      codigo: "",
     };
     const atualizados = [...snips, novo];
     setSnips(atualizados);
     onSalvar(atualizados);
-    setTitulo("");
-    setCodigo("");
-    setLinguagem("javascript");
-  };
-
-  const remover = (id: string) => {
-    const atualizados = snips.filter((s) => s.id !== id);
-    setSnips(atualizados);
-    onSalvar(atualizados);
+    setSnippetParaEditar(novo);
+    setModalAberto(true);
   };
 
   const editarSnippet = (s: Snippet) => {
@@ -154,134 +51,221 @@ export default function AbaSnippets({ snippets, onSalvar }: Props) {
     setModalAberto(true);
   };
 
+  const removerSnippet = (id: string) => {
+    const atualizados = snips.filter((s) => s.id !== id);
+    setSnips(atualizados);
+    onSalvar(atualizados);
+  };
+
   const handleSalvarSnippetEditado = (snipEditado: Snippet) => {
-    const atualizados = snips.map(s =>
+    const atualizados = snips.map((s) =>
       s.id === snipEditado.id ? snipEditado : s
     );
     setSnips(atualizados);
     onSalvar(atualizados);
   };
 
+  const rows = snips.map((s) => ({
+    id: s.id,
+    titulo: s.titulo,
+    linguagem: s.linguagem,
+    codigo: s.codigo,
+  }));
 
-  const snipsFiltrados = snips.filter(
-    (s) =>
-      s.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-      s.codigo.toLowerCase().includes(busca.toLowerCase())
-      || s.linguagem.toLowerCase().includes(busca.toLowerCase())
-  );
+  const columns: GridColDef[] = [
+    {
+      field: "titulo",
+      headerName: "Título",
+      flex: 1,
+      renderCell: (params) => {
+        const snippet = snips.find((s) => s.id === params.row.id);
+        if (!snippet) return null;
+
+        return (
+          <div className="flex flex-col overflow-hidden leading-tight">
+            {/* Badge da linguagem */}
+            <span
+              className="self-start px-1.5 py-[1px] mb-[2px] rounded text-[10px] font-semibold uppercase tracking-wide"
+              style={{
+                backgroundColor:
+                  snippet.linguagem === "javascript"
+                    ? "var(--badge-js-bg, rgba(247, 223, 30, 0.15))"
+                    : snippet.linguagem === "sql"
+                    ? "var(--badge-sql-bg, rgba(0, 117, 143, 0.2))"
+                    : snippet.linguagem === "python"
+                    ? "var(--badge-py-bg, rgba(53, 114, 165, 0.2))"
+                    : "var(--badge-default-bg, rgba(0, 0, 0, 0.05))",
+                color:
+                  snippet.linguagem === "javascript"
+                    ? "var(--badge-js-text, #b89a00)"
+                    : snippet.linguagem === "sql"
+                    ? "var(--badge-sql-text, #006780)"
+                    : snippet.linguagem === "python"
+                    ? "var(--badge-py-text, #2c5d9d)"
+                    : "var(--text)",
+                border: "1px solid rgba(0,0,0,0.05)",
+              }}
+            >
+              {snippet.linguagem?.toUpperCase() || "OUTRO"}
+            </span>
+
+            {/* Título quebrando linha */}
+            <span
+              className="text-sm break-words mt-1"
+              title={snippet.titulo}
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                lineHeight: "1.2em",
+                maxHeight: "2.4em",
+              }}
+            >
+              {snippet.titulo}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      field: "codigo",
+      headerName: "Código (preview)",
+      flex: 2,
+      renderCell: (params) => {
+        const snippet = snips.find((s) => s.id === params.row.id);
+        if (!snippet) return null;
+
+        const highlighted = hljs.highlight(snippet.codigo, {
+          language: snippet.linguagem || "plaintext",
+          ignoreIllegals: true,
+        }).value;
+
+        return (
+          <HoverCard openDelay={100} closeDelay={150}>
+            <HoverCardTrigger asChild>
+              <span
+                className="snippet-inline cursor-help text-xs text-ellipsis overflow-hidden whitespace-nowrap block"
+                title="Passe o mouse para ver o código completo"
+              >
+                <code
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      highlighted.replace(/\s+/g, " ").slice(0, 160) +
+                      (snippet.codigo.length > 160 ? "…" : ""),
+                  }}
+                />
+              </span>
+            </HoverCardTrigger>
+
+            <HoverCardContent
+              side="top"
+              align="start"
+              className="z-[9999] w-[600px] max-h-[400px] overflow-auto bg-[#1e1e1e] border border-neutral-700 shadow-xl rounded-lg p-3 relative"
+            >
+              <button
+                onClick={() => copiarCodigoComAlerta(snippet.codigo)}
+                className="absolute top-2 right-2 p-1.5 rounded-md hover:bg-[#2a2a2a] transition-colors text-gray-300"
+                title="Copiar código"
+              >
+                <FontAwesomeIcon icon={faCopy} size="sm" />
+              </button>
+
+              <pre className="text-xs font-mono text-gray-200 whitespace-pre-wrap leading-snug">
+                <code
+                  dangerouslySetInnerHTML={{
+                    __html: hljs.highlight(snippet.codigo, {
+                      language: snippet.linguagem || "plaintext",
+                    }).value,
+                  }}
+                />
+              </pre>
+            </HoverCardContent>
+          </HoverCard>
+        );
+      },
+    },
+    {
+      field: "acoes",
+      headerName: "Ações",
+      sortable: false,
+      filterable: false,
+      width: 120,
+      renderCell: (params) => {
+        const snippet = snips.find((s) => s.id === params.row.id);
+        if (!snippet) return null;
+
+        return (
+          <>
+            <Tooltip title="Editar snippet">
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() => editarSnippet(snippet)}
+              >
+                <FontAwesomeIcon icon={faPen} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Remover snippet">
+              <IconButton
+                size="small"
+                color="error"
+                onClick={() => removerSnippet(snippet.id)}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </IconButton>
+            </Tooltip>
+          </>
+        );
+      },
+    },
+  ];
 
   return (
-    <div className="campo">
-      {/* Cabeçalho com toggle */}
+    <div style={{ height: "60vh", display: "flex", flexDirection: "column" }}>
       <div className="d-flex justify-content-between align-items-center mb-2">
-        <label className="form-label m-0">Snippets</label>
+        <h6>Snippets</h6>
         <Button
-          variant="outline-primary"
-          size="sm"
-          onClick={() => setMostrarForm((v) => !v)}
+          variant="text"
+          color="inherit"
+          size="small"
+          startIcon={<FontAwesomeIcon icon={faPlus} />}
+          onClick={adicionarNovo}
         >
-          <FontAwesomeIcon
-            icon={mostrarForm ? faMinus : faPlus}
-            className="me-1"
-          />
-          {mostrarForm ? "Fechar" : "Novo"}
+          Novo
         </Button>
       </div>
 
-      {/* Formulário retrátil */}
-      {mostrarForm && (
-        <div className="snippet-form mb-3 p-2 border rounded bg-light-subtle">
-          <input
-            className="form-control mb-2"
-            placeholder="Título"
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-          />
-          <select
-            className="form-select mb-2"
-            value={linguagem}
-            onChange={(e) => setLinguagem(e.target.value)}
-          >
-            <option value="javascript">JavaScript</option>
-            <option value="bash">Bash</option>
-            <option value="html">HTML</option>
-            <option value="json">JSON</option>
-            <option value="css">CSS</option>
-            <option value="php">PHP</option>
-            <option value="sql">SQL</option>
-            <option value="typescript">TypeScript</option>
-          </select>
-          <textarea
-            className="form-control mb-2"
-            rows={4}
-            placeholder="Código"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-          />
-          <div className="d-flex justify-content-end gap-2">
-            <Button
-              variant="outline-secondary btn-sm"
-              size="sm"
-              onClick={() => setMostrarForm(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="success btn-sm"
-              size="sm"
-              onClick={() => {
-                adicionarSnippet();
-                setMostrarForm(false);
-              }}
-            >
-              <FontAwesomeIcon icon={faPlus} className="me-1" />
-              Adicionar
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <hr />
-
-      {/* Lista de snippets */}
-      <div className="campo snippets-wrapper">
-      <div className="snippets-container scroll-suave">
-        <input
-          className="form-control mb-3"
-          placeholder="Buscar snippet por título ou código..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 2,
-            background: "var(--bs-body-bg)", // dark/light
-          }}
-        />
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={snips.map((s) => s.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <ul className="list-unstyled snippets-list">
-              {snipsFiltrados.map((s) => (
-                <SortableSnippetCard
-                  key={s.id}
-                  snippet={s}
-                  onCopy={() => copiarCodigoComAlerta(s.codigo)}
-                  onEdit={() => editarSnippet(s)}
-                  onRemove={() => remover(s.id)}
-                />
-              ))}
-            </ul>
-          </SortableContext>
-        </DndContext>
-      </div>
-      </div>
+      <DataGrid
+        sx={{
+          "& .MuiDataGrid-row": {
+            display: "flex",
+            alignItems: "center",
+          },
+          "& .MuiDataGrid-cell": {
+            display: "flex",
+            alignItems: "center",
+          },
+        }}
+        rows={rows}
+        columns={columns}
+        pageSizeOptions={[10]}
+        initialState={{
+          pagination: { paginationModel: { pageSize: 5, page: 0 } },
+        }}
+        disableRowSelectionOnClick
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
+            quickFilterProps: { debounceMs: 400 },
+          },
+        }}
+        onRowDoubleClick={(params) => {
+          const snippet = snips.find((s) => s.id === params.row.id);
+          if (snippet) editarSnippet(snippet);
+        }}
+      />
 
       <SnippetModal
         show={modalAberto}

@@ -190,22 +190,18 @@ export default function LembreteDrawer({
         </button>
 
         {/* Oculta no mobile */}
-        {!isMobile && (
-          <>
-            <button
-              className={aba === "anotacoes" ? "ativo" : ""}
-              onClick={() => setAba("anotacoes")}
-            >
-              Anotações
-            </button>
-            <button
-              className={aba === "snippets" ? "ativo" : ""}
-              onClick={() => setAba("snippets")}
-            >
-              Snippets
-            </button>
-          </>
-        )}
+        <button
+          className={aba === "anotacoes" ? "ativo" : ""}
+          onClick={() => setAba("anotacoes")}
+        >
+          Anotações
+        </button>
+        <button
+          className={aba === "snippets" ? "ativo" : ""}
+          onClick={() => setAba("snippets")}
+        >
+          Snippets
+        </button>
 
         {isMobile && mostrarModalComentario && (
           <div className="modal-backdrop fade show"></div>

@@ -66,18 +66,35 @@ export function copiarCodigoComAlerta(codigo: string) {
   navigator.clipboard.writeText(codigo)
     .then(() => {
       Swal.fire({
-        title: 'Copiado!',
-        text: 'O código foi copiado para a área de transferência.',
-        icon: 'success',
-        timer: 1200,
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: "Copiado!",
+        text: "O código foi copiado para a área de transferência.",
         showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        background: "#2a2a2a",
+        color: "#fff",
+        customClass: {
+          popup: "z-[10000]"
+        }
       });
     })
     .catch(() => {
       Swal.fire({
-        title: 'Erro!',
-        text: 'Não foi possível copiar o código.',
-        icon: 'error',
+        toast: true,
+        position: "top-end",
+        icon: "error",
+        title: "Erro!",
+        text: "Não foi possível copiar o código.",
+        showConfirmButton: false,
+        timer: 2000,
+        background: "#2a2a2a",
+        color: "#fff",
+        customClass: {
+          popup: "z-[10000]"
+        }
       });
     });
 }

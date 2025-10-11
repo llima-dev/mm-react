@@ -74,3 +74,53 @@
   background-color: var(--scroll-thumb); /* var no lugar de #cbd5e1 */
   border-radius: 3px;
 }
+
+/* Preview de código em linha dentro do DataGrid */
+.snippet-inline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center; /* Alinha verticalmente com o texto das outras células */
+  width: 100%;
+  height: 100%; /* ocupa toda a célula */
+  padding-left: 4px; /* dá um respiro pra não colar na borda */
+  line-height: 1.2;
+}
+
+/* Mantém o highlight bonito, mas discreto dentro do grid */
+.snippet-inline code {
+  background: transparent !important;
+  color: inherit !important;
+  font-weight: 500;
+}
+
+/* Quando a linha está em hover */
+.MuiDataGrid-row:hover .snippet-inline {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+}
+
+.MuiDataGrid-root {
+  overflow: visible !important;
+}
+
+.MuiDataGrid-virtualScroller {
+  overflow: visible !important;
+}
+
+.MuiDataGrid-cell {
+  overflow: hidden !important; /* oculta conteúdo que ultrapassa a célula */
+  text-overflow: ellipsis !important; /* adiciona "..." */
+  white-space: nowrap !important; /* evita quebra de linha */
+  align-items: center !important; /* centraliza verticalmente */
+}
+
+.MuiDataGrid-cell > div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
