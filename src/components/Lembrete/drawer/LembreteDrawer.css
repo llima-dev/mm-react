@@ -29,7 +29,6 @@
   flex: 1;
   overflow-y: auto;
   padding-right: 0.5rem;
-  overflow: hidden;
 }
 
 @media (max-width: 768px) {
@@ -229,4 +228,14 @@
     padding-bottom: calc(env(safe-area-inset-bottom) + 5px);
     z-index: 10;
   }
+}
+
+.drawer .conteudo::-webkit-scrollbar {
+  width: 0px;          /* Oculta a barra no Chrome, Edge e Safari */
+  background: transparent;
+}
+
+.drawer .conteudo {
+  scrollbar-width: none;   /* Oculta no Firefox */
+  -ms-overflow-style: none; /* Oculta no IE e Edge antigo */
 }
