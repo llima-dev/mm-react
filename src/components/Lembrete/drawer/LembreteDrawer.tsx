@@ -10,7 +10,8 @@ import {
   faCommentDots,
   faStickyNote,
   faCode,
-  faTable
+  faTable,
+  faPen
 } from "@fortawesome/free-solid-svg-icons";
 
 import EditorAnotacoes from "../EditorAnotacoes";
@@ -46,6 +47,7 @@ import SortableChecklistItem from "../checklist/SortableChecklistItem";
 
 import "../LembreteCard.css";
 import "./LembreteDrawer.css";
+import PlanilhaModal from "./PlanilhaModal";
 
 type Props = {
   lembrete: Lembrete;
@@ -73,6 +75,7 @@ export default function LembreteDrawer({
   const [novoItem, setNovoItem] = useState("");
   const [editandoId, setEditandoId] = useState<string | null>(null);
   const [textoEditado, setTextoEditado] = useState("");
+  const [planilhaFullscreen, setPlanilhaFullscreen] = useState(false);
 
   const [mostrarModalComentario, setMostrarModalComentario] = useState(false);
 
@@ -626,13 +629,34 @@ export default function LembreteDrawer({
         )}
 
         {aba === "planilha" && (
+          <>
+            <div className="d-flex justify-content-end mb-2">
+              <button
+                className="btn btn-sm btn-outline-secondary"
+                onClick={() => setPlanilhaFullscreen(true)}
+              >
+                <FontAwesomeIcon icon={faPen} className="me-2" />
+                Editar
+              </button>
+            </div>
+
             <PlanilhaEditor
+              key={`planilha-${lembrete.id}-${planilhaFullscreen}`}
               data={lembrete.planilha}
-              onChange={(dados) => {    
-                onSalvarPlanilha?.(dados)
+              onChange={(dados) => {
+                onSalvarPlanilha?.(dados);
               }}
             />
+          </>
         )}
+
+        <PlanilhaModal
+          show={planilhaFullscreen}
+          planilhaTitulo={lembrete.titulo}
+          onClose={() => setPlanilhaFullscreen(false)}
+          data={lembrete.planilha}
+          onChange={(dados) => onSalvarPlanilha?.(dados)}
+        />
 
         {mostrarConfig && (
           <>
