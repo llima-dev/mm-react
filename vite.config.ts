@@ -15,6 +15,9 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: "./src/setupTests.ts",
     css: false,
+    deps: {
+      inline: ["@mui/x-data-grid"]
+    },
     coverage: {
       provider: "v8",
       reportsDirectory: "coverage",
