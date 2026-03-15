@@ -12,19 +12,16 @@ jobs:
 
     steps:
       - name: Clonar repositório
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Instalar Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - name: Preparar workaround do npm
-        run: |
-          rm -rf package-lock.json node_modules
+          node-version: 18
+          cache: npm
 
       - name: Instalar dependências
-        run: npm install --legacy-peer-deps
+        run: npm ci
 
       - name: Rodar testes com Vitest
         run: npx vitest run --coverage
