@@ -598,6 +598,10 @@ export default function App() {
                     onSalvarSnippets={(snips) =>
                       atualizar(l.id, { ...l, snippets: snips })
                     }
+
+                    onSalvarPlanilha={(dados) =>
+                      atualizar(l.id, { ...l, planilha: dados })
+                    }
                   />
                 ) : null
               )}

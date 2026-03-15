@@ -1,0 +1,8 @@
+.jtoolbar button {
+  all: unset;
+  cursor: pointer;
+}
+
+.jtoolbar select {
+  font-size: 14px;
+}

@@ -239,3 +239,11 @@
   scrollbar-width: none;   /* Oculta no Firefox */
   -ms-overflow-style: none; /* Oculta no IE e Edge antigo */
 }
+
+.jss_worksheet {
+  width: 100% !important;
+}
+
+.drawer .conteudo {
+  overflow: hidden;
+}

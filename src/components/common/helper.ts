@@ -221,6 +221,13 @@ export function importarDadosMural(
           comentarios: l.comentarios || [],
           anotacoes: l.anotacoes || "",
           snippets: l.snippets || [],
+          planilha: l.planilha
+          ? {
+              data: l.planilha.data || [[]],
+              style: l.planilha.style || {},
+              columns: l.planilha.columns || []
+            }
+          : undefined,
           prazo: l.prazo || "",
           criadoPorRecorrencia: l.criadoPorRecorrencia,
           geradoPor: l.geradoPor,
