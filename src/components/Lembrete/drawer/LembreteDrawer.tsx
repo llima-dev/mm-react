@@ -10,17 +10,20 @@ import {
   faCommentDots,
   faStickyNote,
   faCode,
+  faTable
 } from "@fortawesome/free-solid-svg-icons";
 
 import EditorAnotacoes from "../EditorAnotacoes";
 import AbaSnippets from "../AbaSnippets";
+import PlanilhaEditor from "../PlanilhaEditor";
 
 import type { 
   Lembrete,
   Comentario,
   Snippet,
   ChecklistItem,
-  Categoria
+  Categoria,
+  Planilha
 } from "../../../types";
 
 import { extrairHashtags, formatarData } from '../../common/helper';
@@ -51,6 +54,7 @@ type Props = {
   onSalvarAnotacoes?: (texto: string) => void;
   onSalvarSnippets?: (snips: Snippet[]) => void;
   onSalvarChecklist?: (novoChecklist: ChecklistItem[]) => void;
+  onSalvarPlanilha?: (dados: Planilha) => void;
   categoria?: Categoria;
 };
 
@@ -61,6 +65,7 @@ export default function LembreteDrawer({
   onSalvarAnotacoes,
   onSalvarSnippets,
   onSalvarChecklist,
+  onSalvarPlanilha,
   categoria
 }: Props) {
   const [comentarioNovo, setComentarioNovo] = useState("");
@@ -83,6 +88,7 @@ export default function LembreteDrawer({
           comentarios: true,
           anotacoes: true,
           snippets: true,
+          planilha: true
         };
     return { ...parsed, detalhes: true };
   });
@@ -100,7 +106,9 @@ export default function LembreteDrawer({
     fecharModalComentario();
   };
 
-  const [aba, setAba] = useState<"detalhes" | "comentarios" | "anotacoes" | "snippets">("detalhes");
+  const [aba, setAba] = useState<
+    "detalhes" | "comentarios" | "anotacoes" | "snippets" | "planilha"
+  >("detalhes");
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -260,6 +268,16 @@ export default function LembreteDrawer({
           >
             <FontAwesomeIcon icon={faCode} className="me-2" />
             Snippets
+          </button>
+        )}
+
+        {abasVisiveis.planilha && (
+          <button
+            className={aba === "planilha" ? "ativo" : ""}
+            onClick={() => setAba("planilha")}
+          >
+            <FontAwesomeIcon icon={faTable} className="me-2" />
+            Planilha
           </button>
         )}
 
@@ -607,6 +625,15 @@ export default function LembreteDrawer({
           />
         )}
 
+        {aba === "planilha" && (
+            <PlanilhaEditor
+              data={lembrete.planilha}
+              onChange={(dados) => {    
+                onSalvarPlanilha?.(dados)
+              }}
+            />
+        )}
+
         {mostrarConfig && (
           <>
             <div className="modal-backdrop fade show"></div>
@@ -643,6 +670,11 @@ export default function LembreteDrawer({
                         label: "Anotações",
                       },
                       { key: "snippets", icon: faCode, label: "Snippets" },
+                      {
+                        key: "planilha",
+                        icon: faTable,
+                        label: "Planilha",
+                      }
                     ].map(({ key, icon, label }) => (
                       <div
                         key={key}

@@ -7,6 +7,9 @@ export type ChecklistItem = {
   concluidoEm?: string;
 };
 
+export type Planilha = CelulaPlanilha[][];
+export type CelulaPlanilha = string | number;
+
 export type Lembrete = {
   id: string;
   titulo: string;
@@ -25,6 +28,7 @@ export type Lembrete = {
   geradoPor?: string;
   diasRecorrencia?: number[];
   categoriaId?: string;
+  planilha?: CelulaPlanilha[][];
 };
 
 export type Comentario = {
