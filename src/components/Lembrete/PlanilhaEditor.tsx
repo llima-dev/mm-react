@@ -1,17 +1,26 @@
 import { useEffect, useRef } from "react";
 import jspreadsheet from "jspreadsheet-ce";
+import type { WorksheetInstance } from "jspreadsheet-ce";
 
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import "jsuites/dist/jsuites.css";
 
 import type { Planilha } from "../../types";
+import "./PlanilhaEditor.css"
 
 type Props = {
   data?: Planilha;
   onChange?: (data: Planilha) => void;
+  isDrawer?: boolean;
 };
 
-export default function PlanilhaEditor({ data = [[]], onChange }: Props) {
+export default function PlanilhaEditor(
+  { 
+    data = { data: [[]], style: {}, columns: [] }, 
+    onChange, 
+    isDrawer = true 
+  }: Props
+) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,14 +32,61 @@ export default function PlanilhaEditor({ data = [[]], onChange }: Props) {
     jspreadsheet(ref.current, {
       worksheets: [
         {
-          data,
-          minDimensions: [10, 10],
-          columns: [],
+          data: data.data as unknown as jspreadsheet.CellValue[][],
+          style: data.style,
+          minDimensions: [10, 20],
+          columns: data?.columns ?? [],
+          tableOverflow: true,
+          tableWidth: "100%",
+          editable: !isDrawer
         }
       ],
-      onchange: (worksheet: any) => {
-        const dados = worksheet.getData() as Planilha;
-        onChange?.(dados);
+      toolbar: !isDrawer,
+
+      onchange: (worksheet: WorksheetInstance) => {
+        const dados = worksheet.getData();
+        const estilos = worksheet.getStyle();
+
+        onChange?.({
+          data: dados,
+          style: typeof estilos === "string" ? {} : estilos
+        });
+      },
+
+      onchangestyle: (worksheet: WorksheetInstance) => {
+        const dados = worksheet.getData();
+        const estilos = worksheet.getStyle();
+
+        onChange?.({
+          data: dados,
+          style: typeof estilos === "string" ? {} : estilos
+        });
+      },
+
+      onresizecolumn: (worksheet: WorksheetInstance) => {
+        const dados = worksheet.getData();
+        const estilos = worksheet.getStyle();
+        const widths = worksheet.getWidth();
+
+        const cols = Array.isArray(widths) ? widths : [widths];
+
+        onChange?.({
+          data: dados,
+          style: typeof estilos === "string" ? {} : estilos,
+          columns: cols.map((w) => ({ width: Number(w) }))
+        });
+      },
+
+      onload: (instance) => {
+        const worksheet = instance.worksheets[0];
+
+        if (!data?.columns) return;
+
+        data.columns.forEach((col, i) => {
+          if (col?.width) {
+            worksheet.setWidth(i, col.width);
+          }
+        });
       }
     });
 
@@ -42,5 +98,5 @@ export default function PlanilhaEditor({ data = [[]], onChange }: Props) {
     };
   }, []);
 
-  return <div ref={ref} style={{ minHeight: 350, width: "100%" }} />;
+  return <div ref={ref} style={{ height: "100%", width: "100%" }} />;
 }
